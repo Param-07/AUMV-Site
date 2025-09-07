@@ -9,38 +9,18 @@ class WebSearchPlugin:
         self.client = TavilyClient(
             api_key= os.environ.get("TAVILY_API_KEY")
         )
-    @kernel_function(description="Use the tavily search for the data related to user query which the llm don't have" \
-    "latest and most appropriate information about any general topics")
-    def general_tavily_search(self, query: str):
+    @kernel_function(description="""Always search the web using Tavily to retrieve the most recent and relevant information 
+                     for any user query. Use this to update or fact-check the LLM's knowledge with the latest 
+                     available data.""")
+    def general_tavily_search(self, query: str, time_range: str):
         if not query or not query.strip():
-            print("IAMHERE")
             return "No Queery Provided"
         print(f"QUERY --: {query}")
         result = self.client.search(query= query,
-                                    time_range='month',
+                                    time_range=f'{time_range}',
                                     max_results= 5,
                                     topic= 'general',
                                     include_answer= 'basic',
-                                    include_domains=["https://en.wikipedia.org/wiki/Wikipedia"]
-                                    )
-        
-        return result
-    
-    @kernel_function(description="Use the tavily search for the data related to query and the query is related to current affairs" \
-    "and news around the globe")
-    def news_tavily_search(self, query: str):
-        if not query or not query.strip():
-            print("IAMHERE")
-            return "No Queery Provided"
-        print(f"QUERY : {query}")
-        result = self.client.search(query= query,
-                                    time_range='year',
-                                    max_results= 5,
-                                    topic= 'news',
-                                    include_answer= 'basic',
-                                    include_domains=["https://www.bbc.com/news",
-                                                     "https://www.thehindu.com/",
-                                                     "https://www.washingtonpost.com/"]
                                     )
         
         return result
