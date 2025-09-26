@@ -3,7 +3,8 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import AnnouncementBar from "./components/AnnouncementBar";
 import HeroSection from "./components/HeroSection";
-import AboutSection from "./components/AboutSection";
+import AboutSection from "./Pages/AboutSection";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 function App() {
   return (
    <>

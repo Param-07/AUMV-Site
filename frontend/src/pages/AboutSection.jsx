@@ -1,5 +1,4 @@
 import React from 'react';
-
 const AboutSection = () => {
     const sections = [
         {
@@ -47,7 +46,6 @@ const AboutSection = () => {
             reverse: true,
         },
     ];
-
     return (
         <section className="py-8 md:py-16 bg-gray-50 font-sans">
             <div className="max-w-7xl mx-auto px-4">
