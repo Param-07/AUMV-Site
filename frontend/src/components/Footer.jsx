@@ -13,7 +13,6 @@ const Footer = () => {
     return (
         <footer className="bg-[#3d2569] text-white py-10 px-4">
             <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
-                {/* About Section */}
                 <div className="space-y-4">
                     <div className="flex items-center space-x-3">
                         <SchoolLogoPlaceholder />
@@ -27,8 +26,6 @@ const Footer = () => {
                         Nurturing excellence in education and character development for over a decade.
                     </p>
                 </div>
-
-                {/* Contact Section */}
                 <div className="space-y-4">
                     <h3 className="text-lg font-bold">Contact Information</h3>
                     <div className="space-y-2">
@@ -47,8 +44,6 @@ const Footer = () => {
                         </p>
                     </div>
                 </div>
-
-                {/* Quick Links Section */}
                 <div className="space-y-4">
                     <h3 className="text-lg font-bold">Quick Links</h3>
                     <div className="grid grid-cols-2 gap-2 text-sm">
@@ -62,12 +57,9 @@ const Footer = () => {
                         <a href="#" className="text-gray-300 hover:text-white transition-colors">Alumni</a>
                     </div>
                 </div>
-
-                {/* Social Section */}
                 <div className="space-y-4">
                     <h3 className="text-lg font-bold">Follow Us</h3>
                     <div className="flex space-x-4">
-                        {/* Placeholder for social icons */}
                         <a href="https://github.com/" target="_blank" rel="noopener noreferrer">
                             <img src="https://placehold.co/40x40/ffffff/000000?text=IG" alt="Instagram" className="rounded-full w-10 h-10" />
                         </a>
@@ -78,7 +70,7 @@ const Footer = () => {
                 </div>
             </div>
 
-            {/* Bottom Bar */}
+            
             <div className="border-t border-gray-600 pt-4 text-center text-xs text-gray-400">
                 <p>&copy; 2024 Alok Inter College, Chandauli. All rights reserved.</p>
             </div>
