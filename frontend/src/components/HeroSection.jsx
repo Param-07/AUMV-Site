@@ -1,15 +1,11 @@
 import React, { useState } from 'react';
 
 const HeroSection = () => {
-    // State to control the visibility of the popup
     const [isPopupOpen, setIsPopupOpen] = useState(false);
 
-    // Function to open the popup
     const handleOpenPopup = () => {
         setIsPopupOpen(true);
     };
-
-    // Function to close the popup
     const handleClosePopup = () => {
         setIsPopupOpen(false);
     };
@@ -52,8 +48,6 @@ const HeroSection = () => {
                     </div>
                 </div>
             </section>
-            
-            {/* The Popup component is now directly inside HeroSection and uses its state */}
             <div
                 className={`fixed inset-0 z-[999] flex items-center justify-center transition-opacity duration-300 ${isPopupOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
             >
