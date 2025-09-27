@@ -1,21 +1,35 @@
-import { useState } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import AnnouncementBar from "./components/AnnouncementBar";
 import HeroSection from "./components/HeroSection";
-import AboutSection from "./Pages/AboutSection";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-function App() {
+import AboutSection from "./pages/AboutSection";
+import Facilities from "./Pages/Facilities";
+import Gallery from "./pages/Gallery";
+
+function HomePage() {
   return (
-   <>
-    < Navbar/>
-    <HeroSection/>
-    <AnnouncementBar/>
-     <AboutSection/>
-    <Footer/>
-   </>
+    <>
+      <HeroSection />
+      <AnnouncementBar />
+      <AboutSection />
+    </>
   );
 }
 
-export default App;
+function App() {
+  return (
+    <Router>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/facilities" element={<Facilities />} />
+        <Route path="/gallery" element={<Gallery />} />
+      </Routes>
 
+      <Footer />
+    </Router>
+  );
+};
+
+export default App;

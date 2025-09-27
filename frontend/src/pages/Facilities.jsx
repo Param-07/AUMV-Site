@@ -3,7 +3,7 @@ import React from 'react'
 const Facilities = () => {
   const sections = [
         {
-            id: 'Computer Lab',
+            id: 'computer-lab',
             title: 'Computer Lab',
             text: [
                 'Alok Higher Secondary School, Chandauli has been a beacon of excellence in education since its establishment. We are committed to providing quality education that nurtures young minds and shapes future leaders.',
@@ -14,7 +14,7 @@ const Facilities = () => {
             reverse: false,
         },
         {
-            id: 'Library',
+            id: 'library',
             title: "Library",
             text: [
                 'At Alok Inter College, we believe education is not just about books, but about building character, nurturing values, and inspiring a lifelong passion for learning. As Principal, my vision is to ensure that every child is empowered with knowledge, compassion, and confidence to succeed in life.',
@@ -25,7 +25,7 @@ const Facilities = () => {
             reverse: true,
         },
         {
-            id: 'Transport',
+            id: 'transport',
             title: "Transport",
             text: [
                 'Education is the most powerful tool that can transform lives and societies. At Alok Inter College, our goal is to provide a nurturing environment where innovation, discipline, and creativity are encouraged.',
@@ -36,7 +36,7 @@ const Facilities = () => {
             reverse: false,
         },
         {
-            id: 'Sports Complex',
+            id: 'sports',
             title: 'Sports Complex',
             text: [
                 'Education is the most powerful tool that can transform lives and societies. At Alok Inter College, our goal is to provide a nurturing environment where innovation, discipline, and creativity are encouraged.',

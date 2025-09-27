@@ -1,5 +1,7 @@
 import React from 'react';
+
 const AboutSection = () => {
+    // Data for each section to avoid repetition
     const sections = [
         {
             id: 'about',
@@ -13,7 +15,7 @@ const AboutSection = () => {
             reverse: false,
         },
         {
-            id: 'principal-desk',
+            id: 'principal',
             title: "Principal's Desk",
             text: [
                 'At Alok Inter College, we believe education is not just about books, but about building character, nurturing values, and inspiring a lifelong passion for learning. As Principal, my vision is to ensure that every child is empowered with knowledge, compassion, and confidence to succeed in life.',
@@ -24,7 +26,7 @@ const AboutSection = () => {
             reverse: true,
         },
         {
-            id: 'director-desk',
+            id: 'director',
             title: "Director's Desk",
             text: [
                 'Education is the most powerful tool that can transform lives and societies. At Alok Inter College, our goal is to provide a nurturing environment where innovation, discipline, and creativity are encouraged.',
@@ -35,7 +37,7 @@ const AboutSection = () => {
             reverse: false,
         },
         {
-            id: 'Vision & Mission',
+            id: 'vision',
             title: 'Vision & Mission',
             text: [
                 'Education is the most powerful tool that can transform lives and societies. At Alok Inter College, our goal is to provide a nurturing environment where innovation, discipline, and creativity are encouraged.',
@@ -46,6 +48,7 @@ const AboutSection = () => {
             reverse: true,
         },
     ];
+
     return (
         <section className="py-8 md:py-16 bg-gray-50 font-sans">
             <div className="max-w-7xl mx-auto px-4">
