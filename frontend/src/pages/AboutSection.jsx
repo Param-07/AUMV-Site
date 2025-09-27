@@ -1,49 +1,50 @@
-import React from 'react'
+import React from 'react';
 
-const Facilities = () => {
-  const sections = [
+const AboutSection = () => {
+    // Data for each section to avoid repetition
+    const sections = [
         {
-            id: 'Computer Lab',
-            title: 'Computer Lab',
+            id: 'about',
+            title: 'About Our School',
             text: [
                 'Alok Higher Secondary School, Chandauli has been a beacon of excellence in education since its establishment. We are committed to providing quality education that nurtures young minds and shapes future leaders.',
                 'Our school follows the motto "विद्या ददाति विनयम्" (Knowledge bestows humility) and strives to create an environment where students can flourish academically, socially, and morally.',
             ],
-            image: 'https://placehold.co/600x400/d7dbe2/4b2e83?text=Computer+Lab',
-            alt: 'Computer Lab',
+            image: 'https://placehold.co/600x400/d7dbe2/4b2e83?text=Front+View+of+School',
+            alt: 'Front View of School',
             reverse: false,
         },
         {
-            id: 'Library',
-            title: "Library",
+            id: 'principal',
+            title: "Principal's Desk",
             text: [
                 'At Alok Inter College, we believe education is not just about books, but about building character, nurturing values, and inspiring a lifelong passion for learning. As Principal, my vision is to ensure that every child is empowered with knowledge, compassion, and confidence to succeed in life.',
                 'Our dedicated staff and holistic approach ensure that students excel academically while also growing into responsible citizens.',
             ],
-            image: 'https://placehold.co/600x400/d7dbe2/4b2e83?text=Library',
-            alt: 'Library',
+            image: 'https://placehold.co/600x400/d7dbe2/4b2e83?text=Principal+of+Alok+School',
+            alt: 'Principal of Alok School',
             reverse: true,
         },
         {
-            id: 'Transport',
-            title: "Transport",
+            id: 'director',
+            title: "Director's Desk",
             text: [
                 'Education is the most powerful tool that can transform lives and societies. At Alok Inter College, our goal is to provide a nurturing environment where innovation, discipline, and creativity are encouraged.',
                 'We are committed to building an institution that fosters intellectual growth, leadership, and values, shaping future leaders for the nation.',
             ],
-            image: 'https://placehold.co/600x400/d7dbe2/4b2e83?text=Transport',
-            alt: 'Transport',
+            image: 'https://placehold.co/600x400/d7dbe2/4b2e83?text=Director+of+Alok+School',
+            alt: 'Director of Alok School',
             reverse: false,
         },
         {
-            id: 'Sports Complex',
-            title: 'Sports Complex',
+            id: 'vision',
+            title: 'Vision & Mission',
             text: [
                 'Education is the most powerful tool that can transform lives and societies. At Alok Inter College, our goal is to provide a nurturing environment where innovation, discipline, and creativity are encouraged.',
                 'We are committed to building an institution that fosters intellectual growth, leadership, and values, shaping future leaders for the nation.',
             ],
-            image: 'https://placehold.co/600x400/d7dbe2/4b2e83?text=Sports+Complex',
-            alt: 'Sports Complex',
+            image: 'https://placehold.co/600x400/d7dbe2/4b2e83?text=Our+Vision+and+Mission',
+            alt: 'Our Vision and Mission',
             reverse: true,
         },
     ];
@@ -77,6 +78,6 @@ const Facilities = () => {
             </div>
         </section>
     );
-}
+};
 
-export default Facilities
+export default AboutSection;

@@ -31,7 +31,7 @@ const HeroSection = () => {
                     <div className="px-4">
                         <h2 className="text-lg md:text-xl font-medium mb-1">Welcome to</h2>
                         <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-2">ALOK INTER COLLEGE, CHANDAULI</h1>
-                        <p className="text-base md:text-lg italic mb-8">विद्या ददाति विनयम्</p>
+                        <p className="text-base md:text-lg mb-8">विद्या ददाति विनयम्</p>
                         <div className="flex justify-center space-x-4">
                             <a href="admission.html" className="inline-block">
                                 <button className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-8 rounded-full transition-colors duration-300 shadow-lg">

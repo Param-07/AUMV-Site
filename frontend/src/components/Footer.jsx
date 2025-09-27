@@ -11,7 +11,7 @@ const SchoolLogoPlaceholder = () => (
 
 const Footer = () => {
     return (
-        <footer className="bg-[#3d2569] text-white py-10 px-4">
+        <footer className="bg-[#3d2569] text-white py-10 px-4" id='contact'>
             <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
                 <div className="space-y-4">
                     <div className="flex items-center space-x-3">
@@ -69,8 +69,6 @@ const Footer = () => {
                     </div>
                 </div>
             </div>
-
-            
             <div className="border-t border-gray-600 pt-4 text-center text-xs text-gray-400">
                 <p>&copy; 2024 Alok Inter College, Chandauli. All rights reserved.</p>
             </div>
@@ -79,3 +77,4 @@ const Footer = () => {
 };
 
 export default Footer;
+
