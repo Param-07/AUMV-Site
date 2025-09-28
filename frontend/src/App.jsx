@@ -5,7 +5,7 @@ import AnnouncementBar from "./components/AnnouncementBar";
 import HeroSection from "./components/HeroSection";
 import AboutSection from "./pages/AboutSection";
 import Facilities from "./Pages/Facilities";
-import Gallery from "./pages/Gallery";
+import Gallery from "./Pages/Gallery";
 
 function HomePage() {
   return (
