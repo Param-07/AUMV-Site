@@ -2,57 +2,57 @@ import React, { useEffect, useState } from "react";
 
 const galleryData = [
   {
-    title: "Cultural Fest",
+    title: "Cultural Events",
     images: [
-      { src: "/images/gallery1a.jpg", heading: "Dance Performance", description: "A glimpse of our cultural fest." },
-      { src: "/images/gallery1b.jpg", heading: "Music Show", description: "Students performing classical music." },
-      { src: "/images/gallery1c.jpg", heading: "Drama", description: "Annual play by class 10th students." },
-      { src: "/images/gallery1d.jpg", heading: "Celebration", description: "Students enjoying the festival." }
+      { src: "/images/gallery1a.jpg", heading: "Dance Performance", description:"A dance performance is a captivating blend of movement, rhythm, and expression, where dancers use their bodies to convey stories, emotions, and cultural heritage. Through carefully choreographed sequences, performers synchronize steps, gestures, and facial expressions to music, creating a visually stunnin" },
+      { src: "/images/gallery1b.jpg", heading: "Music Show", description:"" },
+      { src: "/images/gallery1c.jpg", heading: "Drama", description:"" },
+      { src: "/images/gallery1d.jpg", heading: "Celebration", description:"" }
     ]
   },
   {
-    title: "Sports Day",
+    title: "Sports",
     images: [
-      { src: "/images/gallery2a.jpg", heading: "Track Race", description: "100m race competition." },
-      { src: "/images/gallery2b.jpg", heading: "Long Jump", description: "Sportsmanship in action." },
-      { src: "/images/gallery2c.jpg", heading: "Relay Race", description: "Teamwork on the field." },
-      { src: "/images/gallery2d.jpg", heading: "Victory", description: "Winners holding their medals." }
+      { src: "/images/gallery2a.jpg", heading: "Track Race", description:"" },
+      { src: "/images/gallery2b.jpg", heading: "Long Jump", description:"" },
+      { src: "/images/gallery2c.jpg", heading: "Relay Race", description:"" },
+      { src: "/images/gallery2d.jpg", heading: "Victory", description:"" }
     ]
   },
   {
-    title: "Science Exhibition",
+    title: "Class Gallery",
     images: [
-      { src: "/images/gallery3a.jpg", heading: "Robotics", description: "Students showcasing robotics projects." },
-      { src: "/images/gallery3b.jpg", heading: "Models", description: "Creative science working models." },
-      { src: "/images/gallery3c.jpg", heading: "Presentation", description: "Presenting innovations." },
-      { src: "/images/gallery3d.jpg", heading: "Experiment", description: "Live experiment demonstrations." }
+      { src: "/images/gallery3a.jpg", heading: "Robotics", description:"" },
+      { src: "/images/gallery3b.jpg", heading: "Models", description:"" },
+      { src: "/images/gallery3c.jpg", heading: "Presentation", description:"" },
+      { src: "/images/gallery3d.jpg", heading: "Experiment", description:"" }
     ]
   },
   {
     title: "Annual Function",
     images: [
-      { src: "/images/gallery4a.jpg", heading: "Chief Guest", description: "Our annual day chief guest speech." },
-      { src: "/images/gallery4b.jpg", heading: "Awards", description: "Students receiving awards." },
-      { src: "/images/gallery4c.jpg", heading: "Performance", description: "Dance drama on stage." },
-      { src: "/images/gallery4d.jpg", heading: "Celebrations", description: "Stage celebrations at the end." }
+      { src: "/images/gallery4a.jpg", heading: "Chief Guest", description:"" },
+      { src: "/images/gallery4b.jpg", heading: "Awards", description:"" },
+      { src: "/images/gallery4c.jpg", heading: "Performance", description:"" },
+      { src: "/images/gallery4d.jpg", heading: "Celebrations", description:"" }
     ]
   },
   {
-    title: "Independence Day",
+    title: "Acheivers",
     images: [
-      { src: "/images/gallery5a.jpg", heading: "Flag Hoisting", description: "Tricolor flag hoisting ceremony." },
-      { src: "/images/gallery5b.jpg", heading: "Parade", description: "School parade by students." },
-      { src: "/images/gallery5c.jpg", heading: "Patriotic Song", description: "Choir group performance." },
-      { src: "/images/gallery5d.jpg", heading: "Celebration", description: "Cultural program celebrations." }
+      { src: "/images/gallery5a.jpg", heading: "Flag Hoisting", description:"" },
+      { src: "/images/gallery5b.jpg", heading: "Parade", description:"" },
+      { src: "/images/gallery5c.jpg", heading: "Patriotic Song", description:"" },
+      { src: "/images/gallery5d.jpg", heading: "Celebration", description:"" }
     ]
   },
   {
-    title: "Workshops",
+    title: "Teachers",
     images: [
-      { src: "/images/gallery6a.jpg", heading: "Coding Workshop", description: "Students learning programming." },
-      { src: "/images/gallery6b.jpg", heading: "Art Workshop", description: "Creative art workshop." },
-      { src: "/images/gallery6c.jpg", heading: "Science Demo", description: "Hands-on learning." },
-      { src: "/images/gallery6d.jpg", heading: "Discussion", description: "Interactive discussion session." }
+      { src: "/images/gallery6a.jpg", heading: "Coding Workshop", description:"" },
+      { src: "/images/gallery6b.jpg", heading: "Art Workshop", description:"" },
+      { src: "/images/gallery6c.jpg", heading: "Science Demo", description:"" },
+      { src: "/images/gallery6d.jpg", heading: "Discussion", description:"" }
     ]
   }
 ];
@@ -60,17 +60,19 @@ const galleryData = [
 export default function Gallery() {
   const [activeModal, setActiveModal] = useState(null);
   const [currentSlides, setCurrentSlides] = useState({});
+  const [mainVideo, setMainVideo] = useState("/videos/school-event.mp4");
 
-  // Slideshow effect
   useEffect(() => {
     const intervals = [];
     galleryData.forEach((gallery, idx) => {
-      let i = 0;
       intervals.push(
         setInterval(() => {
           setCurrentSlides((prev) => ({
             ...prev,
-            [idx]: prev[idx] !== undefined ? (prev[idx] + 1) % gallery.images.length : 1
+            [idx]:
+              prev[idx] !== undefined
+                ? (prev[idx] + 1) % gallery.images.length
+                : 1,
           }));
         }, 3000)
       );
@@ -79,81 +81,109 @@ export default function Gallery() {
   }, []);
 
   return (
-    <section className="py-12">
-      <h1 className="text-3xl font-bold text-center text-white drop-shadow mb-12">
-        Our School Gallery
-      </h1>
-
-      {/* Gallery Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-6xl mx-auto px-4">
-        {galleryData.map((gallery, idx) => (
-          <div
-            key={idx}
-            className="relative h-72 rounded-lg overflow-hidden cursor-pointer group transform transition duration-500 hover:scale-110 hover:shadow-2xl"
-            onClick={() => setActiveModal(idx)}
-          >
-            {/* Images Slideshow */}
-            {gallery.images.map((img, i) => (
-              <img
-                key={i}
-                src={img.src}
-                alt={img.heading}
-                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 blur-md ${
-                  currentSlides[idx] === i ? "opacity-100 blur-0" : "opacity-0"
-                }`}
-              />
-            ))}
-
-            {/* Explosive Title */}
-            <h2 className="explosive-text absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 text-3xl font-semibold text-white text-center drop-shadow transition-transform duration-500 group-hover:scale-150 group-hover:rotate-[360deg] group-hover:opacity-0">
-              {gallery.title}
-            </h2>
-
-            {/* Radial Burst */}
-            <div className="absolute inset-0 opacity-0 group-hover:opacity-30 transition-transform duration-500 scale-150 group-hover:scale-[2] bg-[repeating-radial-gradient(circle_at_center,#f07c22_1px,transparent_2px,transparent_50px)]"></div>
-            <div className="absolute inset-0 opacity-0 group-hover:opacity-30 transition-transform duration-500 scale-150 group-hover:scale-[2] rotate-45 bg-[repeating-radial-gradient(circle_at_center,#4B2E83_1px,transparent_2px,transparent_50px)]"></div>
+    <div >
+    
+      <section id="video-gallery"
+        className="py-5 bg-gradient-to-r from-purple-700 to-orange-500"
+      >
+        <h1 className="text-3xl md:text-4xl font-bold text-center text-white drop-shadow mb-10"  >
+          Video Gallery
+        </h1>
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-8 px-4">
+          <div className="lg:col-span-3 w-full aspect-video rounded-xl overflow-hidden shadow-2xl border-4 border-white/30">
+            <video
+              src={mainVideo}
+              controls
+              className="w-full h-full object-cover"
+            />
           </div>
-        ))}
-      </div>
-
-      {/* Modal */}
-      {activeModal !== null && (
-        <div className="fixed inset-0 flex justify-center items-center bg-black/80 z-50">
-          <div className="bg-white w-full max-w-6xl max-h-[90vh] overflow-y-auto rounded-lg relative p-6">
-            {/* Close Button */}
-            <button
-              className="absolute top-4 right-4 text-3xl font-bold text-gray-700 hover:text-purple-700"
-              onClick={() => setActiveModal(null)}
-            >
-              ×
-            </button>
-
-            {/* Modal Content */}
-            <div className="flex flex-col gap-10">
-              {galleryData[activeModal].images.map((img, i) => (
-                <div
-                  key={i}
-                  className={`flex flex-col md:flex-row ${
-                    i % 2 === 1 ? "md:flex-row-reverse" : ""
-                  } items-center gap-6 bg-white/80 rounded-xl shadow p-6`}
-                >
-                  <img
-                    src={img.src}
-                    alt={img.heading}
-                    className="w-full md:w-1/2 rounded-lg shadow"
-                  />
-                  <div className="md:w-1/2 text-gray-800">
-                    <h3 className="text-xl font-bold text-orange-600 mb-2">
-                      {img.heading}
-                    </h3>
-                    <p>{img.description}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+          <div className="flex flex-col gap-6">
+            {[
+              { src: "/videos/thumb1.jpg", video: "/videos/annual.mp4" },
+              { src: "/videos/thumb2.jpg", video: "/videos/sports.mp4" },
+              { src: "/videos/thumb3.jpg", video: "/videos/science.mp4" }
+            ].map((vid, i) => (
+              <div
+                key={i}
+                onClick={() => setMainVideo(vid.video)}
+                className="w-full h-28 rounded-lg overflow-hidden shadow-md cursor-pointer transform transition hover:scale-[1.03] hover:shadow-xl"
+              >
+                <img
+                  src={vid.src}
+                  alt="video thumbnail"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            ))}
           </div>
         </div>
-      )}
-    </section>
+      </section>
+
+      <section className="py-12 bg-gradient-to-r from-purple-900 to-black" id="photo-gallery">
+        <h1 className="text-3xl font-bold text-center text-white drop-shadow mb-12" >
+          Our School Gallery
+        </h1>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto px-4">
+          {galleryData.map((gallery, idx) => (
+            <div
+              key={idx}
+              className="relative aspect-[4/3] rounded-lg overflow-hidden cursor-pointer group transform transition duration-500 hover:scale-105 hover:shadow-2xl"
+              onClick={() => setActiveModal(idx)}
+            >
+              {gallery.images.map((img, i) => (
+                <img
+                  key={i}
+                  src={img.src}
+                  alt={img.heading}
+                  className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
+                    currentSlides[idx] === i ? "opacity-100" : "opacity-0"
+                  }`}
+                />
+              ))}
+              <h2 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-2xl font-semibold text-white text-center drop-shadow transition-transform duration-500 group-hover:scale-125 group-hover:rotate-[360deg] group-hover:opacity-0">
+                {gallery.title}
+              </h2>
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-30 transition duration-500 bg-[repeating-radial-gradient(circle_at_center,#f07c22_1px,transparent_2px,transparent_50px)]"></div>
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-30 transition duration-500 rotate-45 bg-[repeating-radial-gradient(circle_at_center,#4B2E83_1px,transparent_2px,transparent_50px)]"></div>
+            </div>
+          ))}
+        </div>
+
+        {activeModal !== null && (
+          <div className="fixed inset-0 flex justify-center items-center bg-black/80 z-50 p-4">
+            <div className="bg-white w-full max-w-6xl max-h-[90vh] overflow-y-auto rounded-lg relative p-6">
+              <button
+                className="absolute top-4 right-4 text-3xl font-bold text-gray-700 hover:text-purple-700"
+                onClick={() => setActiveModal(null)}
+              >
+                ×
+              </button>
+              <div className="flex flex-col gap-5 bg-gradient-to-r from-purple-700 to-orange-500 p-8">
+                {galleryData[activeModal].images.map((img, i) => (
+                  <div
+                    key={i}
+                    className={`flex flex-col md:flex-row ${
+                      i % 2 === 1 ? "md:flex-row-reverse" : ""
+                    } items-center gap-6 bg-white/80 rounded-xl shadow p-6`}
+                  >
+                    <img
+                      src={img.src}
+                      alt={img.heading}
+                      className="w-full md:w-1/2 rounded-lg shadow"
+                    />
+                    <div className="md:w-1/2 text-gray-800">
+                      <h3 className="text-xl font-bold text-orange-600 mb-2">
+                        {img.heading}
+                      </h3>
+                      <span>{img.description}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+      </section>
+    </div>
   );
 }
