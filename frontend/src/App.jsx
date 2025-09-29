@@ -4,7 +4,7 @@ import Footer from "./components/Footer";
 import AnnouncementBar from "./components/AnnouncementBar";
 import HeroSection from "./components/HeroSection";
 import AboutSection from "./pages/AboutSection";
-import Facilities from "./Pages/Facilities";
+import Facilities from "./pages/Facilities";
 import Gallery from "./Pages/Gallery";
 
 function HomePage() {
@@ -30,6 +30,6 @@ function App() {
       <Footer />
     </Router>
   );
-};
+}
 
 export default App;

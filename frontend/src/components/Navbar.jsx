@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import {Menu, X, ChevronDown, Phone, Mail, MapPin, Download, ArrowLeft,} from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { HashLink } from "react-router-hash-link";
-
+import logo from "../assets/images/logo.png"; 
 const SchoolLogoPlaceholder = () => (
   <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
-    <span className="text-gray-400 font-bold">Logo</span>
+    <span className="text-gray-400 font-bold"><img src={logo} alt="School's Logo" /></span>
   </div>
 );
 
@@ -75,10 +75,7 @@ const Navbar = () => {
                 <p className="text-gray-500 text-xs">CHANDAULI</p>
               </div>
             </div>
-
-            {/* Desktop Navigation */}
             {location.pathname === "/admissions" ? (
-              // Condensed Menu for /admissions
               <div className="hidden lg:flex items-center space-x-1">
                 <NavLink
                   to="/prospectus"
@@ -99,8 +96,6 @@ const Navbar = () => {
             ) : (
               <div className="hidden lg:flex items-center space-x-1">
                 <NavLink to="/">Home</NavLink>
-
-                {/* About */}
                 <div className="relative group">
                   <NavLink to="/#about" hasDropdown isHash>
                     About
@@ -131,8 +126,6 @@ const Navbar = () => {
                     </div>
                   </div>
                 </div>
-
-                {/* Academics */}
                 <div className="relative group">
                   <NavLink to="/academics" hasDropdown>
                     Academics
@@ -163,8 +156,6 @@ const Navbar = () => {
                     </div>
                   </div>
                 </div>
-
-                {/* Admissions */}
                 <div className="relative group">
                   <NavLink to="/admissions" hasDropdown>
                     Admissions
@@ -188,8 +179,6 @@ const Navbar = () => {
                     </div>
                   </div>
                 </div>
-
-                {/* Facilities */}
                 <div className="relative group">
                   <NavLink to="/facilities" hasDropdown>
                     Facilities
@@ -227,8 +216,6 @@ const Navbar = () => {
                     </div>
                   </div>
                 </div>
-
-                {/* Gallery */}
                 <div className="relative group">
                   <NavLink to="/gallery" hasDropdown>
                     Gallery
@@ -237,14 +224,14 @@ const Navbar = () => {
                     <div className="py-1">
                       <HashLink
                         smooth
-                        to="/gallery#videos"
+                        to="/gallery#video-gallery"
                         className="block px-4 py-2 text-sm hover:bg-gray-100 hover:text-[#4B2E83]"
                       >
                         Video Gallery
                       </HashLink>
                       <HashLink
                         smooth
-                        to="/gallery#photos"
+                        to="/gallery#photo-gallery"
                         className="block px-4 py-2 text-sm hover:bg-gray-100 hover:text-[#4B2E83]"
                       >
                         Photo Gallery
