@@ -3,7 +3,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import AnnouncementBar from "./components/AnnouncementBar";
 import HeroSection from "./components/HeroSection";
-import AboutSection from "./pages/AboutSection";
+import AboutSection from "./Pages/AboutSection";
 import Facilities from "./pages/Facilities";
 import Gallery from "./Pages/Gallery";
 
@@ -25,6 +25,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/facilities" element={<Facilities />} />
         <Route path="/gallery" element={<Gallery />} />
+        <Route path="/admission" element={<Addmision />} />
       </Routes>
 
       <Footer />

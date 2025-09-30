@@ -1,6 +1,8 @@
 import React from 'react';
-
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import useScrollToTop from './hooks/useScrollToTop';
 const AboutSection = () => {
+    useScrollToTop(); 
     // Data for each section to avoid repetition
     const sections = [
         {
