@@ -157,21 +157,21 @@ const Navbar = () => {
                   </div>
                 </div>
                 <div className="relative group">
-                  <NavLink to="/admissions" hasDropdown>
+                  <NavLink to="/admission" hasDropdown>
                     Admissions
                   </NavLink>
                   <div className="absolute left-0 mt-2 w-48 rounded-md bg-white shadow-lg invisible group-hover:visible transition-all duration-200 origin-top scale-y-0 group-hover:scale-y-100">
                     <div className="py-1">
                       <HashLink
                         smooth
-                        to="/admissions#apply"
+                        to="/admission"
                         className="block px-4 py-2 text-sm hover:bg-gray-100 hover:text-[#4B2E83]"
                       >
                         How to Apply
                       </HashLink>
                       <HashLink
                         smooth
-                        to="/admissions#scholarships"
+                        to="/admission#scholarships"
                         className="block px-4 py-2 text-sm hover:bg-gray-100 hover:text-[#4B2E83]"
                       >
                         Scholarships

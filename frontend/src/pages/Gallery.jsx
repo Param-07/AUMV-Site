@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-
 const galleryData = [
   {
     title: "Cultural Events",
@@ -61,7 +60,7 @@ export default function Gallery() {
   const [activeModal, setActiveModal] = useState(null);
   const [currentSlides, setCurrentSlides] = useState({});
   const [mainVideo, setMainVideo] = useState("/videos/school-event.mp4");
-
+   
   useEffect(() => {
     const intervals = [];
     galleryData.forEach((gallery, idx) => {

@@ -1,6 +1,7 @@
 import React from 'react'
-
+import useScrollToTop from './hooks/useScrollToTop';
 const Facilities = () => {
+    useScrollToTop(); 
   const sections = [
         {
             id: 'computer-lab',
