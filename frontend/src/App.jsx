@@ -6,7 +6,7 @@ import HeroSection from "./components/HeroSection";
 import AboutSection from "./Pages/AboutSection";
 import Facilities from "./pages/Facilities";
 import Gallery from "./Pages/Gallery";
-
+import Addmission from "./pages/Admission";
 function HomePage() {
   return (
     <>
@@ -25,7 +25,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/facilities" element={<Facilities />} />
         <Route path="/gallery" element={<Gallery />} />
-        <Route path="/admission" element={<Addmision />} />
+        <Route path="/admission" element={<Addmission />} />
       </Routes>
 
       <Footer />

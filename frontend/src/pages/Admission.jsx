@@ -531,7 +531,7 @@ const StepComponents = {
     5: Step5,
 };
 
-export default function Addmision() {
+export default function Addmission() {
     const [currentStep, setCurrentStep] = useState(1);
     const [formData, setFormData] = useState(INITIAL_FORM_STATE);
     const [validationErrors, setValidationErrors] = useState({});
