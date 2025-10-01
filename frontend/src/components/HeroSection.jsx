@@ -37,7 +37,7 @@ const HeroSection = () => {
             </h1>
             <p className="text-base md:text-lg mb-8">विद्या ददाति विनयम्</p>
             <div className="flex justify-center space-x-4">
-              <a href="admission.html" className="inline-block">
+              <a href="/admission" className="inline-block">
                 <button className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-8 rounded-full transition-colors duration-300 shadow-lg">
                   Apply Now
                 </button>
