@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import useScrollToTop from '../hooks/useScrollToTop';
-const AboutSection = () => {
+const Academics = () => {
     useScrollToTop(); 
     const sections = [
         {
@@ -81,4 +81,4 @@ const AboutSection = () => {
     );
 };
 
-export default AboutSection;
+export default Academics;
