@@ -55,8 +55,8 @@ const Navbar = () => {
             <a href="#" className="hover:text-amber-200 transition-colors">
               Jobs
             </a>
-            <a href="#" className="hover:text-amber-200 transition-colors">
-              हिन्दी
+            <a href="/login" className="hover:text-amber-200 transition-colors">
+              login
             </a>
           </div>
         </div>
