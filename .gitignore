@@ -3,3 +3,4 @@ config
 node_modules
 .angular
 desktop.ini
+.env
