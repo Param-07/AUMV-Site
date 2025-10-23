@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
-const NavbarA = () => {
+const AdminNavbar = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -137,4 +137,4 @@ const NavbarA = () => {
   );
 };
 
-export default NavbarA;
+export default AdminNavbar;
