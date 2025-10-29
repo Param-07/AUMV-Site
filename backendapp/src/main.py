@@ -1,17 +1,25 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
+from flask_jwt_extended import JWTManager
 from storage3._sync import client
 from supabase import create_client, Client
 from dotenv import load_dotenv
 from utils.databaseCRUD import (insert_metadata, delete_metadata, get_final_res)
+from auth import auth_bp, bcrypt
 load_dotenv()
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
 app = Flask(__name__)
+
+app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
+bcrypt.init_app(app)
+jwt = JWTManager(app)
 cors = CORS(app)
+
+app.register_blueprint(auth_bp, url_prefix = "/auth")
 
 @app.route('/fetch', methods = ['GET'])   
 def fetch_imgs_vids():
