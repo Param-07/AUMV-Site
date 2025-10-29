@@ -1,5 +1,5 @@
 import React from "react";
-import ManagementPages from "./ManagementPages";
+import ManagementPages from "../components/ManagementPages";
 import { Users } from "lucide-react";
 
 const Teachers = () => {

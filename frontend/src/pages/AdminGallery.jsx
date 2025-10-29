@@ -1,6 +1,6 @@
 import React from "react";
 import { Images } from "lucide-react";
-import ManagementPages from "./ManagementPages";
+import ManagementPages from "./components/ManagementPages";
 
 const AdminGallery = () => {
   const data = [
