@@ -85,11 +85,8 @@ const ManagementPages = ({
         </button>
       </div>
 
-      {/* Conditional Layout */}
       {isGalleryLayout ? (
-        // 🌈 GALLERY / VIDEO / IMAGE LAYOUT
         <div className="bg-white rounded-2xl shadow p-6">
-          {/* Category Filter */}
           <div className="flex flex-col mb-6">
             <div className="flex justify-between items-center mb-2">
               <h2 className="text-gray-700 font-semibold">Browse by Category</h2>
@@ -114,8 +111,6 @@ const ManagementPages = ({
               ))}
             </div>
           </div>
-
-          {/* Gallery Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5">
             {filteredData.map((item, index) => (
               <div
@@ -144,7 +139,6 @@ const ManagementPages = ({
           </div>
         </div>
       ) : (
-        // 🧾 DEFAULT TABLE LAYOUT
         <div className="bg-white rounded-xl shadow p-6">
           <div className="flex justify-between items-center mb-4">
             <div>
