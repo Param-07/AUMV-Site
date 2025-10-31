@@ -21,6 +21,14 @@ cors = CORS(app)
 
 app.register_blueprint(auth_bp, url_prefix = "/auth")
 
+@app.route('/getHero', methods = ['GET'])   
+def fetch_imgs():
+    response = (client.table('Hero Table')
+    .select("url")
+    .execute())
+
+    return jsonify({'message': response.model_dump_json()}),200
+
 @app.route('/fetch', methods = ['GET'])   
 def fetch_imgs_vids():
     response = (client.table('files')
@@ -47,6 +55,26 @@ def upload_file():
         client.storage.from_("AUMV-web").upload(file.filename, file.filename)
         url = client.storage.from_("AUMV-web").get_public_url(file.filename)
         insert_metadata(client, event_name, url, file, description)
+        print(url)
+        file.close()
+        return jsonify({'message': 'File uploaded successfully'}),200
+    except Exception as exc:
+        return jsonify({'message': 'File upload failed', 'error': str(exc)}), 500
+
+@app.route('/uploadHero', methods=['POST'])
+def upload():
+    file = request.files['image_video_file']
+
+    try:
+        file.save(file.filename)
+        if client.storage.from_("AUMV-hero").exists(file.filename):
+            return jsonify({'message': 'File already uploaded'}),400
+
+        client.storage.from_("AUMV-hero").upload(file.filename, file.filename)
+        url = client.storage.from_("AUMV-hero").get_public_url(file.filename)
+        client.table("Hero Table").insert({
+            "url": url
+        }).execute()
         print(url)
         file.close()
         return jsonify({'message': 'File uploaded successfully'}),200

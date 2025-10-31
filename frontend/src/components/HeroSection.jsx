@@ -1,9 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import School from "../assets/images/AlokSchool.png";
 import logo from "../assets/images/logo.png"; 
+import { getHeroSectionImages } from "../utils/api-call";
+
 const HeroSection = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-
+  
+  const [imgData, setUsers] = useState([]);
+  useEffect(()=> {
+    const getData = async()=>{
+      try{
+        const res = await getHeroSectionImages();
+        setUsers(res.data);
+        console.log(res.data);
+        console.log(imgData);
+      }
+      catch(error){
+        console.error(error);
+      }
+    };
+    getData();
+  }, [])
   const handleOpenPopup = () => {
     setIsPopupOpen(true);
   };
@@ -23,7 +40,7 @@ const HeroSection = () => {
         <div
           className="absolute inset-0  bg-center bg-no-repeat"
           style={{
-            backgroundImage: `url(${School})`,
+            backgroundImage: `url(${imgData?.[2]?.url})`,
             backgroundSize: "100% 100%",
           }}
           role="img"
