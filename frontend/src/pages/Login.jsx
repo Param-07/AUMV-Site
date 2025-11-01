@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import logo from "../assets/images/logo.png";
 import { login } from "../utils/ApiCall";
-import { Navigate, NavLink } from "react-router-dom";
+import { useNavigate, NavLink } from "react-router-dom";
 const Login = () => {
   const [role, setRole] = useState("student");
   const [formdata, setformdata] = useState({});
+  const Navigate = useNavigate();
   const roleConfig = {
     student: {
       label: "Student ID or Email",
@@ -29,16 +30,19 @@ const handleChange = (e) => {
   setformdata((prev) => ({ ...prev, [name]: value }));
 };
 
- const handleSubmit = (e) => {
+ const handleSubmit =async (e) => {
   e.preventDefault();
-  console.log(formdata); // logs the full object
-  const dataToSend = new FormData();
-  dataToSend.append()
-  login(formdata);
-  const loginResponse = login(formdata);
-  if(loginResponse == "Login successfull"){
-   Navigate("managementPage");
-  }
+ const updatedData = { ...formdata, role };
+    console.log("Sending:", updatedData);
+
+    const response = await login(updatedData);
+
+    if (response.message === "Login successful") {
+      Navigate("/dashboard");
+    } else {
+      alert(response.error || "Login failed. Please try again.");
+    }
+ 
 };
  
   return (
