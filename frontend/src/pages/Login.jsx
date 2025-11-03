@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import logo from "../assets/images/logo.png";
+import { login } from "../utils/ApiCall";
+import { useNavigate, NavLink } from "react-router-dom";
 const Login = () => {
   const [role, setRole] = useState("student");
+  const [formdata, setformdata] = useState({});
+  const Navigate = useNavigate();
   const roleConfig = {
     student: {
       label: "Student ID or Email",
@@ -21,12 +25,26 @@ const Login = () => {
   };
 
   const { label, placeholder, buttonText } = roleConfig[role];
+const handleChange = (e) => {
+  const { name, value } = e.target;
+  setformdata((prev) => ({ ...prev, [name]: value }));
+};
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    alert(`Logging in as ${role}`);
-  };
+ const handleSubmit =async (e) => {
+  e.preventDefault();
+ const updatedData = { ...formdata, role };
+    console.log("Sending:", updatedData);
 
+    const response = await login(updatedData);
+
+    if (response.message === "Login successful") {
+      Navigate("/dashboard");
+    } else {
+      alert(response.error || "Login failed. Please try again.");
+    }
+ 
+};
+ 
   return (
     <div className="flex justify-center items-center min-h-screen w-full bg-gray-50">
       <div className="w-full max-w-md rounded-2xl p-2">
@@ -70,15 +88,19 @@ const Login = () => {
               <label>{label}</label>
               <input
                 type="email"
+                name="email"
                 placeholder={placeholder}
                 required
+                onChange={handleChange}
                 className="h-10 rounded-lg pl-3 border border-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400"
               />
               <label>Password</label>
               <input
                 type="password"
+                name="password"
                 placeholder="Enter your password"
                 required
+                onChange={handleChange}
                 className="h-10 rounded-lg pl-3 border border-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400"
               />
 
