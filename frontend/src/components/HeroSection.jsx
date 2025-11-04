@@ -1,9 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import School from "../assets/images/AlokSchool.png";
 import logo from "../assets/images/logo.png"; 
+
 const HeroSection = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-
+  
+  // const [imgData, setUsers] = useState([]);
+  // useEffect(()=> {
+  //   const getData = async()=>{
+  //     try{
+  //       const res = await getHeroSectionImages();
+  //       setUsers(res.data);
+  //       console.log(res.data);
+  //       console.log(imgData);
+  //     }
+  //     catch(error){
+  //       console.error(error);
+  //     }
+  //   };
+  //   getData();
+  // }, [])
   const handleOpenPopup = () => {
     setIsPopupOpen(true);
   };
