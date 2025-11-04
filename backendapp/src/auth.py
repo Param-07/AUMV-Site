@@ -15,6 +15,7 @@ bcrypt = Bcrypt()
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 @auth_bp.route("/register", methods=["POST"])
 def register():
@@ -45,7 +46,7 @@ def login():
     password = request.form["password"]
     email = request.form["email"]
 
-    client = create_client(SUPABASE_URL, SUPABASE_KEY)
+    # client = create_client(SUPABASE_URL, SUPABASE_KEY)
     response = (client.table("Admin Table")
                 .select("*")
                 .eq("email", email)
@@ -62,7 +63,8 @@ def login():
     return jsonify({
         "message": "Login successfull",
         "access_token": access_token,
-        "refresh_token": refresh_token
+        "refresh_token": refresh_token,
+        "username": response.data[0]["username"]
     }), 200
 
 @auth_bp.route("/refresh", methods=["POST"])
