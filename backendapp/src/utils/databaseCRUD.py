@@ -1,3 +1,5 @@
+from datetime import date
+import numbers
 from typing import List
 from postgrest.base_request_builder import APIResponse
 from supabase._sync.client import SyncClient
@@ -37,3 +39,20 @@ def get_final_res(final_res:dict, response:APIResponse):
         final_res[res["file_event"]].append(temp_data)
 
     return final_res
+
+def insert_teachers_data(client:SyncClient, name: str, email:str, subject:str, joining_date:date, phone_num:numbers, 
+                        address:str,dob:date, photo:str, resume:str):
+    try:
+        client.table("Teachers").insert({
+        "name": name,
+        "email": email,
+        "subject": subject,
+        "joining_date": joining_date,
+        "phone_num": phone_num,
+        "address": address,
+        "dob": dob,
+        "photo": photo,
+        "resume": resume
+        }).execute()
+    except Exception as exc:
+        print(str(exc))

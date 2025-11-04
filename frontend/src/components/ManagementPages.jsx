@@ -249,7 +249,7 @@ const ManagementPages = ({
                           accept={field.accept || "*"}
                           onChange={handleChange}
                           required={field.required}
-                          className="hidden"
+                          // className="hidden"
                         />
                       </label>
                       {filePreview && (

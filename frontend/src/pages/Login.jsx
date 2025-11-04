@@ -33,11 +33,19 @@ const handleChange = (e) => {
  const handleSubmit =async (e) => {
   e.preventDefault();
  const updatedData = { ...formdata, role };
-    console.log("Sending:", updatedData);
 
-    const response = await login(updatedData);
+    const finalData = new FormData();
+    finalData.append("email", updatedData.email);
+    finalData.append("password", updatedData.password);
+    finalData.append("role", updatedData.role);
 
-    if (response.message === "Login successful") {
+    const response = await login(finalData);
+    console.log(response);
+
+    if (response.message === "Login successfull") {
+      localStorage.setItem("token", response.access_token);
+      localStorage.setItem("r_token", response.refresh_token);
+      localStorage.setItem("username", response.username);
       Navigate("/dashboard");
     } else {
       alert(response.error || "Login failed. Please try again.");

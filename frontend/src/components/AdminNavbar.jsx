@@ -18,11 +18,19 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 const AdminNavbar = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("r_token");
+    setIsLoggedIn(false);
+    navigate("/");
+  };
+
   const menuItems = [
-    { icon: LayoutDashboard, label: "Dashboard", color: "text-purple-600", path: "/" },
+    { icon: LayoutDashboard, label: "Dashboard", color: "text-purple-600", path: "/dashboard" },
     { icon: Users, label: "Teachers", color: "text-blue-400", path: "/teachers" },
     { icon: Trophy, label: "Achievers", color: "text-orange-500", path: "/achievers" },
     { icon: CalendarDays, label: "News/Events", color: "text-green-400", path: "/news-events" },
@@ -86,7 +94,7 @@ const AdminNavbar = () => {
 
         {/* Logout */}
         <div className="px-5 py-4 border-t">
-          <button className="flex gap-5 rounded-xl w-full py-3 px-4 items-center hover:bg-red-200 text-red-500 transition">
+          <button onClick= {handleLogout} className="flex gap-5 rounded-xl w-full py-3 px-4 items-center hover:bg-red-200 text-red-500 transition">
             <LogOut className="text-red-500" />
             <span>Log Out</span>
           </button>
@@ -122,7 +130,7 @@ const AdminNavbar = () => {
               AB
             </div>
             <div className="hidden sm:block">
-              <h1 className="font-semibold">Admin User</h1>
+              <h1 className="font-semibold">{localStorage.getItem("username")}</h1>
               <p className="text-sm text-gray-600">admincollege@edu</p>
             </div>
           </div>

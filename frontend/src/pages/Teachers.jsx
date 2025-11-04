@@ -1,6 +1,7 @@
 import React from "react";
 import ManagementPages from "../components/ManagementPages";
 import { Users } from "lucide-react";
+import { addTeacher } from "../utils/ApiCall";
 
 const Teachers = () => {
   const columns = ["Name", "Email", "Subject", "Phone", "Joining Date"];
@@ -25,16 +26,21 @@ const Teachers = () => {
     { name: "name", label: "Full Name", type: "text", placeholder: "Enter teacher's full name", required: true },
     { name: "email", label: "Email", type: "email", placeholder: "Enter teacher's email", required: true },
     { name: "subject", label: "Subject", type: "select",options:["Hindi","English","Science","Math","G.K","Social Science","Art"], placeholder: "Enter Subject", required: true },
-    { name: "joinDate", label: "Joining Date", type: "date", required: true },
-    {name:"phone",label:"Phone Number",type:"Phone",placeholder:"Enter Phone Number",required:true},
-    {name:"address",label:"Address",type:"textarea",placeholder:"Enter teacher's address",required:true},
-    {name:"DOB",label:"Date of birth",type:"date",required:true},
-    { name: "profilePic", label: "Profile Picture", type: "file", accept: "image/*" },
-    {name:"resume", label:"Upload Resume", type:"file",accept:"document /*" , required:true},
+    { name: "joining_date", label: "Joining Date", type: "date", required: true },
+    { name:"phone_num",label:"Phone Number",type:"Phone",placeholder:"Enter Phone Number",required:true},
+    { name:"address",label:"Address",type:"textarea",placeholder:"Enter teacher's address",required:true},
+    { name:"dob",label:"Date of birth",type:"date",required:true},
+    { name: "photo", label: "Profile Picture", type: "file", accept: "image/*" },
+    { name:"resume", label:"Upload Resume", type:"file",accept:"document/*" , required:true},
   ];
 
-  const handleSubmit = (formData) => {
+  const handleSubmit = async (formData) => {
     console.log("Teacher Submitted:", formData);
+    const finalData = new FormData();
+    Object.entries(formData).forEach(([Key, value])=>{
+      finalData.append(Key, value);
+    });
+    const response = await addTeacher(finalData);
   };
 
   return (
