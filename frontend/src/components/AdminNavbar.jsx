@@ -35,7 +35,7 @@ const AdminNavbar = () => {
     { icon: Trophy, label: "Achievers", color: "text-orange-500", path: "/achievers" },
     { icon: CalendarDays, label: "News/Events", color: "text-green-400", path: "/news-events" },
     { icon: Bell, label: "Announcements", color: "text-blue-600", path: "/announcements" },
-    { icon: Images, label: "Gallery", color: "text-pink-400", path: "/gallery" },
+    { icon: Images, label: "Gallery", color: "text-pink-400", path: "/adminGallery" },
     { icon: Video, label: "Video Gallery", color: "text-orange-400", path: "/videos" },
     { icon: Settings, label: "Settings", color: "text-gray-400", path: "/settings" },
   ];
