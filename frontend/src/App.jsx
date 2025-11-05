@@ -22,7 +22,7 @@ function HomePage() {
     </>
   );
 }
-function PublicLayout() {
+function NormalLayout() {
   return (
     <>
       <Navbar />
@@ -54,7 +54,7 @@ function AppRouter() {
   const location = useLocation();
   const token = localStorage.getItem("token");
 
-  const isAdminRoute =
+  const isAdminPath =
     location.pathname.startsWith("/dashboard") ||
     location.pathname.startsWith("/teachers") ||
     location.pathname.startsWith("/adminGallery");
@@ -66,14 +66,14 @@ function AppRouter() {
     );
   }
 
-  if (isAdminRoute && !token) {
+  if (isAdminPath && !token) {
     return <Navigate to="/login" replace />;
   }
 
-  if (isAdminRoute) {
+  if (isAdminPath) {
     return <AdminLayout />;
   }
-  return <PublicLayout />;
+  return <NormalLayout />;
 }
 
 export default function App() {
