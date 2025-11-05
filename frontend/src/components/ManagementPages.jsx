@@ -23,7 +23,7 @@ const ManagementPages = ({
   const location = useLocation();
   const currentPath = location.pathname;
 
-  const galleryPaths = ["/gallery", "/videos", "/images"];
+  const galleryPaths = ["/adminGallery", "/videos", "/images"];
   const isGalleryLayout = galleryPaths.includes(currentPath);
 
   const handleOpenPopup = () => setIsPopupOpen(true);
