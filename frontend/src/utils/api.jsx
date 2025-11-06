@@ -24,10 +24,11 @@ api.interceptors.response.use(
             originalRequest._retry = true;
 
             const refreshToken = localStorage.getItem('r_token');
+            console.log(refreshToken);
             if(refreshToken){
                 try{
-                    const res = await axios.post(`${import.meta.env.VITE_API_URL}/auth/login`, {
-                        refresh_token : refreshToken
+                    const res = await axios.post(`${import.meta.env.VITE_API_URL}/refresh`,{}, {
+                        headers: { Authorization: `Bearer ${refreshToken}` }
                     });
 
                     const newToken = res.data.access_token;

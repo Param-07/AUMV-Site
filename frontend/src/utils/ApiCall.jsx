@@ -20,3 +20,13 @@ export const getTeachers = async () => {
     const response = await api.get('/teachers');
     return response.data;
 }
+
+export const editTeachers = async (finalData, id) => {
+    const response = await api.put(`edit/teacher/${id}`, finalData);
+    return response.data;
+}
+
+export const deleteTeacherData = async(id) => {
+    const response = await api.delete(`/teacher/delete/${id}`);
+    return response.data;
+}

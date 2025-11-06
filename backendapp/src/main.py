@@ -1,3 +1,4 @@
+from sre_compile import isstring
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, jwt_required
@@ -5,8 +6,10 @@ from supabase import create_client
 from dotenv import load_dotenv
 import os
 
+from werkzeug.datastructures import FileStorage
+
 # Import utilities and blueprints
-from utils.databaseCRUD import insert_metadata, delete_metadata, get_final_res, insert_teachers_data
+from utils.databaseCRUD import insert_metadata, delete_metadata, get_final_res, insert_teachers_data, update_teachers_data
 from auth import auth_bp, bcrypt
 
 # Load environment variables
@@ -108,19 +111,89 @@ def delete_file():
 @jwt_required()
 def get_teachers():
     try:
+        # response = client.table("Teachers").select("id", "name", "subject", "resume", "photo").execute()
         response = client.table("Teachers").select("*").execute()
         teachers = response.data
         return jsonify({'teachers': teachers}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route("/teachers/<int:id>", methods=["GET"], endpoint='get_teachers_by_id')
+@jwt_required()
+def get_teacher_by_id(id):
+    try:
+        response = client.table("Teachers").select("*").eq("id",id).execute();
+        teacher = response.data
+        return jsonify({"teacher": teacher}), 200
+    except Exception as exc:
+        return jsonify({"error": str(exc)}), 500
+
+@app.route("/edit/teacher/<int:id>", methods=["PUT"], endpoint='edit_teacher_by_id')
+@jwt_required()
+def edit_teacher_by_id(id):
+    try:
+        name = request.form.get("name")
+        email = request.form.get("email")
+        subject = request.form.get("subject")
+        joining_date = request.form.get("joining_date")
+        phone_num = request.form.get("phone_num")
+        address = request.form.get("address")
+        dob = request.form.get("dob")
+        photo = request.files.get("photo")
+        resume = request.files.get("resume")
+        if photo is None:
+            photo = request.form.get("photo")
+        if resume is None:
+            resume = request.form.get("resume")
+
+        old_data = client.table("Teachers").select("*").eq("id", id).execute()
+        old_data = old_data.data
+        print(old_data[0])
+        print(old_data[0]["photo"])
+
+        if photo and isinstance(photo, FileStorage):
+            photo_name = old_data[0]["photo"].split("/AUMV-Teachers/")[-1]
+            client.storage.from_("AUMV-Teachers").remove([photo_name])
+            photo.save(photo.filename)
+            client.storage.from_("AUMV-Teachers").upload(photo.filename, photo.filename)
+            photo = client.storage.from_("AUMV-Teachers").get_public_url(photo.filename)
+        
+        if resume and  isinstance(resume, FileStorage):
+            resume_name = old_data[0]["resume"].split("/AUMV-Teachers/")[-1]
+            client.storage.from_("AUMV-Teachers").remove([resume_name])
+            resume.save(resume.filename)
+            client.storage.from_("AUMV-Teachers").upload(resume.filename, resume.filename)
+            resume = client.storage.from_("AUMV-Teachers").get_public_url(resume.filename)
+        
+        update_teachers_data(client, name, email, subject, joining_date, phone_num, address, dob, photo, resume, id)
+        return jsonify({"message": "Data update successfully"}), 200
+    except Exception as exc:
+        print(str(exc))
+        return jsonify({"error": str(exc)}), 500
+
+@app.route("/teacher/delete/<int:id>", methods=["DELETE"], endpoint='delete_teacher_by_id')
+@jwt_required()
+def delete_teacher_by_id(id):
+    try:
+        data = client.table("Teachers").select("photo", "resume").eq("id", id).execute()
+        data = data.data
+
+        photo = data[0]["photo"].split("/AUMV-Teachers/")[-1]
+        client.storage.from_("AUMV-Teachers").remove([photo])
+        
+        resume = data[0]["resume"].split("/AUMV-Teachers/")[-1]
+        client.storage.from_("AUMV-Teachers").remove([resume])
+
+        client.table('Teachers').delete().eq("id", id).execute()
+        return jsonify({"message": "Teacher data deleted"}), 200
+    except Exception as exc:
+        return jsonify({"error": str(exc)}), 500
+
+
 @app.route("/addTeacher", methods=["POST"], endpoint='post_teacher_endpoint')
 @jwt_required()
 def add_teacher():
-    print("here")
     try:
-        # for key,value in request.form.items():
-        #     print(key,value)
         name = request.form.get("name")
         email = request.form.get("email")
         subject = request.form.get("subject")

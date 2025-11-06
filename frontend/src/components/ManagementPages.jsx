@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { Plus, Filter, Search, Edit, Trash2, X, Upload, Image } from "lucide-react";
+import { deleteTeacherData } from "../utils/ApiCall";
 
 const ManagementPages = ({
   icon: Icon,
@@ -17,8 +18,10 @@ const ManagementPages = ({
 }) => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [formData, setFormData] = useState({});
-  const [filePreview, setFilePreview] = useState(null);
+  const [photoPreview, setPhotoPreview] = useState(null);
+  const [resumePreview, setResumePreview] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [editingTeacher, setEditingTeacher] = useState(null);
 
   const location = useLocation();
   const currentPath = location.pathname;
@@ -26,35 +29,97 @@ const ManagementPages = ({
   const galleryPaths = ["/adminGallery", "/videos", "/images"];
   const isGalleryLayout = galleryPaths.includes(currentPath);
 
-  const handleOpenPopup = () => setIsPopupOpen(true);
-  const handleClosePopup = () => {
-    setIsPopupOpen(false);
-    setFormData({});
-    setFilePreview(null);
+  // ✅ Open popup (Add/Edit)
+  const handleOpenPopup = (teacher = null) => {
+    if (teacher) {
+      setEditingTeacher(teacher);
+      setFormData({
+        name: teacher.name || "",
+        subject: teacher.subject || "",
+        photo: teacher.photo || null,
+        resume: teacher.resume || null,
+        joining_date: teacher.joining_date || null,
+        email: teacher.email || "",
+        phone_num: teacher.phone_num || "",
+        dob: teacher.dob || "",
+        address: teacher.address || "",
+      });
+      setPhotoPreview(teacher.photo || null);
+      setResumePreview(null);
+    } else {
+      setEditingTeacher(null);
+      setFormData({});
+      setPhotoPreview(null);
+      setResumePreview(null);
+    }
+    setIsPopupOpen(true);
   };
 
+  // ✅ Close popup
+  const handleClosePopup = () => {
+    setIsPopupOpen(false);
+    setEditingTeacher(null);
+    setFormData({});
+    setPhotoPreview(null);
+    setResumePreview(null);
+  };
+
+  // ✅ Handle input changes
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
+
     if (type === "file") {
       const file = files[0];
       setFormData((prev) => ({ ...prev, [name]: file }));
-      if (file && file.type.startsWith("image/")) {
-        setFilePreview(URL.createObjectURL(file));
-      } else {
-        setFilePreview(null);
+
+      if (name === "photo" && file && file.type.startsWith("image/")) {
+        setPhotoPreview(URL.createObjectURL(file));
+      } else if (name === "resume" && file) {
+        setResumePreview(file.name);
       }
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
   };
 
+  // ✅ Handle form submit
   const handleSubmit = (e) => {
     e.preventDefault();
-    onFormSubmit?.(formData);
+    if (editingTeacher) {
+      onFormSubmit?.({ ...formData, id: editingTeacher.id, mode: "edit" });
+    } else {
+      onFormSubmit?.({ ...formData, mode: "add" });
+    }
     handleClosePopup();
   };
 
-  const categories = ["All", "Teachers", "Students", "Events", "Infrastructure", "Sports", "Cultural Activities", "Others"];
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this teacher?")) return;
+  
+    try {
+      const response = await deleteTeacherData(id);
+  
+      if (response.message === "Teacher data deleted") {
+        setData((prev) => prev.filter((t) => t.id !== id));
+      } else {
+        alert("Failed to delete");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  
+
+  const categories = [
+    "All",
+    "Teachers",
+    "Students",
+    "Events",
+    "Infrastructure",
+    "Sports",
+    "Cultural Activities",
+    "Others",
+  ];
 
   const filteredData =
     selectedCategory === "All"
@@ -78,20 +143,21 @@ const ManagementPages = ({
         </div>
 
         <button
-          onClick={handleOpenPopup}
+          onClick={() => handleOpenPopup()}
           className="bg-gradient-to-r from-purple-600 via-purple-700 to-purple-900 text-white px-5 py-2 rounded-full shadow hover:opacity-90 transition"
         >
           <Upload className="inline mr-2" size={18} /> {buttonText}
         </button>
       </div>
 
+      {/* ✅ GALLERY LAYOUT RESTORED */}
       {isGalleryLayout ? (
         <div className="bg-white rounded-2xl shadow p-6">
           <div className="flex flex-col mb-6">
             <div className="flex justify-between items-center mb-2">
               <h2 className="text-gray-700 font-semibold">Browse by Category</h2>
               <p className="text-sm text-gray-500">
-                {filteredData.length} photos in this category
+                {filteredData.length} items in this category
               </p>
             </div>
 
@@ -111,6 +177,7 @@ const ManagementPages = ({
               ))}
             </div>
           </div>
+
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5">
             {filteredData.map((item, index) => (
               <div
@@ -139,69 +206,80 @@ const ManagementPages = ({
           </div>
         </div>
       ) : (
+        // ✅ TEACHER TABLE LAYOUT
         <div className="bg-white rounded-xl shadow p-6">
           <div className="flex justify-between items-center mb-4">
             <div>
-              <h2 className="font-semibold text-xl">All Records</h2>
+              <h2 className="font-semibold text-xl">Teachers</h2>
               <p className="text-gray-600">
-                Showing 1–{data.length} of {data.length} records
+                Showing {data.length} record{data.length > 1 ? "s" : ""}
               </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="relative flex w-full items-center">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  className="w-60 sm:w-full pl-10 pr-3 py-2 border rounded-full outline-none focus:ring-2 focus:ring-purple-800 bg-slate-100"
-                />
-              </div>
-              <button className="flex items-center gap-1 text-gray-600 border px-3 py-2 rounded-full hover:bg-purple-800 hover:text-white">
-                <Filter size={16} /> Filters
-              </button>
             </div>
           </div>
 
-          <table className="w-full text-left border border-gray-200">
-            <thead>
-              <tr className="border-b bg-gray-100 whitespace-nowrap">
-                {columns.map((col) => (
-                  <th key={col} className="py-3 px-4 text-gray-600 font-medium">
-                    {col}
-                  </th>
-                ))}
-                <th className="py-3 px-4 text-gray-600 font-medium text-right">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.map((row, idx) => (
-                <tr
-                  key={idx}
-                  className="border-b hover:bg-gray-200 whitespace-nowrap"
-                >
-                  {Object.values(row).map((val, i) => (
-                    <td key={i} className="py-3 px-4">
-                      {val}
-                    </td>
+          <div className="overflow-x-auto w-full">
+            <table className="min-w-full border border-gray-200 text-sm">
+              <thead>
+                <tr className="bg-gray-100 border-b">
+                  {["Photo", "Name", "Subject", "Resume", "Actions"].map((heading) => (
+                    <th
+                      key={heading}
+                      className="py-3 px-4 text-gray-700 font-semibold text-center uppercase tracking-wide"
+                    >
+                      {heading}
+                    </th>
                   ))}
-                  <td className="py-3 px-4 flex gap-2 justify-end">
-                    <button className="text-blue-600 flex hover:bg-blue-100 p-2 rounded-full px-4 items-center">
-                      <Edit className="text-sm mr-1" /> Edit
-                    </button>
-                    <button className="text-red-500 flex hover:bg-red-100 rounded-full px-4 items-center">
-                      <Trash2 className="text-xs mr-1" /> Delete
-                    </button>
-                  </td>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+
+              <tbody>
+                {data.map((teacher) => (
+                  <tr
+                    key={teacher.id}
+                    className="border-b hover:bg-gray-50 transition whitespace-nowrap"
+                  >
+                    <td className="py-3 px-4 text-center">
+                      <img
+                        src={teacher.photo}
+                        alt={teacher.name}
+                        title={teacher.name}
+                        className="h-12 w-12 object-cover rounded-full border inline-block"
+                      />
+                    </td>
+                    <td className="py-3 px-4 text-center font-medium">{teacher.name}</td>
+                    <td className="py-3 px-4 text-center">{teacher.subject}</td>
+                    <td className="py-3 px-4 text-center">
+                      <a
+                        href={teacher.resume}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:underline"
+                      >
+                        View
+                      </a>
+                    </td>
+                    <td className="py-3 px-4 text-center">
+                      <div className="flex justify-center gap-3">
+                        <button
+                          onClick={() => handleOpenPopup(teacher)}
+                          className="flex items-center gap-1 text-blue-600 hover:bg-blue-100 px-3 py-1 rounded-full"
+                        >
+                          <Edit size={14} /> Edit
+                        </button>
+                        <button onClick={() => handleDelete(teacher.id)} className="flex items-center gap-1 text-red-500 hover:bg-red-100 px-3 py-1 rounded-full">
+                          <Trash2 size={14} /> Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
-      {/* Popup Form */}
+      {/* ✅ Popup Form */}
       {isPopupOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm">
           <div className="rounded-2xl shadow-2xl p-6 md:p-8 w-[90%] max-w-lg relative overflow-y-scroll h-[80%] bg-gray-100">
@@ -213,7 +291,9 @@ const ManagementPages = ({
             </button>
 
             <div className="flex flex-col mb-5">
-              <h2 className="text-xl font-semibold">{heading}</h2>
+              <h2 className="text-xl font-semibold">
+                {editingTeacher ? "Edit Teacher" : heading}
+              </h2>
               <p>{description}</p>
             </div>
 
@@ -233,33 +313,70 @@ const ManagementPages = ({
                       required={field.required}
                       value={formData[field.name] || ""}
                       onChange={handleChange}
-                      className={`border rounded-lg p-3 focus:ring-2 focus:ring-purple-500 ${field.className || ""}`}
+                      className="border rounded-lg p-3 focus:ring-2 focus:ring-purple-500"
                     />
                   ) : field.type === "file" ? (
-                    <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-purple-600 transition">
-                      <label className="cursor-pointer flex flex-col items-center gap-2 text-gray-600">
-                        <Upload className="text-purple-700" size={20} />
-                        <span className="text-sm font-medium flex flex-col items-center justify-center">
-                          {formData[field.name]?.name || "(Upload a file)"}
-                        </span>
-                        <input
-                          id={field.name}
-                          name={field.name}
-                          type="file"
-                          accept={field.accept || "*"}
-                          onChange={handleChange}
-                          required={field.required}
-                          // className="hidden"
-                        />
-                      </label>
-                      {filePreview && (
-                        <img
-                          src={filePreview}
-                          alt="Preview"
-                          className="mt-3 rounded-lg w-28 h-28 object-cover border"
-                        />
-                      )}
-                    </div>
+                    field.name === "photo" ? (
+                      <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-purple-600 transition">
+                        <label className="cursor-pointer flex flex-col items-center gap-2 text-gray-600">
+                          <Upload className="text-purple-700" size={20} />
+                          <span className="text-sm font-medium">
+                            {formData.photo?.name || "(Upload Photo)"}
+                          </span>
+                          <input
+                            id="photo"
+                            name="photo"
+                            type="file"
+                            accept="image/*"
+                            onChange={handleChange}
+                            required={field.required && !editingTeacher}
+                            className="hidden"
+                          />
+                        </label>
+
+                        {(photoPreview || editingTeacher?.photo) && (
+                          <img
+                            src={photoPreview || editingTeacher.photo}
+                            alt="Photo Preview"
+                            className="mt-3 rounded-lg w-28 h-28 object-cover border"
+                          />
+                        )}
+                      </div>
+                    ) : field.name === "resume" ? (
+                      <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-purple-600 transition">
+                        <label className="cursor-pointer flex flex-col items-center gap-2 text-gray-600">
+                          <Upload className="text-purple-700" size={20} />
+                          <span className="text-sm font-medium">
+                            {formData.resume?.name || "(Upload Resume)"}
+                          </span>
+                          <input
+                            id="resume"
+                            name="resume"
+                            type="file"
+                            accept="application/pdf,image/*"
+                            onChange={handleChange}
+                            required={field.required && !editingTeacher}
+                            className="hidden"
+                          />
+                        </label>
+
+                        {resumePreview && (
+                          <p className="mt-2 text-sm text-gray-500">
+                            Selected: {resumePreview}
+                          </p>
+                        )}
+                        {!resumePreview && editingTeacher?.resume && (
+                          <a
+                            href={editingTeacher.resume}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="mt-2 text-blue-600 underline text-sm"
+                          >
+                            View Existing Resume
+                          </a>
+                        )}
+                      </div>
+                    ) : null
                   ) : (
                     <input
                       id={field.name}
@@ -269,7 +386,7 @@ const ManagementPages = ({
                       required={field.required}
                       value={formData[field.name] || ""}
                       onChange={handleChange}
-                      className={`border rounded-lg p-3 focus:ring-2 focus:ring-purple-500 ${field.className || ""}`}
+                      className="border rounded-lg p-3 focus:ring-2 focus:ring-purple-500"
                     />
                   )}
                 </div>
