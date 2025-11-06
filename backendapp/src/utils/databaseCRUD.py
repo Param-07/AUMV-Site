@@ -56,3 +56,20 @@ def insert_teachers_data(client:SyncClient, name: str, email:str, subject:str, j
         }).execute()
     except Exception as exc:
         print(str(exc))
+
+def update_teachers_data(client:SyncClient, name: str, email:str, subject:str, joining_date:date, phone_num:numbers, 
+                        address:str,dob:date, photo:str, resume:str, id: any):
+    try:
+        client.table("Teachers").update({
+        "name": name,
+        "email": email,
+        "subject": subject,
+        "joining_date": joining_date,
+        "phone_num": phone_num,
+        "address": address,
+        "dob": dob,
+        "photo": photo,
+        "resume": resume
+        }).eq("id", id).execute()
+    except Exception as exc:
+        print(str(exc))
