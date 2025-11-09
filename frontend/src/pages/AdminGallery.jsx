@@ -50,10 +50,10 @@ const AdminGallery = () => {
   const columns = ["Title", "Date", "Category"];
 
   const formFields = [
-    { name: "title", label: "Photo Title", type: "text", placeholder: "Enter title", required: true },
-    { name: "date", label: "Date", type: "date", required: true },
-     { name: "subject", label: "Subject", type: "select",options:["Hindi","English","Science","Math","G.K","Social Science","Art"], placeholder: "Enter Subject", required: true },
-    { name: "image", label: "Upload Image", type: "file", accept: "image/*", required: true },
+    { name: "event_name", label: "Photo Title", type: "select", options: ["Sports", "Cultural", "Class Gallery", "Achievers", "Annual Function"], placeholder: "Select photo section", required: true },
+    // { name: "date", label: "Date", type: "date", required: true },
+    { name: "file", label: "Upload Image", type: "file", accept: "image/*, video/*", required: true },
+    { name: "description", label: "Image Description", type: "text", placeholder: "Enter suitable description", required: true },
   ];
 
   const handleSubmit = (formData) => {

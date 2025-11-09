@@ -5,34 +5,24 @@ import { addTeacher, editTeachers, getTeachers} from "../utils/ApiCall";
 
 const Teachers = () => {
   const columns = ["Name", "Email", "Subject", "Phone", "Joining Date"];
-  // const data = [
-  //   {
-  //     Name: "Dr. Sarah Johnson",
-  //     Email: "sarah.johnson@college.edu",
-  //     Subject: "Data Structures",
-  //     Phone: "+1 234-567-8901",
-  //     "Joining Date": "8/15/2020",
-  //   },
-  //   {
-  //     Name: "Prof. Michael Chen",
-  //     Email: "michael.chen@college.edu",
-  //     Subject: "Calculus",
-  //     Phone: "+1 234-567-8902",
-  //     "Joining Date": "7/20/2018",
-  //   },
-  // ];
+  const [loading, setLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState("");
   const [data, setTeacersData] = useState([]);
 
   useEffect(() => {
     const fetchTeachers = async ()=> {
       try{
+        setLoading(true);
+        setLoadingMessage("Loading Teachers Data...");
         const response = await getTeachers();
         setTeacersData(response.teachers);
-        console.log(response.teachers);
-        console.log(data);
       }
       catch(error){
         console.log(error);
+      }
+      finally{
+        setLoading(false);
+        setLoadingMessage("");
       }
     };
 
@@ -57,18 +47,52 @@ const Teachers = () => {
       finalData.append(Key, value);
     });
 
-    for (let [key, value] of finalData.entries()) {
-      console.log(key, value);
-    }
-    
     if(formData.mode === "add"){
-      const response = await addTeacher(finalData);
+      try{
+        setLoading(true);
+        setLoadingMessage("Adding New Teacher Data...");
+        const response = await addTeacher(finalData);
+        console.log(response);
+        await setTeacersData((prev) => [...prev, response.teacher[0]]);
+      }
+      catch(error){
+        console.log("error while adding teacher :", error);
+      }
+      finally{
+        setLoading(false);
+        setLoadingMessage("");
+      }
     }
     else{
       let id = formData.id;
-      const response = await editTeachers(finalData,id);
+      try{
+        setLoading(true);
+        setLoadingMessage("Editing teacher data in table...");
+        const response = await editTeachers(finalData,id);
+        await setTeacersData((prev) =>
+          prev.map((t) => (t.id === formData.id ? { ...t, ...response.teacher[0] } : t)))
+      }
+      catch(error){
+        console.log("error while editing teacher :", error);
+      }
+      finally{
+        setLoading(false);
+        setLoadingMessage("");
+      }
     }
   };
+
+  const handleDelete = async (id) => {
+    try{
+      setLoading(true);
+      setLoadingMessage("Deleting Data...")
+      await setTeacersData((prev) => prev.filter((t) => t.id !== id))
+    }
+    finally{
+      setLoading(false);
+      setLoadingMessage("");
+    }
+  }
 
   return (
     <ManagementPages
@@ -83,6 +107,9 @@ const Teachers = () => {
       heading="Add New Teachers"
       description="Fill in the details below to create a new record."
       onFormSubmit={handleSubmit}
+      onHandleDelete={handleDelete}
+      loading={loading}
+      loadingMessage={loadingMessage}
     />
   );
 };

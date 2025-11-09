@@ -1,4 +1,3 @@
-from sre_compile import isstring
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, jwt_required
@@ -53,7 +52,7 @@ def fetch_files():
 @jwt_required()
 def upload_file():
     try:
-        file = request.files['image_video_file']
+        file = request.files['file']
         event_name = request.form['event_name']
         description = request.form['description']
 
@@ -165,8 +164,9 @@ def edit_teacher_by_id(id):
             client.storage.from_("AUMV-Teachers").upload(resume.filename, resume.filename)
             resume = client.storage.from_("AUMV-Teachers").get_public_url(resume.filename)
         
-        update_teachers_data(client, name, email, subject, joining_date, phone_num, address, dob, photo, resume, id)
-        return jsonify({"message": "Data update successfully"}), 200
+        response = update_teachers_data(client, name, email, subject, joining_date, phone_num, address, dob, photo, resume, id).data
+        return jsonify({"message": "Data update successfully",
+                        "teacher": response}), 200
     except Exception as exc:
         print(str(exc))
         return jsonify({"error": str(exc)}), 500
@@ -182,6 +182,7 @@ def delete_teacher_by_id(id):
         client.storage.from_("AUMV-Teachers").remove([photo])
         
         resume = data[0]["resume"].split("/AUMV-Teachers/")[-1]
+        print(resume)
         client.storage.from_("AUMV-Teachers").remove([resume])
 
         client.table('Teachers').delete().eq("id", id).execute()
@@ -216,8 +217,9 @@ def add_teacher():
             client.storage.from_("AUMV-Teachers").upload(resume.filename, resume.filename)
             resume = client.storage.from_("AUMV-Teachers").get_public_url(resume.filename)
 
-        insert_teachers_data(client, name, email, subject, joining_date, phone_num, address, dob, photo, resume)
-        return jsonify({'message': 'Teacher details added succesfully'}), 200
+        response = insert_teachers_data(client, name, email, subject, joining_date, phone_num, address, dob, photo, resume).data
+        return jsonify({'message': 'Teacher details added succesfully', 
+                        'teacher': response}), 200
     except Exception as exc:
         print(str(exc))
         return jsonify({'error': str(exc)}), 500

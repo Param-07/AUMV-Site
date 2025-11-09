@@ -43,7 +43,7 @@ def get_final_res(final_res:dict, response:APIResponse):
 def insert_teachers_data(client:SyncClient, name: str, email:str, subject:str, joining_date:date, phone_num:numbers, 
                         address:str,dob:date, photo:str, resume:str):
     try:
-        client.table("Teachers").insert({
+        return client.table("Teachers").insert({
         "name": name,
         "email": email,
         "subject": subject,
@@ -60,7 +60,7 @@ def insert_teachers_data(client:SyncClient, name: str, email:str, subject:str, j
 def update_teachers_data(client:SyncClient, name: str, email:str, subject:str, joining_date:date, phone_num:numbers, 
                         address:str,dob:date, photo:str, resume:str, id: any):
     try:
-        client.table("Teachers").update({
+        return client.table("Teachers").update({
         "name": name,
         "email": email,
         "subject": subject,
