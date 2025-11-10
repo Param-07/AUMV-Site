@@ -15,9 +15,8 @@ def insert_metadata(client:SyncClient, event_name:str, url:str, file:FileStorage
         file_type = "image"
 
     client.table("files").insert({
-        "file_event": event_name,
+        "category": event_name,
         "file_url": url,
-        "file_name": file.filename,
         "file_type": file_type,
         "description": description
     }).execute()
