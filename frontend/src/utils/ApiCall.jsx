@@ -1,8 +1,6 @@
 import api from './api';
 
  export const login = async (finalData) => {
-    console.log(finalData);
-    // baseUrl = baseUrl + "/auth/login";
     const start = Date.now();
 
     const response = await api.post("/auth/login", finalData);
@@ -28,5 +26,20 @@ export const editTeachers = async (finalData, id) => {
 
 export const deleteTeacherData = async(id) => {
     const response = await api.delete(`/teacher/delete/${id}`);
+    return response.data;
+}
+
+export const getImages = async() => {
+    const response = await api.get('/fetch');
+    return response.data;
+}
+
+export const uploadImages = async(finalData) => {
+    const response = await api.post('/upload', finalData);
+    return response.data;
+}
+
+export const deleteImages = async(id) => {
+    const response = await api.delete(`/delete/${id}`);
     return response.data;
 }

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ManagementPages from "../components/ManagementPages";
 import { Users } from "lucide-react";
-import { addTeacher, editTeachers, getTeachers} from "../utils/ApiCall";
+import { addTeacher, editTeachers, getTeachers, deleteTeacherData} from "../utils/ApiCall";
 
 const Teachers = () => {
   const columns = ["Name", "Email", "Subject", "Phone", "Joining Date"];
@@ -83,10 +83,17 @@ const Teachers = () => {
   };
 
   const handleDelete = async (id) => {
-    try{
+    try {
       setLoading(true);
       setLoadingMessage("Deleting Data...")
-      await setTeacersData((prev) => prev.filter((t) => t.id !== id))
+      const response = await deleteTeacherData(id);
+
+      if (response.message === "Teacher data deleted") {
+        setTeacersData((prev) => prev.filter((t) => t.id !== id))
+      }
+    } 
+    catch (error) {
+      console.error(error);
     }
     finally{
       setLoading(false);
