@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { Plus, Filter, Search, Edit, Trash2, X, Upload, Image } from "lucide-react";
 import { deleteTeacherData } from "../utils/ApiCall";
+import ErrorModal from "./ErrorModal";
 
 const ManagementPages = ({
   icon: Icon,
@@ -13,18 +14,22 @@ const ManagementPages = ({
   data,
   formFields = [],
   onFormSubmit,
-  onHandleDelete,
   heading,
   description,
   loading,
   loadingMessage,
   categories,
+  error,
+  onSetError,
+  onHandleDelete
 }) => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [formData, setFormData] = useState({});
-  const [filePreview, setFilePreview] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [editingItem, setEditingItem] = useState(null);
+  const [photoPreview, setPhotoPreview] = useState(null);
+  const [resumePreview, setResumePreview] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState("Sports");
+  const [editingTeacher, setEditingTeacher] = useState(null);
+  const [prevData, setPrevData] = useState([]);
 
   const location = useLocation();
   const currentPath = location.pathname;
@@ -32,64 +37,74 @@ const ManagementPages = ({
   const galleryPaths = ["/adminGallery", "/videos", "/images"];
   const isGalleryLayout = galleryPaths.includes(currentPath);
 
-  // ✅ Open popup (Add/Edit)
   const handleOpenPopup = (item = null) => {
     if (item) {
-      setEditingItem(item);
-      setFormData({ ...item });
-      setFilePreview(item.file_url || null);
+      setEditingTeacher(item);
+      setFormData({...item});
+      setPrevData({...item})
+      setPhotoPreview(item.photo || null);
+      setResumePreview(null);
     } else {
-      setEditingItem(null);
+      setEditingTeacher(null);
       setFormData({});
-      setFilePreview(null);
+      setPhotoPreview(null);
+      setResumePreview(null);
     }
     setIsPopupOpen(true);
   };
 
-  // ✅ Close popup
   const handleClosePopup = () => {
     setIsPopupOpen(false);
-    setEditingItem(null);
+    setEditingTeacher(null);
     setFormData({});
-    setFilePreview(null);
+    setPhotoPreview(null);
+    setResumePreview(null);
   };
 
-  // ✅ Handle input changes
+
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
+
     if (type === "file") {
       const file = files[0];
       setFormData((prev) => ({ ...prev, [name]: file }));
 
-      if (file && file.type.startsWith("image/")) {
-        setFilePreview(URL.createObjectURL(file));
-      } else if (file && file.type.startsWith("video/")) {
-        setFilePreview(URL.createObjectURL(file));
+      if (name === "photo" && file && file.type.startsWith("image/")) {
+        setPhotoPreview(URL.createObjectURL(file));
+      } else if (name === "resume" && file) {
+        setResumePreview(file.name);
       }
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
   };
 
-  // ✅ Submit form
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (editingItem) {
-      onFormSubmit?.({ ...formData, id: editingItem.id, mode: "edit" });
+    if (editingTeacher) {
+      onFormSubmit?.({ ...formData, id: editingTeacher.id, mode: "edit" });
     } else {
+      setPrevData({...formData});
       onFormSubmit?.({ ...formData, mode: "add" });
     }
     handleClosePopup();
   };
 
-  // ✅ Delete item
   const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this record?")) {
+      if (window.confirm("Are you sure you want to delete this record?")) {
       onHandleDelete?.(id);
     }
   };
 
-  // ✅ Category filter
+  const handleError = async (title) =>{
+    onSetError?.(null);
+    if(title === "Upload Error" || title === "Editing Error"){
+      console.log(prevData.photo);
+      handleOpenPopup(prevData);
+    }
+  }
+
   const filteredData =
     selectedCategory === "All"
       ? data
@@ -97,7 +112,6 @@ const ManagementPages = ({
 
   return (
     <div className="flex-1 p-6 bg-gray-50 min-h-screen">
-      {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-3">
           {Icon && (
@@ -119,15 +133,13 @@ const ManagementPages = ({
         </button>
       </div>
 
-      {/* ✅ GALLERY LAYOUT */}
+      {/* ✅ GALLERY LAYOUT RESTORED */}
       {isGalleryLayout ? (
         <div className="bg-white rounded-2xl shadow p-6">
           <div className="flex flex-col mb-6">
             <div className="flex justify-between items-center mb-2">
               <h2 className="text-gray-700 font-semibold">Browse by Category</h2>
-              <p className="text-sm text-gray-500">
-                {filteredData.length} items in this category
-              </p>
+              <p className="text-sm text-gray-500">{filteredData.length} items in this category</p>
             </div>
 
             <div className="flex flex-wrap gap-2 overflow-x-auto pb-2">
@@ -155,11 +167,7 @@ const ManagementPages = ({
               >
                 {item.file_url ? (
                   item.file_url.endsWith(".mp4") ? (
-                    <video
-                      src={item.file_url}
-                      className="w-full h-48 object-cover"
-                      controls
-                    />
+                    <video src={item.file_url} className="w-full h-48 object-cover" controls />
                   ) : (
                     <img
                       src={item.file_url}
@@ -194,9 +202,18 @@ const ManagementPages = ({
             ))}
           </div>
         </div>
-      ) : (
+      )  : (
         // ✅ TEACHER TABLE LAYOUT
         <div className="bg-white rounded-xl shadow p-6">
+          <div className="flex justify-between items-center mb-4">
+            <div>
+              <h2 className="font-semibold text-xl">Teachers</h2>
+              <p className="text-gray-600">
+                Showing {data.length} record{data.length > 1 ? "s" : ""}
+              </p>
+            </div>
+          </div>
+
           <div className="overflow-x-auto w-full">
             <table className="min-w-full border border-gray-200 text-sm">
               <thead>
@@ -214,7 +231,10 @@ const ManagementPages = ({
 
               <tbody>
                 {data.map((teacher) => (
-                  <tr key={teacher.id} className="border-b hover:bg-gray-50 whitespace-nowrap">
+                  <tr
+                    key={teacher.id}
+                    className="border-b hover:bg-gray-50 transition whitespace-nowrap"
+                  >
                     <td className="py-3 px-4 text-center">
                       <img
                         src={teacher.photo}
@@ -243,10 +263,7 @@ const ManagementPages = ({
                         >
                           <Edit size={14} /> Edit
                         </button>
-                        <button
-                          onClick={() => handleDelete(teacher.id)}
-                          className="flex items-center gap-1 text-red-500 hover:bg-red-100 px-3 py-1 rounded-full"
-                        >
+                        <button onClick={() => handleDelete(teacher.id)} className="flex items-center gap-1 text-red-500 hover:bg-red-100 px-3 py-1 rounded-full">
                           <Trash2 size={14} /> Delete
                         </button>
                       </div>
@@ -272,100 +289,91 @@ const ManagementPages = ({
 
             <div className="flex flex-col mb-5">
               <h2 className="text-xl font-semibold">
-                {editingItem ? "Edit Record" : heading}
+                {editingTeacher ? "Edit Teacher" : heading}
               </h2>
               <p>{description}</p>
             </div>
 
             <form className="space-y-4" onSubmit={handleSubmit}>
-              {formFields.map((field) => (
-                <div key={field.name} className="flex flex-col gap-2">
-                  <label htmlFor={field.name} className="text-gray-700 font-medium">
+              {formFields.map((field, idx) => (
+                <div key={idx} className="flex flex-col">
+                  <label htmlFor={field.name} className="text-gray-700 font-medium mb-1">
                     {field.label}
+                    {field.required && <span className="text-red-500 ml-1">*</span>}
                   </label>
 
-                  {field.type === "file" ? (
-                    <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-purple-600 transition">
-                      <label
-                        htmlFor={field.name}
-                        className="cursor-pointer flex flex-col items-center gap-2 text-gray-600"
-                      >
-                        <Upload className="text-purple-700" size={20} />
-                        <span className="text-sm font-medium flex flex-col items-center justify-center">
-                          {formData[field.name]?.name || "(Upload image or video)"}
-                        </span>
-                        <p className="text-xs text-gray-400 mt-1">
-                          Accepted: Images or Videos only
-                        </p>
-                        <input
-                          id={field.name}
-                          name={field.name}
-                          type="file"
-                          accept={field.accept}
-                          onChange={handleChange}
-                          required={field.required && !editingItem}
-                          className="hidden"
-                        />
-                      </label>
-
-                      {filePreview && (
-                        field.accept.includes("video") ? (
-                          <video
-                            src={filePreview}
-                            className="mt-3 rounded-lg w-32 h-32 object-cover border"
-                            controls
-                          />
-                        ) : (
-                          <img
-                            src={filePreview}
-                            alt="Preview"
-                            className="mt-3 rounded-lg w-28 h-28 object-cover border"
-                          />
-                        )
-                      )}
-
-                      {!filePreview && editingItem?.file_url && (
-                        editingItem.file_url.endsWith(".mp4") ? (
-                          <video
-                            src={editingItem.file_url}
-                            className="mt-3 rounded-lg w-32 h-32 object-cover border"
-                            controls
-                          />
-                        ) : (
-                          <img
-                            src={editingItem.file_url}
-                            alt={editingItem.description}
-                            className="mt-3 rounded-lg w-28 h-28 object-cover border"
-                          />
-                        )
-                      )}
-                    </div>
-                  ) : field.type === "select" ? (
-                    <select
-                      id={field.name}
-                      name={field.name}
-                      required={field.required}
-                      value={formData[field.name] || ""}
-                      onChange={handleChange}
-                      className="border rounded-lg p-3 focus:ring-2 focus:ring-purple-500 bg-white"
-                    >
-                      <option value="">{field.placeholder || "Select an option"}</option>
-                      {field.options.map((option) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </select>
-                  ) : field.type === "textarea" ? (
+                  {field.type === "textarea" ? (
                     <textarea
                       id={field.name}
                       name={field.name}
                       placeholder={field.placeholder}
+                      required={field.required}
                       value={formData[field.name] || ""}
                       onChange={handleChange}
-                      required={field.required}
-                      className="border rounded-lg p-3 h-24 resize-none focus:ring-2 focus:ring-purple-500"
+                      className="border rounded-lg p-3 focus:ring-2 focus:ring-purple-500"
                     />
+                  ) : field.type === "file" ? (
+                    field.name === "photo" ? (
+                      <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-purple-600 transition">
+                        <label className="cursor-pointer flex flex-col items-center gap-2 text-gray-600">
+                          <Upload className="text-purple-700" size={20} />
+                          <span className="text-sm font-medium">
+                            {formData.photo?.name || "(Upload Photo)"}
+                          </span>
+                          <input
+                            id="photo"
+                            name="photo"
+                            type="file"
+                            accept="image/*"
+                            onChange={handleChange}
+                            required={field.required && !editingTeacher}
+                            className="hidden"
+                          />
+                        </label>
+
+                        {(photoPreview || editingTeacher?.photo) && (
+                          <img
+                            src={photoPreview || editingTeacher.photo}
+                            alt="Photo Preview"
+                            className="mt-3 rounded-lg w-28 h-28 object-cover border"
+                          />
+                        )}
+                      </div>
+                    ) : field.name === "resume" ? (
+                      <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-purple-600 transition">
+                        <label className="cursor-pointer flex flex-col items-center gap-2 text-gray-600">
+                          <Upload className="text-purple-700" size={20} />
+                          <span className="text-sm font-medium">
+                            {formData.resume?.name || "(Upload Resume)"}
+                          </span>
+                          <input
+                            id="resume"
+                            name="resume"
+                            type="file"
+                            accept="application/pdf,image/*"
+                            onChange={handleChange}
+                            required={field.required && !editingTeacher}
+                            className="hidden"
+                          />
+                        </label>
+
+                        {resumePreview && (
+                          <p className="mt-2 text-sm text-gray-500">
+                            Selected: {resumePreview}
+                          </p>
+                        )}
+                        {!resumePreview && editingTeacher?.resume && (
+                          <a
+                            href={editingTeacher.resume}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="mt-2 text-blue-600 underline text-sm"
+                          >
+                            View Existing Resume
+                          </a>
+                        )}
+                      </div>
+                    ) : null
                   ) : (
                     <input
                       id={field.name}
@@ -418,6 +426,15 @@ const ManagementPages = ({
             <p className="text-sm font-medium text-gray-700">{loadingMessage}</p>
           </div>
         </div>
+      )}
+
+      {error && (
+        <ErrorModal
+          type={error.type}
+          title={error.title}
+          message={error.message}
+          onClose={() => handleError(error.title)}
+        />
       )}
     </div>
   );
