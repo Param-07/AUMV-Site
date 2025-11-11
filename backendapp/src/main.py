@@ -1,4 +1,3 @@
-from fileinput import filename
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, jwt_required
@@ -30,6 +29,16 @@ client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # Register authentication blueprint
 app.register_blueprint(auth_bp, url_prefix="/auth")
+
+@app.route('/gallery', methods=['GET'])
+def get_gallery_data():
+    try:
+        response = client.postgrest.rpc("get_gallery_grouped", {}).execute()
+        print(response.data)
+        return jsonify({"message": "success",
+                        "images": response.data}), 200
+    except Exception as exc:
+        return jsonify({"error": str(exc)}), 500
 
 @app.route('/getHero', methods=['GET'])
 def fetch_hero_images():
@@ -67,14 +76,18 @@ def upload_file():
 
         # Check if already exists
         if client.storage.from_("AUMV-web").exists(filename):
-            return jsonify({'message': 'File already uploaded'}), 400
+            return jsonify({'message': f'{filename} is already uploaded'}), 400
 
         # Upload to Supabase storage
         client.storage.from_("AUMV-web").upload(filename, file.filename)
         url = client.storage.from_("AUMV-web").get_public_url(filename)
 
-        insert_metadata(client, event_name, url, file, description)
-        return jsonify({'message': 'File uploaded successfully', 'url': url}), 200
+        response = insert_metadata(client, event_name, url, file, description)
+        categories = client.postgrest.rpc("get_unique_event_names", {}).execute()
+
+        return jsonify({'message': 'success',
+                        'images': response.data,
+                        'categories': categories.data}), 200
 
     except Exception as exc:
         return jsonify({'message': 'File upload failed', 'error': str(exc)}), 500
@@ -116,8 +129,10 @@ def delete_file(id):
         client.storage.from_("AUMV-web").remove([photo])
 
         client.table("files").delete().eq("id", id).execute();
+        categories = client.postgrest.rpc("get_unique_event_names", {}).execute()
 
-        return jsonify({"message": "file deleted succesfully"}), 200
+        return jsonify({"message": "file deleted succesfully",
+                        "categories": categories.data}), 200
     except Exception as exc:
         return jsonify({'message': 'File deletion failed', 'error': str(exc)}), 500
 

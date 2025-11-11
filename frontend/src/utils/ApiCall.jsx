@@ -29,8 +29,8 @@ export const deleteTeacherData = async(id) => {
     return response.data;
 }
 
-export const getImages = async() => {
-    const response = await api.get('/fetch');
+export const getImages = async(endp) => {
+    const response = await api.get(endp);
     return response.data;
 }
 

@@ -8,6 +8,7 @@ const Teachers = () => {
   const [loading, setLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("");
   const [data, setTeacersData] = useState([]);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchTeachers = async ()=> {
@@ -18,7 +19,11 @@ const Teachers = () => {
         setTeacersData(response.teachers);
       }
       catch(error){
-        console.log(error);
+        setError({
+          type: "error",
+          title: "Loading error",
+          message: error.response.data.message || "Something went wrong while fetching data. Please try again.",
+        });
       }
       finally{
         setLoading(false);
@@ -52,11 +57,14 @@ const Teachers = () => {
         setLoading(true);
         setLoadingMessage("Adding New Teacher Data...");
         const response = await addTeacher(finalData);
-        console.log(response);
-        await setTeacersData((prev) => [...prev, response.teacher[0]]);
+        setTeacersData((prev) => [...prev, response.teacher[0]]);
       }
       catch(error){
-        console.log("error while adding teacher :", error);
+        setError({
+          type: "error",
+          title: "Upload Error",
+          message: error.response.data.message || "Something went wrong while uploading. Please try again.",
+        });
       }
       finally{
         setLoading(false);
@@ -73,7 +81,11 @@ const Teachers = () => {
           prev.map((t) => (t.id === formData.id ? { ...t, ...response.teacher[0] } : t)))
       }
       catch(error){
-        console.log("error while editing teacher :", error);
+        setError({
+          type: "error",
+          title: "Editing Error",
+          message: error.response.data.message || "Something went wrong while editing. Please try again.",
+        });
       }
       finally{
         setLoading(false);
@@ -93,7 +105,11 @@ const Teachers = () => {
       }
     } 
     catch (error) {
-      console.error(error);
+      setError({
+        type: "error",
+        title: "Deltetion Error",
+        message: error.response.data.message || "Something went wrong while deleting data. Please try again.",
+      });
     }
     finally{
       setLoading(false);
@@ -101,6 +117,9 @@ const Teachers = () => {
     }
   }
 
+  const handleError = () => {
+    setError(null);
+  }
   return (
     <ManagementPages
       icon={Users}
@@ -117,6 +136,8 @@ const Teachers = () => {
       onHandleDelete={handleDelete}
       loading={loading}
       loadingMessage={loadingMessage}
+      onSetError={handleError}
+      error={error}
     />
   );
 };
