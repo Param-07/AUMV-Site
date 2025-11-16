@@ -27,7 +27,7 @@ api.interceptors.response.use(
             console.log(refreshToken);
             if(refreshToken){
                 try{
-                    const res = await axios.post(`${import.meta.env.VITE_API_URL}/refresh`,{}, {
+                    const res = await axios.post(`${import.meta.env.VITE_API_URL}/auth/refresh`,{}, {
                         headers: { Authorization: `Bearer ${refreshToken}` }
                     });
 

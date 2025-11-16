@@ -1,80 +1,84 @@
-from ast import Not
-from datetime import timedelta
-from json import load
-from click import password_option
-from supabase import create_client
-from flask import Flask, jsonify, Blueprint, request
-from flask_jwt_extended import create_access_token, JWTManager, create_refresh_token, jwt_required, get_jwt_identity
-from flask_bcrypt import Bcrypt, check_password_hash
+# auth.py
 import os
-from dotenv import load_dotenv
+from datetime import timedelta
+from flask import Blueprint, request, jsonify
+from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity
+from flask_bcrypt import Bcrypt
+from database.queries import _fetch_one, _execute_and_return
 
-load_dotenv()
-auth_bp = Blueprint('auth', __name__)
-bcrypt = Bcrypt()
+bcrypt = Bcrypt()  
+auth_bp = Blueprint("auth", __name__)
 
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_KEY")
-client = create_client(SUPABASE_URL, SUPABASE_KEY)
+# Configurable token lifetimes (in minutes)
+ACCESS_EXPIRE_MINUTES = int(os.getenv("ACCESS_EXPIRE_MINUTES", 45))
+
+
 
 @auth_bp.route("/register", methods=["POST"])
 def register():
-    username = request.form["username"]
-    password = request.form["password"]
-    email = request.form["email"]
+    # Expecting form-data or JSON
+    username = request.form.get("username") or (request.json or {}).get("username")
+    password = request.form.get("password") or (request.json or {}).get("password")
+    email = request.form.get("email") or (request.json or {}).get("email")
 
-    client = create_client(SUPABASE_URL, SUPABASE_KEY)
+    if not username or not password or not email:
+        return jsonify({"message": "username, password and email are required"}), 400
 
-    response = (client.table("Admin Table")
-                .select("email")
-                .eq("email", email)
-                .execute())
-
-    print(response)
-    if response.data.count is not None :
+    existing = _fetch_one(email)
+    if existing:
         return jsonify({"message": "Email already exists", "status": 0}), 400
-    
-    password = bcrypt.generate_password_hash(password).decode('utf-8')
-    response = (client.table("Admin Table")
-                .insert({"username": username, "password": password, "email": email})
-                .execute())
 
-    return jsonify({"message": "User registered successfully", "status": 1}), 200
+    hashed = bcrypt.generate_password_hash(password).decode("utf-8")
+    inserted = _execute_and_return(username, email, password)
+
+    return jsonify({"message": "User registered successfully", "status": 1, "user": inserted}), 200
+
 
 @auth_bp.route("/login", methods=["POST"])
 def login():
-    password = request.form["password"]
-    email = request.form["email"]
+    password = request.form.get("password") or (request.json or {}).get("password")
+    email = request.form.get("email") or (request.json or {}).get("email")
 
-    # client = create_client(SUPABASE_URL, SUPABASE_KEY)
-    response = (client.table("Admin Table")
-                .select("*")
-                .eq("email", email)
-                .execute())
+    if not password or not email:
+        return jsonify({"message": "email and password required"}), 400
 
-    print(response.count)
-    print(response)
-    if response.data.count is None or not bcrypt.check_password_hash(response.data[0]["password"], password):
-        return jsonify({"message": "Invalid user credentials"}), 401
+    user = _fetch_one(email)
+    if not user:
+        return jsonify({"message": "Invalid credentials"}), 401
 
-    access_token = create_access_token(identity= response.data[0]["username"], expires_delta= timedelta(minutes=45))
-    refresh_token = create_refresh_token(identity=response.data[0]["username"])
+    # user["password"] is hashed
+    if not bcrypt.check_password_hash(user["password"], password):
+        return jsonify({"message": "Invalid credentials"}), 401
+
+    access_token = create_access_token(identity=user["username"], expires_delta=timedelta(minutes=ACCESS_EXPIRE_MINUTES))
+    refresh_token = create_refresh_token(identity=user["username"])
 
     return jsonify({
-        "message": "Login successfull",
+        "message": "Login successful",
         "access_token": access_token,
         "refresh_token": refresh_token,
-        "username": response.data[0]["username"]
+        "username": user["username"]
     }), 200
 
+
+# OPTIONS preflight for /auth/refresh (no JWT)
+@auth_bp.route("/refresh", methods=["OPTIONS"])
+def refresh_options():
+    resp = jsonify({"status": "preflight ok"})
+    # double ensure the proper CORS headers if needed
+    resp.headers.add("Access-Control-Allow-Origin", os.getenv("CORS_ORIGINS", "*"))
+    resp.headers.add("Access-Control-Allow-Headers", "Authorization, Content-Type")
+    resp.headers.add("Access-Control-Allow-Methods", "POST, OPTIONS")
+    return resp, 200
+
+
+# Protected POST route (requires refresh token)
 @auth_bp.route("/refresh", methods=["POST"])
 @jwt_required(refresh=True)
 def refresh():
     current_user = get_jwt_identity()
-    new_access_token = create_access_token(current_user, expires_delta=timedelta(minutes=45))
-
+    new_access_token = create_access_token(identity=current_user, expires_delta=timedelta(minutes=ACCESS_EXPIRE_MINUTES))
     return jsonify({
         "message": "Refreshed token",
         "access_token": new_access_token
     }), 200
-

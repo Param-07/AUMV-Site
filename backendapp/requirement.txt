@@ -4,3 +4,4 @@ dotenv == 0.9.9
 flask_cors == 6.0.1
 flask_jwt_extended == 4.7.1
 flask_bcrypt == 1.0.1
+psycopg2 == 2.9.11

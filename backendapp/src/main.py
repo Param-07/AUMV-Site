@@ -1,3 +1,4 @@
+from unicodedata import category
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, jwt_required
@@ -7,9 +8,11 @@ import os
 import supabase
 from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
+from psycopg2.extras import RealDictCursor
 
 # Import utilities and blueprints
-from utils.databaseCRUD import insert_metadata, delete_metadata, get_final_res, insert_teachers_data, update_teachers_data
+from database.queries import  delete_admin_gallery, fetch_admin_gallery, fetch_teachers_data, if_file_exists, insert_teachers_data, update_teachers_data, upload_admin_gallery
+from database.connection import get_conn, put_conn, close_conn
 from auth import auth_bp, bcrypt
 
 # Load environment variables
@@ -33,18 +36,26 @@ app.register_blueprint(auth_bp, url_prefix="/auth")
 @app.route('/gallery', methods=['GET'])
 def get_gallery_data():
     try:
-        response = client.postgrest.rpc("get_gallery_grouped", {}).execute()
-        print(response.data)
+        conn = get_conn()
+        cursor = conn.cursor()
+        cursor.execute("SELECT get_gallery_grouped ();")
+        response = cursor.fetchone()[0]
+        put_conn(conn)
+
         return jsonify({"message": "success",
-                        "images": response.data}), 200
+                        "images": response}), 200
     except Exception as exc:
         return jsonify({"error": str(exc)}), 500
 
 @app.route('/getHero', methods=['GET'])
 def fetch_hero_images():
     try:
-        response = client.table('Hero Table').select("url").execute()
-        return jsonify({'message': response.model_dump_json()}), 200
+        conn = get_conn()
+        cursor = conn.cursor(cursor_factory = RealDictCursor)
+        cursor.execute("Select url from hero_table;")
+        response = cursor.fetchall()
+        put_conn(conn)
+        return jsonify({'message': response}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -52,14 +63,12 @@ def fetch_hero_images():
 @app.route('/fetch', methods=['GET'])
 def fetch_files():
     try:
-        response = client.table('files').select("*").execute()
-        categories = client.postgrest.rpc("get_unique_event_names", {}).execute()
-        print(categories)
-        # final_res = get_final_res({}, response)
+        response = fetch_admin_gallery()
         return jsonify({'message': 'success',
-                        'images': response.data,
-                        'categories': categories.data}), 200
+                        'images': response[0],
+                        'categories': response[1]}), 200
     except Exception as e:
+        print(str(e))
         return jsonify({'error': str(e)}), 500
 
 
@@ -70,28 +79,20 @@ def upload_file():
     event_name = request.form['event_name']
     description = request.form['description']
 
-    try:
-        file.save(file.filename)
-        filename = secure_filename(file.filename)
+    try: 
+        message = if_file_exists(client, [file], "AUMV-web")
 
-        # Check if already exists
-        if client.storage.from_("AUMV-web").exists(filename):
-            return jsonify({'message': f'{filename} is already uploaded'}), 400
+        if message != "":
+            return jsonify({'error': message}), 400
 
-        # Upload to Supabase storage
-        client.storage.from_("AUMV-web").upload(filename, file.filename)
-        url = client.storage.from_("AUMV-web").get_public_url(filename)
 
-        response = insert_metadata(client, event_name, url, file, description)
-        categories = client.postgrest.rpc("get_unique_event_names", {}).execute()
-
+        response = upload_admin_gallery(client, event_name, description, file)
         return jsonify({'message': 'success',
-                        'images': response.data,
-                        'categories': categories.data}), 200
-
+                        'images': response[0],
+                        'categories': response[1]}), 200
     except Exception as exc:
+        print(str(exc))
         return jsonify({'message': 'File upload failed', 'error': str(exc)}), 500
-
     finally:
         if os.path.exists(file.filename):
             os.remove(file.filename)
@@ -109,7 +110,7 @@ def upload_hero():
 
         client.storage.from_("AUMV-hero").upload(file.filename, file.filename)
         url = client.storage.from_("AUMV-hero").get_public_url(file.filename)
-        client.table("Hero Table").insert({"url": url}).execute()
+        client.table("hero_table").insert({"url": url}).execute()
 
         file.close()
         return jsonify({'message': 'Hero file uploaded successfully', 'url': url}), 200
@@ -122,17 +123,10 @@ def upload_hero():
 @jwt_required()
 def delete_file(id):
     try:
-        data = client.table("files").select("file_url").eq("id", id).execute()
-        data = data.data
-
-        photo = data[0]["file_url"].split("/AUMV-web/")[-1]
-        client.storage.from_("AUMV-web").remove([photo])
-
-        client.table("files").delete().eq("id", id).execute();
-        categories = client.postgrest.rpc("get_unique_event_names", {}).execute()
+        categories = delete_admin_gallery(client, id)
 
         return jsonify({"message": "file deleted succesfully",
-                        "categories": categories.data}), 200
+                        "categories": categories}), 200
     except Exception as exc:
         return jsonify({'message': 'File deletion failed', 'error': str(exc)}), 500
 
@@ -140,9 +134,7 @@ def delete_file(id):
 @jwt_required()
 def get_teachers():
     try:
-        # response = client.table("Teachers").select("id", "name", "subject", "resume", "photo").execute()
-        response = client.table("Teachers").select("*").execute()
-        teachers = response.data
+        teachers = fetch_teachers_data()
         return jsonify({'teachers': teachers}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -174,27 +166,8 @@ def edit_teacher_by_id(id):
             photo = request.form.get("photo")
         if resume is None:
             resume = request.form.get("resume")
-
-        old_data = client.table("Teachers").select("*").eq("id", id).execute()
-        old_data = old_data.data
-        print(old_data[0])
-        print(old_data[0]["photo"])
-
-        if photo and isinstance(photo, FileStorage):
-            photo_name = old_data[0]["photo"].split("/AUMV-Teachers/")[-1]
-            client.storage.from_("AUMV-Teachers").remove([photo_name])
-            photo.save(photo.filename)
-            client.storage.from_("AUMV-Teachers").upload(photo.filename, photo.filename)
-            photo = client.storage.from_("AUMV-Teachers").get_public_url(photo.filename)
         
-        if resume and  isinstance(resume, FileStorage):
-            resume_name = old_data[0]["resume"].split("/AUMV-Teachers/")[-1]
-            client.storage.from_("AUMV-Teachers").remove([resume_name])
-            resume.save(resume.filename)
-            client.storage.from_("AUMV-Teachers").upload(resume.filename, resume.filename)
-            resume = client.storage.from_("AUMV-Teachers").get_public_url(resume.filename)
-        
-        response = update_teachers_data(client, name, email, subject, joining_date, phone_num, address, dob, photo, resume, id).data
+        response = update_teachers_data(client, name, email, subject, joining_date, phone_num, address, dob, photo, resume, id)
         return jsonify({"message": "Data update successfully",
                         "teacher": response}), 200
     except Exception as exc:
@@ -205,7 +178,7 @@ def edit_teacher_by_id(id):
 @jwt_required()
 def delete_teacher_by_id(id):
     try:
-        data = client.table("Teachers").select("photo", "resume").eq("id", id).execute()
+        data = client.table("teachers").select("photo", "resume").eq("id", id).execute()
         data = data.data
 
         photo = data[0]["photo"].split("/AUMV-Teachers/")[-1]
@@ -215,7 +188,7 @@ def delete_teacher_by_id(id):
         print(resume)
         client.storage.from_("AUMV-Teachers").remove([resume])
 
-        client.table('Teachers').delete().eq("id", id).execute()
+        client.table('teachers').delete().eq("id", id).execute()
         return jsonify({"message": "Teacher data deleted"}), 200
     except Exception as exc:
         return jsonify({"error": str(exc)}), 500
@@ -224,6 +197,14 @@ def delete_teacher_by_id(id):
 @app.route("/addTeacher", methods=["POST"], endpoint='post_teacher_endpoint')
 @jwt_required()
 def add_teacher():
+
+    photo = request.files.get("photo")
+    resume = request.files.get("resume")
+
+    response = if_file_exists(client, [photo, resume], "AUMV-Teachers")
+    if response != "":
+        return jsonify({'error': response}), 400
+        
     name = request.form.get("name")
     email = request.form.get("email")
     subject = request.form.get("subject")
@@ -231,34 +212,15 @@ def add_teacher():
     phone_num = request.form.get("phone_num")
     address = request.form.get("address")
     dob = request.form.get("dob")
-    photo = request.files.get("photo")
-    resume = request.files.get("resume")
-
-    secure_photo_name = secure_filename(photo.filename)
-    secure_resume_name = secure_filename(resume.filename)
 
     try:
-        if photo:
-            photo.save(photo.filename)
-            if client.storage.from_("AUMV-Teachers").exists(secure_photo_name):
-                return jsonify({'message': 'File already uploaded'}), 400
-            client.storage.from_("AUMV-Teachers").upload(secure_photo_name, photo.filename)
-            photo_url = client.storage.from_("AUMV-Teachers").get_public_url(secure_photo_name)
-        if resume:
-            resume.save(resume.filename)
-            if client.storage.from_("AUMV-Teachers").exists(secure_resume_name):
-                client.storage.from_("AUMV-Teachers").remove([secure_photo_name])
-                return jsonify({'message': 'File already uploaded'}), 400
-            client.storage.from_("AUMV-Teachers").upload(secure_resume_name, resume.filename)
-            resume_url = client.storage.from_("AUMV-Teachers").get_public_url(secure_resume_name)
-
-        response = insert_teachers_data(client, name, email, subject, joining_date, phone_num, address, dob, photo_url, resume_url).data
+        response = insert_teachers_data(client, name, email, subject, joining_date, phone_num, address, dob, photo, resume)
+        print(response)
         return jsonify({'message': 'Teacher details added succesfully', 
                         'teacher': response}), 200
     except Exception as exc:
         print(str(exc))
         return jsonify({'error': str(exc)}), 500
-    
     finally:
         if os.path.exists(photo.filename):
             os.remove(photo.filename)

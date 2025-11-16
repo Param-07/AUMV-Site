@@ -12,6 +12,7 @@ import Dashboard from "./pages/Dashboard";
 import AdminNavbar from "./components/AdminNavbar";
 import Teachers from "./pages/Teachers";
 import AdminGallery from "./pages/AdminGallery";
+// import LoadingScreen from "./components/LoadingScreen";
 
 function HomePage() {
   return (
