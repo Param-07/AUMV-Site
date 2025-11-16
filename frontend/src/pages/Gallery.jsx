@@ -7,7 +7,6 @@ export default function Gallery() {
   const [galleryData, setGalleryData] = useState([]);
   const [mainVideo, setMainVideo] = useState("/videos/school-event.mp4");
 
-  // 🖼️ Preload images for faster display
   const preloadImages = (images) => {
     images.forEach((gallery) => {
       gallery.images.forEach((img) => {
@@ -17,30 +16,28 @@ export default function Gallery() {
     });
   };
 
-  // 📦 Fetch gallery data once
   useEffect(() => {
     const fetchGallery = async () => {
       try {
         const response = await getImages("/gallery");
         if (response.message === "success") {
           setGalleryData(response.images);
-          preloadImages(response.images); // preload all gallery images
+          preloadImages(response.images);
         }
       } catch (error) {
         console.error("Error loading images:", error);
-      }
+      }  
     };
     fetchGallery();
   }, []);
 
-  // 🎞️ Setup slideshow for each gallery
   useEffect(() => {
     if (galleryData.length === 0) return;
 
     const intervals = galleryData.map((gallery, idx) =>
       setInterval(() => {
         setCurrentSlides((prev) => {
-          const currentIndex = prev[idx] ?? 0; // start at 0 if undefined
+          const currentIndex = prev[idx] ?? 0;
           const nextIndex = (currentIndex + 1) % gallery.images.length;
           return { ...prev, [idx]: nextIndex };
         });
@@ -52,7 +49,6 @@ export default function Gallery() {
 
   return (
     <div>
-      {/* 🎥 Video Gallery Section */}
       <section className="py-5 bg-gradient-to-r from-purple-700 to-orange-500">
         <h1 className="text-3xl md:text-4xl font-bold text-center text-white drop-shadow mb-10">
           Video Gallery
@@ -89,7 +85,6 @@ export default function Gallery() {
         </div>
       </section>
 
-      {/* 🖼️ Photo Gallery Section */}
       <section className="py-12 bg-gradient-to-r from-purple-900 to-black">
         <h1 className="text-3xl font-bold text-center text-white drop-shadow mb-12">
           Our School Gallery
@@ -113,7 +108,6 @@ export default function Gallery() {
                 />
               ))}
 
-              {/* 🏷️ Styled title at bottom */}
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent p-4 text-center">
                 <h2 className="text-xl font-semibold text-white">
                   {gallery.category}
@@ -123,52 +117,51 @@ export default function Gallery() {
           ))}
         </div>
 
-        {/* 🪟 Modal for full gallery view */}
         {activeModal !== null && (
-  <div className="fixed inset-0 flex justify-center items-center bg-black/80 z-50 p-4">
-    <div className="bg-white w-full max-w-6xl max-h-[90vh] overflow-y-auto rounded-lg relative p-6">
-      <button
-        className="absolute top-4 right-4 text-3xl font-bold text-gray-700 hover:text-purple-700"
-        onClick={() => setActiveModal(null)}
-      >
-        ×
-      </button>
-
-      <div className="flex flex-col gap-6 bg-gradient-to-r from-purple-700 to-orange-500 p-8 rounded-lg">
-        {galleryData[activeModal].images.map((img, i) => (
-          <div
-            key={i}
-            className={`flex flex-col md:flex-row ${
-              i % 2 === 1 ? "md:flex-row-reverse" : ""
-            } items-center gap-8 bg-white/90 rounded-xl shadow-lg p-6`}
+      <div className="fixed inset-0 flex justify-center items-center bg-black/80 z-50 p-4">
+        <div className="bg-white w-full max-w-6xl max-h-[90vh] overflow-y-auto rounded-lg relative p-6">
+          <button
+            className="absolute top-4 right-4 text-3xl font-bold text-gray-700 hover:text-purple-700"
+            onClick={() => setActiveModal(null)}
           >
-            {/* 🖼️ Uniform image box */}
-            <div className="w-full md:w-1/2 flex justify-center items-center">
-              <div className="w-full aspect-[4/3] overflow-hidden rounded-lg shadow">
-                <img
-                  src={img.src}
-                  alt={img.heading}
-                  className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-                  loading="lazy"
-                />
-              </div>
-            </div>
+            ×
+          </button>
 
-            {/* 📝 Text box */}
-            <div className="w-full md:w-1/2 text-gray-800">
-              <h3 className="text-2xl font-bold text-orange-600 mb-3 text-center md:text-left">
-                {img.heading}
-              </h3>
-              <p className="text-base leading-relaxed text-justify">
-                {img.description || "No description available."}
-              </p>
-            </div>
+          <div className="flex flex-col gap-6 bg-gradient-to-r from-purple-700 to-orange-500 p-8 rounded-lg">
+            {galleryData[activeModal].images.map((img, i) => (
+              <div
+                key={i}
+                className={`flex flex-col md:flex-row ${
+                  i % 2 === 1 ? "md:flex-row-reverse" : ""
+                } items-center gap-8 bg-white/90 rounded-xl shadow-lg p-6`}
+              >
+                {/* 🖼️ Uniform image box */}
+                <div className="w-full md:w-1/2 flex justify-center items-center">
+                  <div className="w-full aspect-[4/3] overflow-hidden rounded-lg shadow">
+                    <img
+                      src={img.src}
+                      alt={img.heading}
+                      className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                      loading="lazy"
+                    />
+                  </div>
+                </div>
+
+                {/* 📝 Text box */}
+                <div className="w-full md:w-1/2 text-gray-800">
+                  <h3 className="text-2xl font-bold text-orange-600 mb-3 text-center md:text-left">
+                    {img.heading}
+                  </h3>
+                  <p className="text-base leading-relaxed text-justify">
+                    {img.description || "No description available."}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
+        </div>
       </div>
-    </div>
-  </div>
-)}
+    )}
 
       </section>
     </div>

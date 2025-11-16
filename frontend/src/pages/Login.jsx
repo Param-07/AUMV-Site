@@ -42,7 +42,7 @@ const handleChange = (e) => {
     const response = await login(finalData);
     console.log(response);
 
-    if (response.message === "Login successfull") {
+    if (response.message === "Login successful") {
       localStorage.setItem("token", response.access_token);
       localStorage.setItem("r_token", response.refresh_token);
       localStorage.setItem("username", response.username);

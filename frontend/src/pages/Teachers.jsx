@@ -22,7 +22,7 @@ const Teachers = () => {
         setError({
           type: "error",
           title: "Loading error",
-          message: error.response.data.message || "Something went wrong while fetching data. Please try again.",
+          message: error.response || "Something went wrong while fetching data. Please try again.",
         });
       }
       finally{
@@ -57,13 +57,14 @@ const Teachers = () => {
         setLoading(true);
         setLoadingMessage("Adding New Teacher Data...");
         const response = await addTeacher(finalData);
-        setTeacersData((prev) => [...prev, response.teacher[0]]);
+        setTeacersData((prev) => [...prev, response.teacher]);
       }
       catch(error){
+        console.log(error);
         setError({
           type: "error",
           title: "Upload Error",
-          message: error.response.data.message || "Something went wrong while uploading. Please try again.",
+          message: error.response.data.error || "Something went wrong while uploading. Please try again.",
         });
       }
       finally{

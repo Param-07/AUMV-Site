@@ -254,13 +254,15 @@ const Navbar = () => {
                       >
                         Contact Us
                       </HashLink>
-                      <HashLink
-                        smooth
-                        to="/#contact"
+                      <a
+                        href="https://www.google.com/maps/dir/?api=1&destination=Alok+Inter+College+Chandauli"
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="block px-4 py-2 text-sm hover:bg-gray-100 hover:text-[#4B2E83]"
                       >
                         Get Directions
-                      </HashLink>
+                      </a>
+
                     </div>
                   </div>
                 </div>

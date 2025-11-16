@@ -30,7 +30,10 @@ export const deleteTeacherData = async(id) => {
 }
 
 export const getImages = async(endp) => {
+    const start = Date.now();
     const response = await api.get(endp);
+    const end = Date.now();
+    console.log(`⏱️ API call took ${end - start} ms`);
     return response.data;
 }
 
@@ -42,4 +45,9 @@ export const uploadImages = async(finalData) => {
 export const deleteImages = async(id) => {
     const response = await api.delete(`/delete/${id}`);
     return response.data;
+}
+
+export const getHeroSectionImages = async() => {
+    const response = await api.get('/getHero');
+    return response.data
 }

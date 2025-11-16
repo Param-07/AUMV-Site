@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Images } from "lucide-react";
 import ManagementPages from "../components/ManagementPages";
-import ErrorModal from "../components/ErrorModal"; 
 import { deleteImages, getImages, uploadImages } from "../utils/ApiCall";
 
 const AdminGallery = () => {
@@ -74,7 +73,7 @@ const AdminGallery = () => {
       const response = await uploadImages(finalData);
 
       if (response.message === "success") {
-        setData((prev) => [...prev, response.images[0]]);
+        setData((prev) => [...prev, response.images]);
         if (response.categories !== null) {
           const _categories = response.categories.split(",").map((item) => item.trim());
           setCategories(_categories);

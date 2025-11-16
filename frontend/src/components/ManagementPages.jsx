@@ -37,18 +37,25 @@ const ManagementPages = ({
   const galleryPaths = ["/adminGallery", "/videos", "/images"];
   const isGalleryLayout = galleryPaths.includes(currentPath);
 
-  const handleOpenPopup = (item = null) => {
-    if (item) {
-      setEditingTeacher(item);
+  const handleOpenPopup = (item = null, type ) => {
+    if(type === "error"){
       setFormData({...item});
-      setPrevData({...item})
-      setPhotoPreview(item.photo || null);
-      setResumePreview(null);
-    } else {
-      setEditingTeacher(null);
-      setFormData({});
-      setPhotoPreview(null);
-      setResumePreview(null);
+      console.log(item.photo);
+      console.log(item.resume);
+    }
+    else{
+      if (item) {
+        setEditingTeacher(item);
+        setFormData({...item});
+        setPrevData({...item})
+        setPhotoPreview(item.photo || null);
+        setResumePreview(null);
+      } else {
+        setEditingTeacher(null);
+        setFormData({});
+        setPhotoPreview(null);
+        setResumePreview(null);
+      }
     }
     setIsPopupOpen(true);
   };
@@ -100,8 +107,7 @@ const ManagementPages = ({
   const handleError = async (title) =>{
     onSetError?.(null);
     if(title === "Upload Error" || title === "Editing Error"){
-      console.log(prevData.photo);
-      handleOpenPopup(prevData);
+      handleOpenPopup(prevData, "error");
     }
   }
 
@@ -132,8 +138,7 @@ const ManagementPages = ({
           <Upload className="inline mr-2" size={18} /> {buttonText}
         </button>
       </div>
-
-      {/* ✅ GALLERY LAYOUT RESTORED */}
+      
       {isGalleryLayout ? (
         <div className="bg-white rounded-2xl shadow p-6">
           <div className="flex flex-col mb-6">
@@ -258,7 +263,7 @@ const ManagementPages = ({
                     <td className="py-3 px-4 text-center">
                       <div className="flex justify-center gap-3">
                         <button
-                          onClick={() => handleOpenPopup(teacher)}
+                          onClick={() => handleOpenPopup(teacher, "edit")}
                           className="flex items-center gap-1 text-blue-600 hover:bg-blue-100 px-3 py-1 rounded-full"
                         >
                           <Edit size={14} /> Edit
@@ -276,7 +281,6 @@ const ManagementPages = ({
         </div>
       )}
 
-      {/* ✅ Popup Form */}
       {isPopupOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm">
           <div className="rounded-2xl shadow-2xl p-6 md:p-8 w-[90%] max-w-lg relative overflow-y-scroll h-[80%] bg-gray-100">
@@ -374,7 +378,26 @@ const ManagementPages = ({
                         )}
                       </div>
                     ) : null
-                  ) : (
+                  ) : field.type === "select"?(
+                    <select
+                      id={field.name}
+                      name={field.name}
+                      required={field.required}
+                      value={formData[field.name] || ""}
+                      onChange={handleChange}
+                      className="border rounded-lg p-3 focus:ring-2 focus:ring-purple-500"
+                    >
+                      <option value="" disabled>
+                        {field.placeholder || "Select an option"}
+                      </option>
+
+                      {field.options.map((opt, index) => (
+                        <option key={index} value={opt}>
+                          {opt}
+                        </option>
+                      ))}   
+                      </select>
+                  ) :(
                     <input
                       id={field.name}
                       name={field.name}
