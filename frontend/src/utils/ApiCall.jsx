@@ -51,3 +51,35 @@ export const getHeroSectionImages = async() => {
     const response = await api.get('/getHero');
     return response.data
 }
+
+
+export const getEvents = async() => {
+    const response = await api.get('/getEvents');
+    console.log(response.data.events);
+    return response.data.events;
+}
+
+export const addEvents = async(form) => {
+    console.log(form);
+    const response = await api.post('/addEvents', form);
+    return response.data
+}
+
+export const editEvents = async(id, formData) => {
+    const response = await api.post(`edit/Events/${id}`, formData);
+    return response.data
+}
+
+export const apiRequest = async (method, endpoint, data = null) => {
+    try {
+        const response = await api({
+            method: method,
+            url: endpoint,
+            data: data
+        });
+        return response.data;
+    } catch (error) {
+        console.error("API Error:", error);
+        throw error;
+    }
+};

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Images } from "lucide-react";
 import ManagementPages from "../components/ManagementPages";
 import { deleteImages, getImages, uploadImages } from "../utils/ApiCall";
+import toast, { Toaster } from "react-hot-toast";
 
 const AdminGallery = () => {
   const [data, setData] = useState([]);
@@ -78,6 +79,7 @@ const AdminGallery = () => {
           const _categories = response.categories.split(",").map((item) => item.trim());
           setCategories(_categories);
         }
+        toast.success("Added successfully!");
       } else {
         setError({
           type: "error",
@@ -109,6 +111,7 @@ const AdminGallery = () => {
           const _categories = response.categories.split(",").map((item) => item.trim());
           setCategories(_categories);
         }
+        toast.success("Deleted");
       } else {
         setError({
           type: "warning",

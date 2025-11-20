@@ -74,6 +74,24 @@ def get_login(email):
     finally:
         put_conn(conn)
 
+def upload_to_hero(url):
+    conn = None 
+    try:
+        conn = get_conn()
+        cursor = conn.cursor(cursor_factory = RealDictCursor)
+        cursor.execute("""
+                INSERT INTO hero_table (url)
+                VALUES (%s)
+                RETURNING *;
+                """,
+                (url,)
+        )
+        conn.commit()
+    except Exception as exc:
+        raise DatabaseError(str(exc))
+    finally:
+        put_conn(conn)
+
 def fetch_admin_gallery():
     conn = None 
     try:
@@ -94,7 +112,7 @@ def upload_admin_gallery(client: SyncClient, category: str, description: str, fi
     conn = None
     try:
         conn = get_conn()
-        file.save(file.filename)
+        file.save(secure_filename(file.filename))
         filename = secure_filename(file.filename)
         client.storage.from_("AUMV-web").upload(file.filename, filename)
         url = client.storage.from_("AUMV-web").get_public_url(filename)
@@ -241,9 +259,9 @@ def update_teachers_data(client:SyncClient, name: str, email:str, subject:str, j
             "SELECT photo, resume FROM Teachers WHERE id = %s;",
             (id,)
         )
-        photo_url = cursor.fetchone()[0]
-        resume_url = cursor.fetchone()[1]
-
+        response = cursor.fetchone()
+        photo_url = response['photo']
+        resume_url = response['resume']
 
         if photo and isinstance(photo, FileStorage):
             photo_name = photo_url.split("/AUMV-Teachers/")[-1]
@@ -274,7 +292,7 @@ def update_teachers_data(client:SyncClient, name: str, email:str, subject:str, j
                         RETURNING *;
                 """, (
             name, email, subject, joining_date, phone_num,
-            address, dob, photo, resume, id
+            address, dob, photo, resume, id,
         ))
 
         updated_row = cursor.fetchone()
@@ -282,6 +300,7 @@ def update_teachers_data(client:SyncClient, name: str, email:str, subject:str, j
 
         return updated_row
     except Exception as exc:
+        print(str(exc))
         raise DatabaseError(str(exc))
     finally:
         put_conn(conn)
@@ -289,6 +308,127 @@ def update_teachers_data(client:SyncClient, name: str, email:str, subject:str, j
             os.remove(photo.filename)
         if isinstance(resume, FileStorage):
             os.remove(resume.filename)
+
+def delete_teacher(client:SyncClient, id: any):
+    conn= None
+    try:
+        conn = get_conn()
+        cursor = conn.cursor(cursor_factory = RealDictCursor)
+        cursor.execute(
+            "SELECT photo, resume FROM Teachers WHERE id = %s;",
+            (id,)
+        )
+        response = cursor.fetchone()
+        photo_url = response['photo']
+        resume_url = response['resume']
+
+        photo = photo_url.split("/AUMV-Teachers/")[-1]
+        client.storage.from_("AUMV-Teachers").remove([photo])
+        
+        resume = resume_url.split("/AUMV-Teachers/")[-1]
+        print(resume)
+        client.storage.from_("AUMV-Teachers").remove([resume])
+
+
+        cursor.execute(
+            "DELETE FROM teachers WHERE id = %s RETURNING *;",
+            (id,)
+        )
+        conn.commit()
+
+        return "Teacher data deleted"
+    except Exception as exc:
+        raise DatabaseError(str(exc))
+    finally:
+        put_conn(conn)
+
+def add_upcoming_event(title: str, valid_till: date, description: str):
+    conn = None
+    try:
+        conn = get_conn()
+        cursor = conn.cursor(cursor_factory = RealDictCursor)
+        cursor.execute("""
+                INSERT INTO events 
+                (title, valid_till, description)
+                VALUES (%s, %s, %s)
+                RETURNING *;
+            """,
+            (title, valid_till, description,)
+        )
+        conn.commit()
+        response = cursor.fetchone()
+        return response
+    except Exception as exc:
+        raise DatabaseError(str(exc))
+    finally:
+        put_conn(conn)
+
+def edit_event(title: str, valid_till: date, description: str, id:any):
+    conn = None
+    try:
+        conn = get_conn()
+        cursor = conn.cursor(cursor_factory = RealDictCursor)
+        cursor.execute("""
+                        UPDATE events
+                        SET title=%s,
+                        valid_till=%s,
+                        description=%s
+                        WHERE id=%s
+                        RETURNING *;
+            """,
+            (title, valid_till, description, id,)
+        )
+        conn.commit()
+        response = cursor.fetchone()
+        return response
+    except Exception as exc:
+        raise DatabaseError(str(exc))
+    finally:
+        put_conn(conn)
+
+def delete_event_by_id(id: any):
+    conn = None
+    try:
+        conn = get_conn()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+
+        cursor.execute(
+            "DELETE FROM events WHERE id = %s RETURNING *;",
+            (id,)
+        )
+        conn.commit()
+
+        return "Deletion success"
+    except Exception as exc:
+        raise DatabaseError(str(exc))
+    finally:
+        put_conn(conn)
+
+def upload_video(client: SyncClient, video: FileStorage):
+    conn = None
+    try:
+        conn = get_conn()
+        video.save(secure_filename(video.filename))
+        filename = secure_filename(video.filename)
+        client.storage.from_("AUMV-videos").upload(video.filename, filename)
+        url = client.storage.from_("AUMV-videos").get_public_url(filename)
+        cur = conn.cursor(cursor_factory = RealDictCursor)
+        cur.execute(
+            """
+            INSERT INTO videos (video_url)
+            VALUES (%s)
+            RETURNING *;
+            """,
+            (url,)
+        )
+        conn.commit()
+        response = cur.fetchone()
+
+        return response
+    except Exception as exc:
+        raise DatabaseError(str(exc))
+    finally:
+        put_conn(conn)
 
 def if_file_exists(client: SyncClient, files: list[FileStorage], bucket_name: str):
     try:
