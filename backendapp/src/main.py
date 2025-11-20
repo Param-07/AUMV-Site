@@ -11,7 +11,7 @@ from werkzeug.utils import secure_filename
 from psycopg2.extras import RealDictCursor
 
 # Import utilities and blueprints
-from database.queries import  delete_admin_gallery, fetch_admin_gallery, fetch_teachers_data, if_file_exists, insert_teachers_data, update_teachers_data, upload_admin_gallery
+from database.queries import  delete_admin_gallery, delete_event_by_id, delete_teacher, edit_event, fetch_admin_gallery, fetch_teachers_data, if_file_exists, insert_teachers_data, update_teachers_data, upload_admin_gallery, upload_to_hero, add_upcoming_event, upload_video
 from database.connection import get_conn, put_conn, close_conn
 from auth import auth_bp, bcrypt
 
@@ -32,6 +32,95 @@ client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # Register authentication blueprint
 app.register_blueprint(auth_bp, url_prefix="/auth")
+
+@app.route('/getVideos', methods=['GET'])
+def get_videos():
+    try:
+        conn = get_conn()
+        cursor = conn.cursor(cursor_factory = RealDictCursor)
+        cursor.execute("SELECT * from videos;")
+        response = cursor.fetchall()
+        put_conn(conn)
+
+        return jsonify({"message": "success",
+                        "videos": response}), 200
+    except Exception as exc:
+        return jsonify({"error": str(exc)}), 500
+
+@app.route("/addVideo", methods=["POST"], endpoint='post_video_endpoint')
+@jwt_required()
+def add_Video():
+
+    video = request.files.get("video")
+    
+
+    response = if_file_exists(client, [video], "AUMV-Teachers")
+    if response != "":
+        return jsonify({'error': response}), 400
+
+    try:
+        response = upload_video(client, video)
+
+        return jsonify({'message': 'Teacher details added succesfully', 
+                        'video': response}), 200
+    except Exception as exc:
+        print(str(exc))
+        return jsonify({'error': str(exc)}), 500
+    finally:
+        if os.path.exists(secure_filename(video.filename)):
+            os.remove(secure_filename(video.filename))
+
+@app.route('/getEvents', methods=['GET'])
+def get_events_data():
+    try:
+        conn = get_conn()
+        cursor = conn.cursor(cursor_factory = RealDictCursor)
+        cursor.execute("SELECT * from events;")
+        response = cursor.fetchall()
+        put_conn(conn)
+
+        return jsonify({"message": "success",
+                        "events": response}), 200
+    except Exception as exc:
+        return jsonify({"error": str(exc)}), 500
+
+@app.route("/addEvents", methods=["POST"], endpoint='post_events_endpoint')
+@jwt_required()
+def add_events():
+    title = request.form.get("title")
+    valid_till = request.form.get("valid_till")
+    description = request.form.get("description")
+
+    try:
+        response = add_upcoming_event(title, valid_till, description)
+        return jsonify({"message": "success",
+                        "event": response}), 200
+    except Exception as exc :
+        return jsonify({'error', str(exc)}), 500
+
+@app.route("/edit/Events/<int:id>", methods=["PUT"], endpoint='put_events_endpoint')
+@jwt_required()
+def edit_events(id):
+    title = request.form.get("title")
+    valid_till = request.form.get("valid_till")
+    description = request.form.get("description")
+
+    try:
+        response = edit_event(title, valid_till, description, id)
+        return jsonify({"message": "success",
+                        "event": response}), 200
+    except Exception as exc :
+        return jsonify({'error', str(exc)}), 500
+
+@app.route('/delete/Event/<int:id>', methods=['DELETE'], endpoint='delete_event_endpoint')
+@jwt_required()
+def delete_event(id):
+    try:
+        response = delete_event_by_id(id)
+
+        return jsonify({"message": response}), 200
+    except Exception as exc:
+        return jsonify({'message':'deletion failed', 'error': str(exc)}), 500
 
 @app.route('/gallery', methods=['GET'])
 def get_gallery_data():
@@ -101,22 +190,24 @@ def upload_file():
 @app.route('/uploadHero', methods=['POST'], endpoint='upload_hero_endpoint')
 @jwt_required()
 def upload_hero():
+    file = request.files['image_video_file']
     try:
-        file = request.files['image_video_file']
         file.save(file.filename)
 
-        if client.storage.from_("AUMV-hero").exists(file.filename):
+        if client.storage.from_("AUMV-hero").exists(secure_filename(file.filename)):
             return jsonify({'message': 'File already uploaded'}), 400
 
-        client.storage.from_("AUMV-hero").upload(file.filename, file.filename)
-        url = client.storage.from_("AUMV-hero").get_public_url(file.filename)
-        client.table("hero_table").insert({"url": url}).execute()
+        client.storage.from_("AUMV-hero").upload(file.filename, secure_filename(file.filename))
+        url = client.storage.from_("AUMV-hero").get_public_url(secure_filename(file.filename))
+        upload_to_hero(url)
 
         file.close()
         return jsonify({'message': 'Hero file uploaded successfully', 'url': url}), 200
 
     except Exception as exc:
         return jsonify({'message': 'Hero file upload failed', 'error': str(exc)}), 500
+    finally:
+        os.remove(file.filename)
 
 
 @app.route('/delete/<int:id>', methods=['DELETE'], endpoint='delete_file_endpoint')
@@ -178,18 +269,8 @@ def edit_teacher_by_id(id):
 @jwt_required()
 def delete_teacher_by_id(id):
     try:
-        data = client.table("teachers").select("photo", "resume").eq("id", id).execute()
-        data = data.data
-
-        photo = data[0]["photo"].split("/AUMV-Teachers/")[-1]
-        client.storage.from_("AUMV-Teachers").remove([photo])
-        
-        resume = data[0]["resume"].split("/AUMV-Teachers/")[-1]
-        print(resume)
-        client.storage.from_("AUMV-Teachers").remove([resume])
-
-        client.table('teachers').delete().eq("id", id).execute()
-        return jsonify({"message": "Teacher data deleted"}), 200
+        response = delete_teacher(client, id)
+        return jsonify({"message": response}), 200
     except Exception as exc:
         return jsonify({"error": str(exc)}), 500
 

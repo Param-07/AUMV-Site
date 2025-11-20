@@ -12,6 +12,8 @@ import Dashboard from "./pages/Dashboard";
 import AdminNavbar from "./components/AdminNavbar";
 import Teachers from "./pages/Teachers";
 import AdminGallery from "./pages/AdminGallery";
+import EventsPage from "./pages/Events";
+import VideoGallery from "./pages/VideoGallery";
 // import LoadingScreen from "./components/LoadingScreen";
 
 function HomePage() {
@@ -47,6 +49,8 @@ function AdminLayout() {
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="teachers" element={<Teachers />} />
         <Route path="adminGallery" element={<AdminGallery />} />
+        <Route path="events" element={<EventsPage />} /> 
+        <Route path="videos" element={<VideoGallery />} />
       </Route>
     </Routes>
   );
@@ -58,7 +62,9 @@ function AppRouter() {
   const isAdminRoute =
     location.pathname.startsWith("/dashboard") ||
     location.pathname.startsWith("/teachers") ||
-    location.pathname.startsWith("/adminGallery");
+    location.pathname.startsWith("/adminGallery") ||
+    location.pathname.startsWith("/events") ||
+    location.pathname.startsWith("/videos");
   if (location.pathname === "/login") {
     return (
       <Routes>

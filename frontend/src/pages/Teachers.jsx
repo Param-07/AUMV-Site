@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import ManagementPages from "../components/ManagementPages";
 import { Users } from "lucide-react";
 import { addTeacher, editTeachers, getTeachers, deleteTeacherData} from "../utils/ApiCall";
+import toast, { Toaster } from "react-hot-toast";
 
 const Teachers = () => {
   const columns = ["Name", "Email", "Subject", "Phone", "Joining Date"];
@@ -17,6 +18,7 @@ const Teachers = () => {
         setLoadingMessage("Loading Teachers Data...");
         const response = await getTeachers();
         setTeacersData(response.teachers);
+        console.log(data);
       }
       catch(error){
         setError({
@@ -51,13 +53,14 @@ const Teachers = () => {
     Object.entries(formData).forEach(([Key, value])=>{
       finalData.append(Key, value);
     });
-
+    console.log(finalData);
     if(formData.mode === "add"){
       try{
         setLoading(true);
         setLoadingMessage("Adding New Teacher Data...");
         const response = await addTeacher(finalData);
         setTeacersData((prev) => [...prev, response.teacher]);
+        toast.success("Added successfully!");
       }
       catch(error){
         console.log(error);
@@ -78,8 +81,9 @@ const Teachers = () => {
         setLoading(true);
         setLoadingMessage("Editing teacher data in table...");
         const response = await editTeachers(finalData,id);
-        await setTeacersData((prev) =>
-          prev.map((t) => (t.id === formData.id ? { ...t, ...response.teacher[0] } : t)))
+        setTeacersData((prev) =>
+          prev.map((t) => (t.id === formData.id ? { ...t, ...response.teacher } : t)))
+        toast.success("Updated successfully!");
       }
       catch(error){
         setError({
@@ -103,6 +107,7 @@ const Teachers = () => {
 
       if (response.message === "Teacher data deleted") {
         setTeacersData((prev) => prev.filter((t) => t.id !== id))
+        toast.success("Deleted");
       }
     } 
     catch (error) {
