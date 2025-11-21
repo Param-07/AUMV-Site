@@ -14,7 +14,14 @@ import Teachers from "./pages/Teachers";
 import AdminGallery from "./pages/AdminGallery";
 import EventsPage from "./pages/Events";
 import VideoGallery from "./pages/VideoGallery";
-// import LoadingScreen from "./components/LoadingScreen";
+import TopScholars from "./pages/TopScholor";
+import { useEffect, useState } from "react";
+import LoadingScreen from "./components/LoadingScreen";
+import SkeletonBlock from "./components/SkeletonBlock";
+import { apiRequest } from "./utils/ApiCall";
+import Achievers from "./pages/Achievers";
+
+import { AppDataProvider, useAppData } from "./context/AppDataContext";
 
 function HomePage() {
   return (
@@ -25,6 +32,7 @@ function HomePage() {
     </>
   );
 }
+
 function PublicLayout() {
   return (
     <>
@@ -34,12 +42,12 @@ function PublicLayout() {
         <Route path="/facilities" element={<Facilities />} />
         <Route path="/gallery" element={<Gallery />} />
         <Route path="/admission" element={<Addmission />} />
+        <Route path="/academics" element={<TopScholars />} />
       </Routes>
       <Footer />
     </>
   );
 }
-
 
 function AdminLayout() {
   return (
@@ -49,22 +57,21 @@ function AdminLayout() {
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="teachers" element={<Teachers />} />
         <Route path="adminGallery" element={<AdminGallery />} />
-        <Route path="events" element={<EventsPage />} /> 
+        <Route path="events" element={<EventsPage />} />
         <Route path="videos" element={<VideoGallery />} />
+        <Route path="achievers" element={<Achievers />} />
       </Route>
     </Routes>
   );
 }
+
 function AppRouter() {
   const location = useLocation();
   const token = localStorage.getItem("token");
 
-  const isAdminRoute =
-    location.pathname.startsWith("/dashboard") ||
-    location.pathname.startsWith("/teachers") ||
-    location.pathname.startsWith("/adminGallery") ||
-    location.pathname.startsWith("/events") ||
-    location.pathname.startsWith("/videos");
+  const adminPaths = ["/dashboard", "/teachers", "/adminGallery", "/events", "/videos", "/achievers"];
+  const isAdminRoute = adminPaths.some((p) => location.pathname.startsWith(p));
+
   if (location.pathname === "/login") {
     return (
       <Routes>
@@ -73,20 +80,76 @@ function AppRouter() {
     );
   }
 
-  if (isAdminRoute && !token) {
-    return <Navigate to="/login" replace />;
-  }
+  if (isAdminRoute && !token) return <Navigate to="/login" replace />;
+  if (isAdminRoute) return <AdminLayout />;
 
-  if (isAdminRoute) {
-    return <AdminLayout />;
-  }
   return <PublicLayout />;
+}
+
+function AppContent() {
+  const [loadingScreen, setLoadingScreen] = useState(true);
+  const [showSkeleton, setShowSkeleton] = useState(true);
+
+  const { setGallery, setHero, setVideos } = useAppData();
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const [galleryRes, videosRes, heroRes] = await Promise.all([
+          apiRequest("GET", "/gallery"),
+          apiRequest("GET", "/getVideos"),
+          apiRequest("GET", "/getHero"),
+        ]);
+
+        setGallery(galleryRes.images ?? []);
+        setVideos(videosRes.videos ?? []);
+        setHero(heroRes.message ?? []);
+
+        setTimeout(() => {
+          setLoadingScreen(false);
+          setTimeout(() => setShowSkeleton(false), 900);
+        }, 2000);
+
+      } catch (error) {
+        console.error("Preload error:", error);
+        setLoadingScreen(false);
+      }
+    };
+
+    loadData();
+  }, []);
+
+  if (loadingScreen) return <LoadingScreen />;
+
+  return (
+    <div className="animate-fadeIn">
+      {showSkeleton ? (
+        <div className="p-6 space-y-6">
+          <SkeletonBlock height="h-64" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <SkeletonBlock height="h-40" />
+            <SkeletonBlock height="h-40" />
+            <SkeletonBlock height="h-40" />
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[...Array(8)].map((_, i) => (
+              <SkeletonBlock key={i} height="h-32" />
+            ))}
+          </div>
+        </div>
+      ) : (
+        <Router>
+          <AppRouter />
+        </Router>
+      )}
+    </div>
+  );
 }
 
 export default function App() {
   return (
-    <Router>
-      <AppRouter />
-    </Router>
+    <AppDataProvider>
+      <AppContent />
+    </AppDataProvider>
   );
 }

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Images } from "lucide-react";
 import ManagementPages from "../components/ManagementPages";
-import { deleteImages, getImages, uploadImages } from "../utils/ApiCall";
+import { deleteImages, getImages, uploadImages, apiRequest } from "../utils/ApiCall";
 import toast, { Toaster } from "react-hot-toast";
 
 const AdminGallery = () => {
@@ -16,8 +16,7 @@ const AdminGallery = () => {
       try {
         setLoading(true);
         setLoadingMessage("Fetching images from database...");
-        let endp = "/fetch";
-        const response = await getImages(endp);
+        const response = await apiRequest("GET", "/fetch");
 
         if (response.message === "success") {
           if (response.categories !== null) {
@@ -71,7 +70,7 @@ const AdminGallery = () => {
     try {
       setLoading(true);
       setLoadingMessage("Uploading image...");
-      const response = await uploadImages(finalData);
+      const response = await apiRequest("POST", "/upload", finalData);
 
       if (response.message === "success") {
         setData((prev) => [...prev, response.images]);
@@ -103,7 +102,7 @@ const AdminGallery = () => {
     try {
       setLoading(true);
       setLoadingMessage("Deleting image...");
-      const response = await deleteImages(id);
+      const response = await apiRequest("DELETE", `/delete/${id}`);
 
       if (response.message === "file deleted succesfully") {
         setData((prev) => prev.filter((t) => t.id !== id));
