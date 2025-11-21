@@ -60,7 +60,19 @@ def _execute_and_return(username, email, hashed):
     finally:
         if conn:
             put_conn(conn)
+def get_data_from_DB(query: str):
+    conn = None
+    try:
+        conn = get_conn()
+        cursor = conn.cursor(cursor_factory = RealDictCursor)
+        cursor.execute(query)
+        response = cursor.fetchall()
 
+        return response
+    except Exception as exc:
+        raise DatabaseError(str(exc))
+    finally:
+        put_conn(conn)
 def get_login(email):
     conn = None
     try:
@@ -430,16 +442,3 @@ def upload_video(client: SyncClient, video: FileStorage):
     finally:
         put_conn(conn)
 
-def if_file_exists(client: SyncClient, files: list[FileStorage], bucket_name: str):
-    try:
-        message = ""
-        for file in files:
-            secure_name = secure_filename(file.filename)
-            if client.storage.from_(bucket_name).exists(secure_name):
-                message = message + f"{file.filename} "
-        
-        if message != "":
-            message += "already exists"
-        return message
-    except Exception as exc:
-        raise DatabaseError(str(exc)) 

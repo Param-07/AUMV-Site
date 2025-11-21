@@ -74,7 +74,7 @@ export const apiRequest = async (method, endpoint, data = null) => {
     try {
         const response = await api({
             method: method,
-            url: endpoint,
+            url: `admin${endpoint}`,
             data: data
         });
         return response.data;

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ManagementPages from "../components/ManagementPages";
 import { Users } from "lucide-react";
-import { addTeacher, editTeachers, getTeachers, deleteTeacherData} from "../utils/ApiCall";
+import { addTeacher, editTeachers, getTeachers, deleteTeacherData, apiRequest} from "../utils/ApiCall";
 import toast, { Toaster } from "react-hot-toast";
 
 const Teachers = () => {
@@ -16,7 +16,7 @@ const Teachers = () => {
       try{
         setLoading(true);
         setLoadingMessage("Loading Teachers Data...");
-        const response = await getTeachers();
+        const response = await apiRequest("GET", "/teachers");
         setTeacersData(response.teachers);
         console.log(data);
       }
@@ -58,7 +58,7 @@ const Teachers = () => {
       try{
         setLoading(true);
         setLoadingMessage("Adding New Teacher Data...");
-        const response = await addTeacher(finalData);
+        const response = await apiRequest("POST", "/addTeacher", finalData);
         setTeacersData((prev) => [...prev, response.teacher]);
         toast.success("Added successfully!");
       }
@@ -67,7 +67,7 @@ const Teachers = () => {
         setError({
           type: "error",
           title: "Upload Error",
-          message: error.response.data.error || "Something went wrong while uploading. Please try again.",
+          message: error.message || "Something went wrong while uploading. Please try again.",
         });
       }
       finally{
@@ -80,7 +80,7 @@ const Teachers = () => {
       try{
         setLoading(true);
         setLoadingMessage("Editing teacher data in table...");
-        const response = await editTeachers(finalData,id);
+        const response = await apiRequest("PUT", `/edit/Teacher/${id}`, finalData);
         setTeacersData((prev) =>
           prev.map((t) => (t.id === formData.id ? { ...t, ...response.teacher } : t)))
         toast.success("Updated successfully!");
