@@ -1,5 +1,22 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useAppData } from "../context/AppDataContext";
+import SmartImage from "../components/SmartImages";
+import { Image as IconImage, GalleryVerticalEnd, Images, Film, Sparkles } from "lucide-react";
+
+
+// helper for optimized img
+const buildOptimizedUrl = (src, width) => {
+  if (!src) return "";
+  try {
+    const url = new URL(src);
+    if (width) url.searchParams.set("width", String(width));
+    url.searchParams.set("quality", "80");
+    url.searchParams.set("format", "webp");
+    return url.toString();
+  } catch {
+    return src;
+  }
+};
 
 export default function Gallery() {
   const { gallery, videos } = useAppData();
@@ -7,156 +24,263 @@ export default function Gallery() {
   const [activeModal, setActiveModal] = useState(null);
   const [currentSlides, setCurrentSlides] = useState({});
   const [mainVideo, setMainVideo] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState("All");
 
+  const [zoom, setZoom] = useState(1);
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const dragRef = useRef(null);
+  const isDragging = useRef(false);
+  const startPos = useRef({ x: 0, y: 0 });
+
+  /* VIDEO INIT */
   useEffect(() => {
     if (videos?.length > 0) setMainVideo(videos[0].video_url);
   }, [videos]);
 
+  /* AUTO SLIDES ON CARDS */
   useEffect(() => {
     if (!gallery || gallery.length === 0) return;
-
-    const intervals = gallery.map((g, idx) =>
+    const timers = gallery.map((group, idx) =>
       setInterval(() => {
         setCurrentSlides((prev) => {
-          const current = prev[idx] ?? 0;
-          const next = (current + 1) % g.images.length;
+          const cur = prev[idx] ?? 0;
+          const next = (cur + 1) % group.images.length;
           return { ...prev, [idx]: next };
         });
-      }, 3000)
+      }, 3500)
     );
-
-    return () => intervals.forEach((id) => clearInterval(id));
+    return () => timers.forEach(clearInterval);
   }, [gallery]);
 
-  return (
-    <div>
+  /* MODAL SLIDESHOW */
+  useEffect(() => {
+    if (activeModal === null) return;
+    const timer = setInterval(() => {
+      setCurrentSlides((prev) => {
+        const cur = prev.modal ?? 0;
+        const next = (cur + 1) % gallery[activeModal].images.length;
+        return { ...prev, modal: next };
+      });
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [activeModal, gallery]);
 
-      <section className="py-5 bg-gradient-to-r from-purple-700 to-orange-500">
-        <h1 className="text-3xl md:text-4xl font-bold text-center text-white drop-shadow mb-10">
-          Video Gallery
+  /* LOCK SCROLL ON MODAL */
+  useEffect(() => {
+    document.body.style.overflow = activeModal ? "hidden" : "auto";
+  }, [activeModal]);
+
+  const availableCategories = ["All", ...(gallery?.map((g) => g.category) || [])];
+
+  /* ZOOM + DRAG */
+  const handleWheelZoom = (e) => {
+    e.preventDefault();
+    setZoom((prev) =>
+      Math.min(3, Math.max(1, prev + (e.deltaY > 0 ? -0.2 : 0.2)))
+    );
+  };
+  const handleMouseDown = (e) => {
+    isDragging.current = true;
+    startPos.current = { x: e.clientX - offset.x, y: e.clientY - offset.y };
+  };
+  const handleMouseMove = (e) => {
+    if (!isDragging.current) return;
+    setOffset({ x: e.clientX - startPos.current.x, y: e.clientY - startPos.current.y });
+  };
+  const handleMouseUp = () => {
+    isDragging.current = false;
+  };
+
+  return (
+    <div className="bg-gradient-to-b from-[#F4F1FF] via-[#F8F6FF] to-[#EFEAFF]">
+
+      {/* VIDEO GALLERY */}
+      <section className="py-14 bg-gradient-to-r from-purple-700 to-orange-500 shadow-lg">
+        <h1 className="text-4xl font-bold text-center text-white mb-10 flex items-center justify-center gap-3 drop-shadow-lg">
+          <Film className="h-9" /> Video Gallery
         </h1>
 
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-8 px-4">
-
-          <div className="lg:col-span-3 w-full aspect-video rounded-xl overflow-hidden shadow-2xl border-4 border-white/30">
+          <div className="lg:col-span-3 aspect-video rounded-2xl overflow-hidden shadow-2xl border-4 border-white/40">
             {mainVideo ? (
-              <video src={mainVideo} controls className="w-full h-full object-cover" />
+              <video src={mainVideo} controls preload="metadata" className="w-full h-full object-cover" />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-white text-xl">
+              <div className="flex items-center justify-center text-white text-xl h-full">
                 No Videos Available
               </div>
             )}
           </div>
 
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-6 max-h-[70vh] overflow-y-auto pr-2">
             {videos
-              ?.filter((vid) => vid.video_url !== mainVideo)
-              .map((vid, i) => (
+              ?.filter((v) => v.video_url !== mainVideo)
+              .map((v, i) => (
                 <div
                   key={i}
-                  onClick={() => setMainVideo(vid.video_url)}
-                  className="relative w-full h-28 rounded-xl overflow-hidden shadow-lg border-2 border-white/40 hover:border-white transition cursor-pointer group"
+                  onClick={() => setMainVideo(v.video_url)}
+                  className="relative h-28 rounded-xl overflow-hidden cursor-pointer shadow-xl border-2 border-white/40 hover:border-white transition group"
                 >
                   <video
-                    src={vid.video_url}
+                    src={v.video_url}
                     muted
                     preload="metadata"
-                    playsInline
-                    className="w-full h-full object-cover brightness-75 group-hover:brightness-100 transition-all duration-300"
+                    className="w-full h-full object-cover brightness-75 group-hover:brightness-100 duration-300"
                   />
-
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-10 w-10 text-white drop-shadow-xl"
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M8 5v14l11-7z" />
-                    </svg>
-                  </div>
                 </div>
               ))}
           </div>
-
         </div>
       </section>
 
-      <section className="py-12 bg-gradient-to-r from-purple-900 to-black">
-        <h1 className="text-3xl font-bold text-center text-white drop-shadow mb-12">
-          Our School Gallery
+      {/* TITLE DIVIDER */}
+      <div className="flex justify-center my-12">
+        <div className="flex items-center gap-3 text-purple-700 text-lg font-semibold">
+          <Sparkles className="h-6" />
+          Experience Moments at Alok Inter College
+          <Sparkles className="h-6" />
+        </div>
+      </div>
+
+      {/* IMAGE GALLERY */}
+      <section className="py-14">
+        <h1 className="text-4xl font-bold text-center text-purple-800 mb-10 flex items-center justify-center gap-3">
+          <GalleryVerticalEnd className="h-8" /> Our School Gallery
         </h1>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto px-4">
-          {gallery?.map((g, idx) => (
-            <div
-              key={idx}
-              className="relative aspect-[4/3] rounded-lg overflow-hidden cursor-pointer group transform transition duration-500 hover:scale-105 hover:shadow-2xl"
-              onClick={() => setActiveModal(idx)}
-            >
-              {g.images.map((img, i) => (
-                <img
-                  key={i}
-                  src={img.src}
-                  alt={img.heading}
-                  className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
-                    currentSlides[idx] === i ? "opacity-100" : "opacity-0"
-                  }`}
-                />
-              ))}
-
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent p-4 text-center">
-                <h2 className="text-xl font-semibold text-white">{g.category}</h2>
-              </div>
-            </div>
-          ))}
+        {/* Category Selector */}
+        <div className="flex justify-center mb-10">
+          <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className="px-6 py-3 bg-white border-2 border-purple-300 rounded-xl shadow text-purple-800 font-medium cursor-pointer hover:border-purple-500 transition"
+          >
+            {availableCategories.map((cat, i) => (
+              <option key={i} value={cat}>{cat}</option>
+            ))}
+          </select>
         </div>
 
-        {activeModal !== null && (
-          <div className="fixed inset-0 flex justify-center items-center bg-black/80 z-50 p-4">
-            <div className="bg-white w-full max-w-6xl max-h-[90vh] overflow-y-auto rounded-lg relative p-6">
-              <button
-                className="absolute top-4 right-4 text-3xl font-bold text-gray-700 hover:text-purple-700"
-                onClick={() => setActiveModal(null)}
-              >
-                ×
-              </button>
+        {/* Cards */}
+        <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {gallery?.map((group, idx) => {
+            if (selectedCategory !== "All" && group.category !== selectedCategory) return null;
 
-              <div className="flex flex-col gap-6 bg-gradient-to-r from-purple-700 to-orange-500 p-8 rounded-lg">
-                {gallery[activeModal].images.map((img, i) => (
+            if (selectedCategory === "All") {
+              return (
+                <div
+                  key={idx}
+                  className="relative aspect-[4/3] rounded-xl overflow-hidden shadow-xl cursor-pointer transition hover:scale-105 bg-white"
+                  onClick={() => {
+                    setActiveModal(idx);
+                    setCurrentSlides((prev) => ({ ...prev, modal: 0 }));
+                    setZoom(1);
+                    setOffset({ x: 0, y: 0 });
+                  }}
+                >
+                  {group.images.map((img, i) => {
+                    const url = buildOptimizedUrl(img.src, 1200);
+                    return (
+                      <img
+                        key={i}
+                        src={url}
+                        alt={img.heading}
+                        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
+                          currentSlides[idx] === i ? "opacity-100" : "opacity-0"
+                        }`}
+                      />
+                    );
+                  })}
+
+                  <div className="absolute bottom-0 w-full bg-black/55 p-4 text-center text-white text-lg font-semibold flex justify-center items-center gap-2 backdrop-blur-sm">
+                    <Images className="h-5" /> {group.category}
+                  </div>
+                </div>
+              );
+            }
+
+            return (
+              <React.Fragment key={idx}>
+                {group.images.map((img, i) => (
                   <div
                     key={i}
-                    className={`flex flex-col md:flex-row ${
-                      i % 2 === 1 ? "md:flex-row-reverse" : ""
-                    } items-center gap-8 bg-white/90 rounded-xl shadow-lg p-6`}
+                    className="aspect-[4/3] rounded-xl overflow-hidden shadow-xl cursor-pointer hover:scale-[1.03] transition bg-white"
+                    onClick={() => {
+                      setActiveModal(idx);
+                      setCurrentSlides((prev) => ({ ...prev, modal: i }));
+                      setZoom(1);
+                      setOffset({ x: 0, y: 0 });
+                    }}
                   >
-                    <div className="w-full md:w-1/2 flex justify-center">
-                      <div className="w-full aspect-[4/3] overflow-hidden rounded-lg shadow">
-                        <img
-                          src={img.src}
-                          alt={img.heading}
-                          className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="w-full md:w-1/2 text-gray-800">
-                      <h3 className="text-2xl font-bold text-orange-600 mb-3 text-center md:text-left">
-                        {img.heading}
-                      </h3>
-                      <p className="text-base leading-relaxed text-justify">
-                        {img.description || "No description available."}
-                      </p>
-                    </div>
+                    <SmartImage
+                      src={img.src}
+                      alt={img.heading}
+                      width={900}
+                      wrapperClassName="w-full h-full"
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                 ))}
-              </div>
-
-            </div>
-          </div>
-        )}
-
+              </React.Fragment>
+            );
+          })}
+        </div>
       </section>
+
+      {/* MODAL */}
+      {activeModal !== null && (
+        <div
+          className="fixed inset-0 bg-black/85 z-[200] flex items-center justify-center p-4"
+          onMouseUp={handleMouseUp}
+        >
+          <button
+            className="absolute top-4 right-4 text-white text-4xl font-bold hover:text-orange-300"
+            onClick={() => {
+              setActiveModal(null);
+              setZoom(1);
+              setOffset({ x: 0, y: 0 });
+            }}
+          >
+            ×
+          </button>
+
+          <div className="bg-white max-w-5xl w-full max-h-[90vh] overflow-y-auto rounded-xl p-6 space-y-10 shadow-2xl border border-purple-100">
+            {gallery[activeModal].images.map(
+              (img, i) =>
+                currentSlides.modal === i && (
+                  <div className="w-full" key={i}>
+                    <h2 className="text-3xl font-bold text-purple-700 mb-4 text-center flex justify-center items-center gap-2">
+                      <IconImage className="h-7" /> {img.heading}
+                    </h2>
+
+                    <div
+                      ref={dragRef}
+                      onWheel={handleWheelZoom}
+                      onMouseDown={handleMouseDown}
+                      onMouseMove={handleMouseMove}
+                      className="mx-auto overflow-hidden rounded-xl shadow-lg bg-gray-200 border border-gray-300"
+                      style={{ height: "65vh", cursor: zoom > 1 ? "grab" : "default" }}
+                    >
+                      <img
+                        src={buildOptimizedUrl(img.src, 1600)}
+                        alt={img.heading}
+                        style={{
+                          transform: `scale(${zoom}) translate(${offset.x / zoom}px, ${offset.y / zoom}px)`,
+                          transition: isDragging.current ? "none" : "0.3s",
+                        }}
+                        className="w-full h-full object-contain select-none"
+                        draggable={false}
+                      />
+                    </div>
+
+                    <p className="text-gray-600 text-center mt-4 max-w-2xl mx-auto leading-relaxed">
+                      {img.description}
+                    </p>
+                  </div>
+                )
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

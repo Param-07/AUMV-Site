@@ -1,64 +1,81 @@
 import React, { useEffect, useState } from "react";
 import { Images } from "lucide-react";
 import ManagementPages from "../components/ManagementPages";
-import { deleteImages, getImages, uploadImages, apiRequest } from "../utils/ApiCall";
-import toast, { Toaster } from "react-hot-toast";
+import { apiRequest } from "../utils/ApiCall";
+import toast from "react-hot-toast";
 
 const AdminGallery = () => {
   const [data, setData] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("");
-  const [categories, setCategories] = useState([]);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        setLoadingMessage("Fetching images from database...");
-        const response = await apiRequest("GET", "/fetch");
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      setLoadingMessage("Fetching gallery items...");
+      const response = await apiRequest("GET", "/fetch");
 
-        if (response.message === "success") {
-          if (response.categories !== null) {
-            const _categories = response.categories.split(",").map((item) => item.trim());
-            setCategories(_categories);
-          }
-          setData(response.images);
-        } else {
-          setError({
-            type: "error",
-            title: "Data Fetch Failed",
-            message: response.message || "Unable to load images. Please try again.",
-          });
+      if (response.message === "success") {
+        if (response.categories !== null) {
+          const _categories = response.categories.split(",").map((item) => item.trim());
+          setCategories(_categories);
         }
-      } catch (error) {
+        setData(response.images);
+      } else {
         setError({
           type: "error",
-          title: "Network Error",
-          message: "There was an issue connecting to the server. Please try again later.",
+          title: "Loading Failed",
+          message: response.message || "Could not load gallery items.",
         });
-      } finally {
-        setLoading(false);
-        setLoadingMessage("");
       }
-    };
+    } catch {
+      setError({
+        type: "error",
+        title: "Network Error",
+        message: "Unable to connect to server. Please try again later.",
+      });
+    } finally {
+      setLoading(false);
+      setLoadingMessage("");
+    }
+  };
 
+  useEffect(() => {
     fetchData();
   }, []);
-
-  const columns = ["Title", "Date", "Category"];
 
   const formFields = [
     {
       name: "event_name",
-      label: "Photo Title",
+      label: "Photo Category",
       type: "select",
-      options: ["Videos", "Sports", "Cultural", "Class Gallery", "Achievers", "Annual Function"],
-      placeholder: "Select photo section",
+      options: [
+        "Videos",
+        "Sports",
+        "Cultural",
+        "Class Gallery",
+        "Achievers",
+        "Annual Function",
+      ],
+      placeholder: "Select category",
       required: true,
     },
-    { name: "photo", label: "Upload Image", type: "file", accept: "image/*", required: true },
-    { name: "description", label: "Image Description", type: "text", placeholder: "Enter suitable description", required: true },
+    {
+      name: "photo",
+      label: "Upload Image",
+      type: "file",
+      accept: "image/*",
+      required: true,
+    },
+    {
+      name: "description",
+      label: "Image Description",
+      type: "text",
+      placeholder: "Enter image caption or detail",
+      required: true,
+    },
   ];
 
   const handleSubmit = async (formData) => {
@@ -74,23 +91,25 @@ const AdminGallery = () => {
 
       if (response.message === "success") {
         setData((prev) => [...prev, response.images]);
+
         if (response.categories !== null) {
           const _categories = response.categories.split(",").map((item) => item.trim());
           setCategories(_categories);
         }
-        toast.success("Added successfully!");
+
+        toast.success("Image uploaded successfully!");
       } else {
         setError({
           type: "error",
           title: "Upload Failed",
-          message: response.error || "Please check your file and try again.",
+          message: response.error || "Please verify the uploaded file and try again.",
         });
       }
-    } catch (error) {
+    } catch (err) {
       setError({
         type: "error",
         title: "Upload Error",
-        message: error.response.data.message || "Something went wrong while uploading. Please try again.",
+        message: err?.response?.data?.message || "Unexpected upload issue occurred.",
       });
     } finally {
       setLoading(false);
@@ -105,24 +124,26 @@ const AdminGallery = () => {
       const response = await apiRequest("DELETE", `/delete/${id}`);
 
       if (response.message === "file deleted succesfully") {
-        setData((prev) => prev.filter((t) => t.id !== id));
+        setData((prev) => prev.filter((img) => img.id !== id));
+
         if (response.categories !== null) {
           const _categories = response.categories.split(",").map((item) => item.trim());
           setCategories(_categories);
         }
-        toast.success("Deleted");
+
+        toast.success("Image deleted");
       } else {
         setError({
           type: "warning",
           title: "Deletion Issue",
-          message: "Could not delete the file. Please try again.",
+          message: "File deletion failed. Try again.",
         });
       }
-    } catch (error) {
+    } catch {
       setError({
         type: "error",
         title: "Delete Error",
-        message: "Something went wrong while deleting the file.",
+        message: "Unexpected error occurred while deleting.",
       });
     } finally {
       setLoading(false);
@@ -130,31 +151,24 @@ const AdminGallery = () => {
     }
   };
 
-  const handleError = () =>{
-    setError(null);
-  }
   return (
-    <>
-      <ManagementPages
-        icon={Images}
-        color="bg-purple-100 text-purple-700"
-        title="Photo Gallery"
-        subtitle="Manage your college photo collection"
-        buttonText="Upload Photos"
-        columns={columns}
-        data={data}
-        formFields={formFields}
-        heading="Upload New Photo"
-        description="Add a new photo to the college gallery"
-        onFormSubmit={handleSubmit}
-        onHandleDelete={handleDelete}
-        categories={categories}
-        loading={loading}
-        loadingMessage={loadingMessage}
-        error={error}
-        onSetError={handleError}
-      />
-    </>
+    <ManagementPages
+      icon={Images}
+      title="Photo Gallery"
+      subtitle="Upload and organize images across school events"
+      buttonText="Upload Photo"
+      data={data}
+      formFields={formFields}
+      heading="Upload New Photo"
+      description="Add a new memory to the school gallery"
+      onFormSubmit={handleSubmit}
+      onHandleDelete={handleDelete}
+      categories={categories}
+      loading={loading}
+      loadingMessage={loadingMessage}
+      error={error}
+      onSetError={() => setError(null)}
+    />
   );
 };
 
