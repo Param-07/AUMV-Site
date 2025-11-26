@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Plus, Edit, Trash2, X, Sun, Moon } from "lucide-react";
+import { Plus, Edit, Trash2, X, Sun, Moon, CalendarDays } from "lucide-react";
 import { apiRequest } from "../utils/ApiCall";
 import ErrorModal from "../components/ErrorModal";
 import toast, { Toaster } from "react-hot-toast";
@@ -13,13 +13,13 @@ export default function EventsPage() {
   const [error, setError] = useState("");
   const [errors, setErrors] = useState({});
   const [deleteModal, setDeleteModal] = useState({ open: false, id: null, title: "" });
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(true); // default for neo-glass
   const [searchQ, setSearchQ] = useState("");
 
   const [form, setForm] = useState({
     title: "",
     valid_till: "",
-    description: ""
+    description: "",
   });
 
   const fetchEvents = async () => {
@@ -49,10 +49,7 @@ export default function EventsPage() {
 
   const handleSubmit = async (e) => {
     if (e) e.preventDefault();
-    if (!validateForm()) {
-      toast.error("Please fill all required fields");
-      return;
-    }
+    if (!validateForm()) return toast.error("Fill all required fields");
 
     const finalData = new FormData();
     Object.entries(form).forEach(([k, v]) => finalData.append(k, v));
@@ -90,16 +87,14 @@ export default function EventsPage() {
     setForm({
       title: ev.title,
       valid_till: ev.valid_till,
-      description: ev.description
+      description: ev.description,
     });
-    setErrors({});
     setModalOpen(true);
   };
 
   const openAddModal = () => {
     setEditingEvent(null);
     setForm({ title: "", valid_till: "", description: "" });
-    setErrors({});
     setModalOpen(true);
   };
 
@@ -109,7 +104,7 @@ export default function EventsPage() {
   const confirmDelete = async () => {
     try {
       setLoading(true);
-      setLoadingMessage("Deleting...");
+      setLoadingMessage("Deleting event...");
       const r = await apiRequest("DELETE", `/delete/Event/${deleteModal.id}`);
       if (r.message === "Deletion success") {
         setEvents((p) => p.filter((e) => e.id !== deleteModal.id));
@@ -130,217 +125,212 @@ export default function EventsPage() {
     );
   });
 
-  const Animations = (
-    <style>{`
-      @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
-      .animate-fadeIn { animation: fadeIn .3s ease-out; }
-      @keyframes scaleIn { from { transform:scale(.96); opacity:0;} to {transform:scale(1); opacity:1;} }
-      .animate-scaleIn { animation: scaleIn .25s ease-out; }
-      @keyframes shimmer { 0% { background-position:-200px 0 } 100% {background-position:200px 0} }
-      .skeleton { background:linear-gradient(90deg,#e2e2e2 25%,#f6f6f6 50%,#e2e2e2 75%); background-size:400px 100%; animation:shimmer 1.2s infinite; }
-    `}</style>
-  );
-
   return (
-    <div className={`${darkMode ? "bg-gray-900 text-gray-100" : "bg-gray-100 text-gray-900"} min-h-screen p-6`}>
-      {Animations}
+    <div className={`min-h-screen p-6 transition-all duration-300 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-50`}>
       <Toaster position="top-right" />
 
+      {/* HEADER */}
       <div className="max-w-6xl mx-auto">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-          <div>
-            <h1 className="text-3xl font-bold">Events & Announcements</h1>
-            <p className="text-sm opacity-70">Manage upcoming events</p>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+          <div className="flex items-center gap-4">
+            <div className="relative h-12 w-12 rounded-2xl flex items-center justify-center bg-gradient-to-br from-cyan-400 via-sky-500 to-blue-700 shadow-lg">
+              <CalendarDays size={24} className="text-slate-950" />
+              <div className="absolute -inset-0.5 rounded-2xl bg-cyan-400/50 blur-lg opacity-60 pointer-events-none" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-semibold tracking-tight">Events & Announcements</h1>
+              <p className="text-sm text-slate-400">
+                Manage and publish upcoming happenings
+              </p>
+            </div>
           </div>
 
           <div className="flex items-center gap-3">
-            <div className={`flex items-center gap-2 px-3 py-2 rounded-lg border ${darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-300"}`}>
+            <div className="flex items-center gap-2 bg-white/5 backdrop-blur-xl border border-cyan-300/20 text-slate-200 px-3 py-2 rounded-lg shadow">
               <input
                 value={searchQ}
                 onChange={(e) => setSearchQ(e.target.value)}
-                placeholder="Search…"
-                className="bg-transparent outline-none text-sm w-full"
+                placeholder="Search events..."
+                className="bg-transparent outline-none text-sm w-44 md:w-64 placeholder:text-slate-400"
               />
             </div>
 
-            <button onClick={() => setDarkMode(!darkMode)} className="p-2 rounded-lg bg-white/20">
-              {darkMode ? <Sun size={18} /> : <Moon size={18} />}
+            <button
+              onClick={() => setDarkMode(!darkMode)}
+              className="p-2 rounded-lg bg-white/10 border border-cyan-200/20 hover:bg-white/20 transition"
+            >
+              {darkMode ? <Sun size={18} className="text-yellow-300" /> : <Moon size={18} className="text-sky-300" />}
             </button>
 
             <button
               onClick={openAddModal}
-              className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 px-4 py-2 rounded-xl text-white"
+              className="relative flex items-center gap-2 bg-gradient-to-r from-cyan-400 via-sky-500 to-blue-700 text-slate-950 px-4 py-2 rounded-xl font-semibold shadow-xl active:scale-95 transition"
             >
-              <Plus size={18} /> Add Event
+              <Plus size={18} />
+              Add Event
+              <span className="absolute -inset-0.5 rounded-xl bg-cyan-400/40 blur opacity-70 pointer-events-none" />
             </button>
           </div>
         </div>
 
+        {/* OVERVIEW + LIST */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          <div className={`${darkMode ? "bg-gray-800" : "bg-white"} rounded-2xl p-6 shadow`}>
+          {/* Overview */}
+          <div className="rounded-2xl bg-white/5 backdrop-blur-xl border border-cyan-300/10 p-6 shadow-xl">
             <h2 className="text-lg font-semibold">Overview</h2>
-            <p className="text-sm opacity-80 mt-1">Quick stats</p>
+            <p className="text-sm text-slate-400 mt-1">Quick statistics</p>
 
             <div className="mt-6">
-              <p className="text-xs opacity-70">Total Events</p>
-              <p className="text-4xl font-bold">{events.length}</p>
+              <p className="text-xs text-slate-400">Total Events</p>
+              <p className="text-4xl font-bold text-sky-300">{events.length}</p>
             </div>
 
             <div className="mt-6 flex flex-col gap-3">
-              <button className="px-4 py-2 rounded-lg bg-purple-700 text-white" onClick={openAddModal}>
+              <button onClick={openAddModal} className="px-4 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-semibold shadow transition">
                 Create Event
               </button>
               <button
                 onClick={fetchEvents}
-                className="px-4 py-2 rounded-lg border border-white/20 hover:bg-white/10"
+                className="px-4 py-2 rounded-lg border border-cyan-200/30 bg-white/5 text-slate-200 hover:bg-white/10 transition"
               >
                 Refresh
               </button>
             </div>
           </div>
 
-          <div className="lg:col-span-3">
+          {/* Event Cards */}
+          <div className="lg:col-span-3 flex flex-col gap-6">
             {loading ? (
-              <div className="flex flex-col gap-6">
-                {Array.from({ length: 3 }).map((_, i) => (
-                  <div key={i} className="skeleton h-32 rounded-xl"></div>
-                ))}
-              </div>
+              Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="h-32 rounded-2xl bg-white/5 border border-cyan-300/10 backdrop-blur-xl animate-pulse" />
+              ))
             ) : (
-              <div className="flex flex-col gap-6">
-                {filteredEvents.map((ev) => (
-                  <div
-                    key={ev.id}
-                    className={`rounded-2xl p-6 shadow-lg hover:shadow-xl transition animate-scaleIn 
-                      ${darkMode ? "bg-gray-800 text-gray-100" : "bg-white text-gray-900"}`}
-                  >
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-2">
-                        <span className={`${darkMode ? "bg-purple-700/40 text-purple-200" : "bg-purple-100 text-purple-700"} px-3 py-1 text-xs rounded-full font-semibold`}>
-                          EVENT
-                        </span>
-                        <span className="text-xs opacity-70">ID: {ev.id}</span>
-                      </div>
-                      <span className="text-xs opacity-60">
-                        {ev.created_at ? ev.created_at.slice(0, 10) : ""}
-                      </span>
-                    </div>
-
-                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                      <div className="flex-1">
-                        <h3 className="text-2xl font-bold text-orange-500">{ev.title}</h3>
-
-                        <p className="mt-2 text-sm opacity-80 leading-relaxed max-w-2xl">
-                          {ev.description}
-                        </p>
-
-                        <div className="mt-3 text-sm opacity-70 flex items-center gap-2">
-                          <span className="font-medium">Valid Till:</span>
-                          <span>{ev.valid_till}</span>
-                        </div>
-                      </div>
-
-                      <div className="flex gap-3 lg:flex-col lg:w-40 justify-end">
-                        <button
-                          onClick={() => openEditModal(ev)}
-                          className="flex-1 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center gap-1"
-                        >
-                          <Edit size={16} /> Edit
-                        </button>
-
-                        <button
-                          onClick={() => openDeleteModal(ev.id, ev.title)}
-                          className="flex-1 px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white flex items-center justify-center gap-1"
-                        >
-                          <Trash2 size={16} /> Delete
-                        </button>
-                      </div>
-                    </div>
+              filteredEvents.map((ev) => (
+                <div
+                  key={ev.id}
+                  className="rounded-2xl p-6 bg-white/5 backdrop-blur-xl border border-cyan-300/10 shadow-[0_18px_45px_rgba(0,0,0,0.65)] hover:shadow-[0_25px_60px_rgba(0,0,0,0.75)] transition"
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="px-3 py-1 bg-cyan-500/30 text-cyan-200 rounded-full font-semibold text-xs">
+                      EVENT
+                    </span>
+                    <span className="text-xs text-slate-400">{ev.created_at?.slice(0, 10)}</span>
                   </div>
-                ))}
-              </div>
+
+                  <h3 className="text-2xl font-semibold text-cyan-300">{ev.title}</h3>
+                  <p className="text-sm text-slate-300 mt-2 leading-relaxed">{ev.description}</p>
+
+                  <p className="text-sm text-slate-400 mt-3">
+                    <span className="font-medium text-slate-200">Valid Till:</span> {ev.valid_till}
+                  </p>
+
+                  <div className="mt-4 flex flex-wrap gap-3">
+                    <button
+                      onClick={() => openEditModal(ev)}
+                      className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 font-semibold text-white flex items-center gap-2 shadow active:scale-95 transition"
+                    >
+                      <Edit size={16} /> Edit
+                    </button>
+                    <button
+                      onClick={() => openDeleteModal(ev.id, ev.title)}
+                      className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-500 font-semibold text-white flex items-center gap-2 shadow active:scale-95 transition"
+                    >
+                      <Trash2 size={16} /> Delete
+                    </button>
+                  </div>
+                </div>
+              ))
             )}
           </div>
         </div>
       </div>
 
+      {/* ADD / EDIT MODAL */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-white w-[95%] max-w-2xl rounded-2xl p-6 shadow-2xl animate-scaleIn relative">
-            <button onClick={() => setModalOpen(false)} className="absolute top-4 right-4 p-2 hover:bg-gray-200 rounded-full">
+        <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-xl z-50 flex items-center justify-center animate-fadeIn">
+          <div className="w-[95%] max-w-2xl rounded-3xl bg-white/5 backdrop-blur-xl p-7 border border-cyan-400/10 shadow-[0_15px_45px_rgba(0,0,0,0.8)] animate-scaleIn relative">
+            <button onClick={() => setModalOpen(false)} className="absolute top-4 right-4 p-2 rounded-full bg-white/10 border border-slate-600 hover:bg-white/20 transition">
               <X size={20} />
             </button>
 
-            <div className="flex flex-col md:flex-row gap-6">
-              <div className="md:w-1/3 flex flex-col items-center">
-                <div className="w-24 h-24 rounded-xl bg-gradient-to-tr from-purple-600 to-orange-400 flex items-center justify-center text-white text-xl font-bold">
-                  {editingEvent ? "ED" : "NEW"}
-                </div>
+            <h2 className="text-2xl font-semibold text-sky-300 mb-6 text-center">
+              {editingEvent ? "Edit Event" : "Add New Event"}
+            </h2>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="text-sm mb-1 block text-slate-200">Event Title *</label>
+                <input
+                  type="text"
+                  value={form.title}
+                  onChange={(e) => setForm({ ...form, title: e.target.value })}
+                  className="w-full p-3 rounded-lg border bg-slate-950/40 text-sm text-slate-50 outline-none border-slate-700 focus:ring-2 focus:ring-cyan-400"
+                />
+                {errors.title && <p className="text-red-400 text-xs mt-1">{errors.title}</p>}
               </div>
 
-              <form onSubmit={handleSubmit} className="md:w-2/3 space-y-4">
-                <div>
-                  <label className="text-sm mb-1 block">Event Title *</label>
-                  <input
-                    type="text"
-                    value={form.title}
-                    onChange={(e) => setForm({ ...form, title: e.target.value })}
-                    className="w-full p-3 rounded-lg border"
-                  />
-                  {errors.title && <p className="text-red-500 text-sm">{errors.title}</p>}
-                </div>
+              <div>
+                <label className="text-sm mb-1 block text-slate-200">Valid Till *</label>
+                <input
+                  type="date"
+                  value={form.valid_till}
+                  onChange={(e) => setForm({ ...form, valid_till: e.target.value })}
+                  className="w-full p-3 rounded-lg border bg-slate-950/40 text-sm text-slate-50 outline-none border-slate-700 focus:ring-2 focus:ring-cyan-400"
+                />
+                {errors.valid_till && <p className="text-red-400 text-xs mt-1">{errors.valid_till}</p>}
+              </div>
 
-                <div>
-                  <label className="text-sm mb-1 block">Valid Till *</label>
-                  <input
-                    type="date"
-                    value={form.valid_till}
-                    onChange={(e) => setForm({ ...form, valid_till: e.target.value })}
-                    className="w-full p-3 rounded-lg border"
-                  />
-                  {errors.valid_till && <p className="text-red-500 text-sm">{errors.valid_till}</p>}
-                </div>
+              <div>
+                <label className="text-sm mb-1 block text-slate-200">Description *</label>
+                <textarea
+                  rows="4"
+                  value={form.description}
+                  onChange={(e) => setForm({ ...form, description: e.target.value })}
+                  className="w-full p-3 rounded-lg border bg-slate-950/40 text-sm text-slate-50 outline-none border-slate-700 focus:ring-2 focus:ring-cyan-400"
+                />
+                {errors.description && <p className="text-red-400 text-xs mt-1">{errors.description}</p>}
+              </div>
 
-                <div>
-                  <label className="text-sm mb-1 block">Description *</label>
-                  <textarea
-                    rows="4"
-                    value={form.description}
-                    onChange={(e) => setForm({ ...form, description: e.target.value })}
-                    className="w-full p-3 rounded-lg border"
-                  />
-                  {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
-                </div>
-
-                <div className="flex gap-3">
-                  <button type="submit" className="px-4 py-2 rounded-lg bg-purple-700 text-white">
-                    {editingEvent ? "Update Event" : "Add Event"}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setModalOpen(false)}
-                    className="px-4 py-2 rounded-lg border"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </form>
-            </div>
+              <div className="flex items-center justify-end gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setModalOpen(false)}
+                  className="px-4 py-2 rounded-lg bg-slate-950/40 border border-slate-700 text-slate-100 hover:bg-slate-900/80 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2.5 rounded-lg bg-gradient-to-r from-cyan-400 via-sky-500 to-blue-700 text-slate-950 font-semibold shadow-md active:scale-95 transition"
+                >
+                  {editingEvent ? "Update Event" : "Add Event"}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
 
+      {/* DELETE CONFIRM MODAL */}
       {deleteModal.open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-white rounded-xl p-6 shadow-2xl w-[90%] max-w-sm">
-            <h3 className="text-lg font-semibold">Delete Event?</h3>
-            <p className="text-sm opacity-80 mt-2">Delete <b>{deleteModal.title}</b>?</p>
+        <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-xl z-50 flex items-center justify-center animate-fadeIn">
+          <div className="w-[92%] max-w-sm rounded-3xl bg-white/5 backdrop-blur-xl p-6 border border-cyan-400/10 shadow-[0_15px_45px_rgba(0,0,0,0.8)] animate-scaleIn">
+            <h3 className="text-lg font-semibold text-sky-300">Delete Event?</h3>
+            <p className="text-sm text-slate-300 mt-2">
+              Remove <span className="font-semibold text-white">{deleteModal.title}</span>?
+            </p>
 
             <div className="flex justify-end gap-3 mt-6">
-              <button onClick={closeDeleteModal} className="px-4 py-2 border rounded-lg">
+              <button
+                onClick={closeDeleteModal}
+                className="px-4 py-2 rounded-lg bg-slate-950/40 border border-slate-700 text-slate-100 hover:bg-slate-900/80 transition"
+              >
                 Cancel
               </button>
-              <button onClick={confirmDelete} className="px-4 py-2 bg-red-600 text-white rounded-lg">
+              <button
+                onClick={confirmDelete}
+                className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-500 font-semibold text-white shadow transition"
+              >
                 Delete
               </button>
             </div>
@@ -348,11 +338,12 @@ export default function EventsPage() {
         </div>
       )}
 
+      {/* LOADING OVERLAY */}
       {loading && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-md z-50 animate-fadeIn">
+        <div className="fixed inset-0 flex items-center justify-center bg-slate-950/80 backdrop-blur-xl z-50 animate-fadeIn">
           <div className="flex flex-col items-center gap-5">
-            <div className="w-16 h-16 border-4 border-purple-500/30 border-t-purple-500 animate-spin rounded-full shadow-[0_0_20px_rgba(168,85,247,0.8)]"></div>
-            <p className="text-purple-200 text-lg">{loadingMessage}</p>
+            <div className="w-16 h-16 border-4 border-cyan-400/30 border-t-cyan-400 animate-spin rounded-full shadow-[0_0_20px_rgba(6,182,212,0.7)]"></div>
+            <p className="text-cyan-200 text-lg font-medium tracking-wide">{loadingMessage}</p>
           </div>
         </div>
       )}
