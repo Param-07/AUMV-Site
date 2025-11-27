@@ -26,7 +26,7 @@ export default function EventsPage() {
     try {
       setLoading(true);
       setLoadingMessage("Loading events...");
-      const data = await apiRequest("GET", "/getEvents");
+      const data = await apiRequest("GET", "/events/");
       setEvents(data.events || []);
     } finally {
       setLoading(false);
@@ -58,7 +58,7 @@ export default function EventsPage() {
       try {
         setLoading(true);
         setLoadingMessage("Updating event...");
-        const r = await apiRequest("PUT", `/edit/Events/${editingEvent.id}`, finalData);
+        const r = await apiRequest("PUT", `/events/edit/${editingEvent.id}`, finalData);
         setEvents((p) => p.map((ev) => (ev.id === editingEvent.id ? { ...ev, ...r.event } : ev)));
         toast.success("Event updated");
       } finally {
@@ -68,7 +68,7 @@ export default function EventsPage() {
       try {
         setLoading(true);
         setLoadingMessage("Adding event...");
-        const r = await apiRequest("POST", "/addEvents", finalData);
+        const r = await apiRequest("POST", "/events/addEvents", finalData);
         setEvents((p) => [...p, r.event]);
         toast.success("Event added");
       } finally {
@@ -105,8 +105,8 @@ export default function EventsPage() {
     try {
       setLoading(true);
       setLoadingMessage("Deleting event...");
-      const r = await apiRequest("DELETE", `/delete/Event/${deleteModal.id}`);
-      if (r.message === "Deletion success") {
+      const r = await apiRequest("DELETE", `/events/delete/${deleteModal.id}`);
+      if (r.message === "deleted") {
         setEvents((p) => p.filter((e) => e.id !== deleteModal.id));
         toast.success("Event deleted");
       }
