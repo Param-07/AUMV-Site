@@ -95,15 +95,15 @@ function AppContent() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [galleryRes, videosRes, heroRes] = await Promise.all([
-          apiRequest("GET", "/gallery"),
-          apiRequest("GET", "/getVideos"),
-          apiRequest("GET", "/getHero"),
+        const [galleryRes, videosRes] = await Promise.all([
+          apiRequest("GET", "/gallery/"),
+          apiRequest("GET", "/videos/getVideos"),
+          // apiRequest("GET", "/gallery/"),
         ]);
 
         setGallery(galleryRes.images ?? []);
         setVideos(videosRes.videos ?? []);
-        setHero(heroRes.message ?? []);
+        setHero(galleryRes.hero_images ?? []);
 
         setTimeout(() => {
           setLoadingScreen(false);

@@ -16,7 +16,7 @@ const Teachers = () => {
       try{
         setLoading(true);
         setLoadingMessage("Loading Teachers Data...");
-        const response = await apiRequest("GET", "/teachers");
+        const response = await apiRequest("GET", "/teachers/");
         setTeacersData(response.teachers);
         console.log(data);
       }
@@ -58,7 +58,7 @@ const Teachers = () => {
       try{
         setLoading(true);
         setLoadingMessage("Adding New Teacher Data...");
-        const response = await apiRequest("POST", "/addTeacher", finalData);
+        const response = await apiRequest("POST", "/teachers/addTeacher", finalData);
         setTeacersData((prev) => [...prev, response.teacher]);
         toast.success("Added successfully!");
       }
@@ -80,7 +80,7 @@ const Teachers = () => {
       try{
         setLoading(true);
         setLoadingMessage("Editing teacher data in table...");
-        const response = await apiRequest("PUT", `/edit/Teacher/${id}`, finalData);
+        const response = await apiRequest("PUT", `teachers/edit/${id}`, finalData);
         setTeacersData((prev) =>
           prev.map((t) => (t.id === formData.id ? { ...t, ...response.teacher } : t)))
         toast.success("Updated successfully!");
@@ -103,7 +103,7 @@ const Teachers = () => {
     try {
       setLoading(true);
       setLoadingMessage("Deleting Data...")
-      const response = await deleteTeacherData(id);
+      const response = await apiRequest("DELETE", `teachers/delete/${id}`);
 
       if (response.message === "Teacher data deleted") {
         setTeacersData((prev) => prev.filter((t) => t.id !== id))
