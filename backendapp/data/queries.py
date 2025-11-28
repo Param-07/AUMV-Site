@@ -58,7 +58,7 @@ def insert_teacher(name, email, subject, joining_date, phone_num, address, dob, 
     conn = get_conn()
     cur = conn.cursor(cursor_factory=RealDictCursor)
     cur.execute(
-        "INSERT INTO teachers (name,email,subject,joining_date,phone_num,address,dob,photo_url,resume_url) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING *;",
+        "INSERT INTO teachers (name,email,subject,joining_date,phone_num,address,dob,photo,resume) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING *;",
         (name,email,subject,joining_date,phone_num,address,dob,photo_url,resume_url)
     )
     row = cur.fetchone()
@@ -69,7 +69,7 @@ def update_teacher(id, name, email, subject, joining_date, phone_num, address, d
     conn = get_conn()
     cur = conn.cursor(cursor_factory=RealDictCursor)
     cur.execute(
-        "UPDATE teachers SET name=%s,email=%s,subject=%s,joining_date=%s,phone_num=%s,address=%s,dob=%s,photo_url=%s,resume_url=%s WHERE id=%s RETURNING *;",
+        "UPDATE teachers SET name=%s,email=%s,subject=%s,joining_date=%s,phone_num=%s,address=%s,dob=%s,photo=%s,resume=%s WHERE id=%s RETURNING *;",
         (name,email,subject,joining_date,phone_num,address,dob,photo_url,resume_url,id)
     )
     row = cur.fetchone()
@@ -103,6 +103,14 @@ def fetch_gallery_grouped():
     conn = get_conn()
     cur = conn.cursor()
     cur.execute("SELECT get_gallery_grouped();")
+    row = cur.fetchone()
+    put_conn(conn)
+    return row[0]
+
+def fetch_categories():
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute("SELECT get_unique_event_names();")
     row = cur.fetchone()
     put_conn(conn)
     return row[0]

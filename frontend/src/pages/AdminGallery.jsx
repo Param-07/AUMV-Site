@@ -15,14 +15,14 @@ const AdminGallery = () => {
     try {
       setLoading(true);
       setLoadingMessage("Fetching gallery items...");
-      const response = await apiRequest("GET", "/fetch");
+      const response = await apiRequest("GET", "/gallery/");
 
       if (response.message === "success") {
         if (response.categories !== null) {
           const _categories = response.categories.split(",").map((item) => item.trim());
           setCategories(_categories);
         }
-        setData(response.images);
+        setData(response.admin_images);
       } else {
         setError({
           type: "error",
@@ -87,7 +87,7 @@ const AdminGallery = () => {
     try {
       setLoading(true);
       setLoadingMessage("Uploading image...");
-      const response = await apiRequest("POST", "/upload", finalData);
+      const response = await apiRequest("POST", "/gallery/upload", finalData);
 
       if (response.message === "success") {
         setData((prev) => [...prev, response.images]);
@@ -121,7 +121,7 @@ const AdminGallery = () => {
     try {
       setLoading(true);
       setLoadingMessage("Deleting image...");
-      const response = await apiRequest("DELETE", `/delete/${id}`);
+      const response = await apiRequest("DELETE", `/gallery/delete/${id}`);
 
       if (response.message === "file deleted succesfully") {
         setData((prev) => prev.filter((img) => img.id !== id));
