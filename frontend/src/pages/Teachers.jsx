@@ -80,7 +80,7 @@ const Teachers = () => {
       try{
         setLoading(true);
         setLoadingMessage("Editing teacher data in table...");
-        const response = await apiRequest("PUT", `teachers/edit/${id}`, finalData);
+        const response = await apiRequest("PUT", `/teachers/edit/${id}`, finalData);
         setTeacersData((prev) =>
           prev.map((t) => (t.id === formData.id ? { ...t, ...response.teacher } : t)))
         toast.success("Updated successfully!");
@@ -103,7 +103,7 @@ const Teachers = () => {
     try {
       setLoading(true);
       setLoadingMessage("Deleting Data...")
-      const response = await apiRequest("DELETE", `teachers/delete/${id}`);
+      const response = await apiRequest("DELETE", `/teachers/delete/${id}`);
 
       if (response.message === "Teacher data deleted") {
         setTeacersData((prev) => prev.filter((t) => t.id !== id))
