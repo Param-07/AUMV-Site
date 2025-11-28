@@ -32,6 +32,8 @@ def upload_gallery_item():
 def delete_gallery_item(id):
     try:
         delete_item(id)
-        return jsonify({'message': 'deleted'}), 200
+        categories = queries.fetch_categories()
+        return jsonify({'message': 'deleted',
+                        'categories': categories}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500

@@ -123,7 +123,7 @@ const AdminGallery = () => {
       setLoadingMessage("Deleting image...");
       const response = await apiRequest("DELETE", `/gallery/delete/${id}`);
 
-      if (response.message === "file deleted succesfully") {
+      if (response.message === "deleted") {
         setData((prev) => prev.filter((img) => img.id !== id));
 
         if (response.categories !== null) {

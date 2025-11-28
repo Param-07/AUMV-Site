@@ -10,6 +10,7 @@ from routes.event_routes import event_bp
 from routes.gallery_routes import gallery_bp
 from routes.video_routes import video_bp
 from routes.achiever_routes import achiever_bp
+from routes.facilities_routes import facilities_bp
 import logging
 
 def create_app(config_object=Config):
@@ -28,6 +29,7 @@ def create_app(config_object=Config):
     app.register_blueprint(gallery_bp, url_prefix="/admin/gallery")
     app.register_blueprint(video_bp, url_prefix="/admin/videos")
     app.register_blueprint(achiever_bp, url_prefix="/admin/achievers")
+    app.register_blueprint(facilities_bp, url_prefix="/admin/facilities")
 
     @app.errorhandler(Exception)
     def handle_exception(e):

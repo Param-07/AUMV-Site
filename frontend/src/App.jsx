@@ -22,6 +22,7 @@ import { apiRequest } from "./utils/ApiCall";
 import Achievers from "./pages/Achievers";
 
 import { AppDataProvider, useAppData } from "./context/AppDataContext";
+import AdminFacilities from "./pages/AdminFacilities";
 
 function HomePage() {
   return (
@@ -60,6 +61,7 @@ function AdminLayout() {
         <Route path="events" element={<EventsPage />} />
         <Route path="videos" element={<VideoGallery />} />
         <Route path="achievers" element={<Achievers />} />
+        <Route path="facilities" element={<AdminFacilities />} />
       </Route>
     </Routes>
   );
@@ -69,7 +71,7 @@ function AppRouter() {
   const location = useLocation();
   const token = localStorage.getItem("token");
 
-  const adminPaths = ["/dashboard", "/teachers", "/adminGallery", "/events", "/videos", "/achievers"];
+  const adminPaths = ["/dashboard", "/teachers", "/adminGallery", "/events", "/videos", "/achievers", "/facilities"];
   const isAdminRoute = adminPaths.some((p) => location.pathname.startsWith(p));
 
   if (location.pathname === "/login") {

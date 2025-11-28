@@ -86,7 +86,7 @@ def delete_teacher(id):
 def insert_gallery(event_name, description, url):
     conn = get_conn()
     cur = conn.cursor(cursor_factory=RealDictCursor)
-    cur.execute("INSERT INTO gallery (event_name, description, url) VALUES (%s,%s,%s) RETURNING *;",
+    cur.execute("INSERT INTO files (event_name, description, url) VALUES (%s,%s,%s) RETURNING *;",
                 (event_name, description, url))
     row = cur.fetchone()
     put_conn(conn)
@@ -95,7 +95,7 @@ def insert_gallery(event_name, description, url):
 def delete_gallery(id):
     conn = get_conn()
     cur = conn.cursor()
-    cur.execute("DELETE FROM gallery WHERE id=%s;", (id,))
+    cur.execute("DELETE FROM files WHERE id=%s;", (id,))
     put_conn(conn)
     return True
 
@@ -122,3 +122,28 @@ def insert_video(url):
     row = cur.fetchone()
     put_conn(conn)
     return row
+
+def insert_facilities(category, photo):
+    conn = get_conn()
+    cur = conn.cursor(cursor_factory=RealDictCursor)
+    cur.execute("INSERT INTO facilities (category, photo) VALUES (%s,%s) RETURNING *;",
+                (category, photo))
+    row = cur.fetchone()
+    put_conn(conn)
+    return row
+
+def delete_facilities(id):
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute("DELETE FROM facilities WHERE id=%s;", (id,))
+    put_conn(conn)
+    return True
+
+def get_facilities():
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute("SELECT get_facilities_grouped();")
+    row = cur.fetchone()
+    put_conn(conn)
+    print(row[0])
+    return row[0]
