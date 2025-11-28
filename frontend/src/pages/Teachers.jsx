@@ -105,7 +105,7 @@ const Teachers = () => {
       setLoadingMessage("Deleting Data...")
       const response = await apiRequest("DELETE", `/teachers/delete/${id}`);
 
-      if (response.message === "Teacher data deleted") {
+      if (response.message === "deleted") {
         setTeacersData((prev) => prev.filter((t) => t.id !== id))
         toast.success("Deleted");
       }
