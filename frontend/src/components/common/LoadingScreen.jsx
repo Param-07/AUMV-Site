@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import logo from "../assets/images/logo.png"; 
-import AlokSchool from "../assets/images/logo.png"
+import logo from  "../../assets/images/logo.png"; 
+import AlokSchool from "../../assets/images/logo.png"
 
 export default function LoadingScreen() {
   const slides = [

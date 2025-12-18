@@ -6,6 +6,7 @@ export const AppDataProvider = ({ children }) => {
   const [gallery, setGallery] = useState([]);
   const [videos, setVideos] = useState([]);
   const [hero, setHero] = useState([]);
+  const [facilities, setFacilities] = useState([]);
 
   const value = {
     gallery,
@@ -14,6 +15,8 @@ export const AppDataProvider = ({ children }) => {
     setVideos,
     hero,
     setHero,
+    facilities,
+    setFacilities,
   };
 
   return (

@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { HashLink } from "react-router-hash-link";
-import logo from "../assets/images/logo.png";
+import logo from "../../assets/images/logo.png";
 
 const NavLink = ({
   children,

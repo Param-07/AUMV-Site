@@ -11,7 +11,7 @@ import {
   Moon,
   Search as SearchIcon,
 } from "lucide-react";
-import ErrorModal from "./ErrorModal";
+import ErrorModal from "./common/ErrorModal";
 import toast, { Toaster } from "react-hot-toast";
 import SmartImage from "./SmartImages";
 

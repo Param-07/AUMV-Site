@@ -1,11 +1,11 @@
 import React from "react";
 import { Phone, Mail, MapPin, ArrowUpRight } from "lucide-react";
 import { HashLink } from "react-router-hash-link";
-import SmartImage from "./SmartImages";
-import logo from "../assets/images/logo.png";
-import facebook from "../assets/images/facebook-modified.png";
-import instagram from "../assets/images/instagram-modified.png";
-import youtube from "../assets/images/youtube.png";
+import SmartImage from "../SmartImages";
+import logo from "../../assets/images/logo.png";
+import facebook from "../../assets/images/facebook-modified.png";
+import instagram from "../../assets/images/instagram-modified.png";
+import youtube from "../../assets/images/youtube.png";
 
 const Footer = () => {
   const quickLinks = [
