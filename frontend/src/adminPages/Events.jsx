@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Plus, Edit, Trash2, X, Sun, Moon, CalendarDays } from "lucide-react";
 import { apiRequest } from "../utils/ApiCall";
-import ErrorModal from "../components/ErrorModal";
+import ErrorModal from "../components/common/ErrorModal";
 import toast, { Toaster } from "react-hot-toast";
 
 export default function EventsPage() {

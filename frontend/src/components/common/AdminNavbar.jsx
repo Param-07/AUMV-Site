@@ -34,7 +34,7 @@ const AdminNavbar = () => {
     { icon: Users, label: "Teachers", path: "/teachers" },
     { icon: Trophy, label: "Achievers", path: "/achievers" },
     { icon: CalendarDays, label: "News/Events", path: "/events" },
-    { icon: Bell, label: "Facilities", path: "/facilities" },
+    { icon: Bell, label: "Facilities", path: "/adminfacilities" },
     { icon: Images, label: "Gallery", path: "/adminGallery" },
     { icon: Video, label: "Video Gallery", path: "/videos" },
     { icon: Settings, label: "Settings", path: "/settings" },

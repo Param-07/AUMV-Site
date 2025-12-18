@@ -1,28 +1,28 @@
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from "react-router-dom";
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
+import Navbar from "./components/common/Navbar";
+import Footer from "./components/common/Footer";
 import AnnouncementBar from "./components/AnnouncementBar";
 import HeroSection from "./components/HeroSection";
 import AboutSection from "./Pages/AboutSection";
 import Facilities from "./pages/Facilities";
 import Addmission from "./pages/Admission";
 import Gallery from "./pages/Gallery";
-import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
-import AdminNavbar from "./components/AdminNavbar";
-import Teachers from "./pages/Teachers";
-import AdminGallery from "./pages/AdminGallery";
-import EventsPage from "./pages/Events";
-import VideoGallery from "./pages/VideoGallery";
+import Login from "./components/common/Login";
+import Dashboard from "./adminPages/Dashboard";
+import AdminNavbar from "./components/common/AdminNavbar";
+import Teachers from "./adminPages/Teachers";
+import AdminGallery from "./adminPages/AdminGallery";
+import EventsPage from "./adminPages/Events";
+import VideoGallery from "./adminPages/VideoGallery";
 import TopScholars from "./pages/TopScholor";
 import { useEffect, useState } from "react";
-import LoadingScreen from "./components/LoadingScreen";
+import LoadingScreen from "./components/common/LoadingScreen";
 import SkeletonBlock from "./components/SkeletonBlock";
 import { apiRequest } from "./utils/ApiCall";
-import Achievers from "./pages/Achievers";
+import Achievers from "./adminPages/Achievers";
 
 import { AppDataProvider, useAppData } from "./context/AppDataContext";
-import AdminFacilities from "./pages/AdminFacilities";
+import AdminFacilities from "./adminPages/AdminFacilities";
 
 function HomePage() {
   return (
@@ -61,7 +61,7 @@ function AdminLayout() {
         <Route path="events" element={<EventsPage />} />
         <Route path="videos" element={<VideoGallery />} />
         <Route path="achievers" element={<Achievers />} />
-        <Route path="facilities" element={<AdminFacilities />} />
+        <Route path="adminfacilities" element={<AdminFacilities />} />
       </Route>
     </Routes>
   );
@@ -71,7 +71,7 @@ function AppRouter() {
   const location = useLocation();
   const token = localStorage.getItem("token");
 
-  const adminPaths = ["/dashboard", "/teachers", "/adminGallery", "/events", "/videos", "/achievers", "/facilities"];
+  const adminPaths = ["/dashboard", "/teachers", "/adminGallery", "/events", "/videos", "/achievers", "/adminfacilities"];
   const isAdminRoute = adminPaths.some((p) => location.pathname.startsWith(p));
 
   if (location.pathname === "/login") {
@@ -92,20 +92,22 @@ function AppContent() {
   const [loadingScreen, setLoadingScreen] = useState(true);
   const [showSkeleton, setShowSkeleton] = useState(true);
 
-  const { setGallery, setHero, setVideos } = useAppData();
+  const { setGallery, setHero, setVideos, setFacilities} = useAppData();
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [galleryRes, videosRes] = await Promise.all([
+        const [galleryRes, videosRes, facilitiesRes] = await Promise.all([
           apiRequest("GET", "/gallery/"),
           apiRequest("GET", "/videos/getVideos"),
+          apiRequest("GET", "/facilities/"),
           // apiRequest("GET", "/gallery/"),
         ]);
 
         setGallery(galleryRes.images ?? []);
         setVideos(videosRes.videos ?? []);
         setHero(galleryRes.hero_images ?? []);
+        setFacilities(facilitiesRes.facilities ?? []);
 
         setTimeout(() => {
           setLoadingScreen(false);

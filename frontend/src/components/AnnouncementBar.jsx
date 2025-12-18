@@ -10,7 +10,7 @@ const AnnouncementBar = () => {
   useEffect(() => {
     const fetchAnnouncements = async () => {
       try {
-        const res = await apiRequest("GET", "/getEvents");
+        const res = await apiRequest("GET", "/events/");
         const events = res?.events || [];
 
         // Filter events that are still valid (valid_till ≥ today)

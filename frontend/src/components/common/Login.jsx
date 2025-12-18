@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import logo from "../assets/images/logo.png";
-import { login } from "../utils/ApiCall";
+import logo from "../../assets/images/logo.png";
+import { login } from "../../utils/ApiCall";
 import { useNavigate, NavLink } from "react-router-dom";
 const Login = () => {
   const [role, setRole] = useState("student");
