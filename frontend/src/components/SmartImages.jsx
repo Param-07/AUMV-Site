@@ -1,20 +1,5 @@
 import React, { useState } from "react";
 
-/**
- * SmartImage
- * - Lazy loads by default
- * - Adds blur/skeleton while loading
- * - Smooth fade-in
- * - Adds width/quality/format params to Supabase URLs (safe: ignored if unsupported)
- *
- * Props:
- *  - src: string (required)
- *  - alt: string
- *  - width: number (for optimization hint, e.g. 400, 800, 1200…)
- *  - className: string (extra classes for the <img>)
- *  - wrapperClassName: string (extra classes for outer div)
- *  - priority: boolean (true = eager load, for hero/logo)
- */
 const buildOptimizedUrl = (src, width, quality = 80, format = "webp") => {
   if (!src) return "";
 

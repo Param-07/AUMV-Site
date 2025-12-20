@@ -13,7 +13,7 @@ export default function VideoGallery() {
   const fetchVideos = async () => {
     try {
       setLoading(true);
-      const data = await apiRequest("GET", "/getVideos");
+      const data = await apiRequest("GET", "/videos/getVideos");
       setVideos(data.videos || []);
     } catch {
       toast.error("Failed to load videos");

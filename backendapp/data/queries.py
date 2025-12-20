@@ -1,3 +1,5 @@
+from os import name
+from utils.file_utils import remove_file_from_storage
 from data.connection import get_conn, put_conn
 from psycopg2.extras import RealDictCursor
 
@@ -63,39 +65,65 @@ def insert_teacher(name, email, subject, joining_date, phone_num, address, dob, 
     )
     row = cur.fetchone()
     put_conn(conn)
+    print(row)
     return row
 
-def update_teacher(id, name, email, subject, joining_date, phone_num, address, dob, photo_url, resume_url):
-    conn = get_conn()
-    cur = conn.cursor(cursor_factory=RealDictCursor)
-    cur.execute(
-        "UPDATE teachers SET name=%s,email=%s,subject=%s,joining_date=%s,phone_num=%s,address=%s,dob=%s,photo=%s,resume=%s WHERE id=%s RETURNING *;",
-        (name,email,subject,joining_date,phone_num,address,dob,photo_url,resume_url,id)
-    )
-    row = cur.fetchone()
-    put_conn(conn)
-    return row
+def update_teacher(id, name, email, subject, joining_date, phone_num, address, dob, photo_url, resume_url, photo_updated, resume_updated, bucket_name):
+    try:
+        conn = get_conn()
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        cur.execute("SELECT photo, resume from teachers where id=%s ;",
+            (id,))
+        data = cur.fetchone()
+        files_to_remove = []
+        if photo_updated:
+            files_to_remove.append(data['photo'])
+        if resume_updated:
+            files_to_remove.append(data['resume'])
+        
+        if len(files_to_remove) > 0:
+            remove_file_from_storage(bucket_name, files_to_remove)
 
-def delete_teacher(id):
-    conn = get_conn()
-    cur = conn.cursor()
-    cur.execute("DELETE FROM teachers WHERE id=%s;", (id,))
-    put_conn(conn)
-    return True
+        cur.execute(
+            "UPDATE teachers SET name=%s,email=%s,subject=%s,joining_date=%s,phone_num=%s,address=%s,dob=%s,photo=%s,resume=%s WHERE id=%s RETURNING *;",
+            (name,email,subject,joining_date,phone_num,address,dob,photo_url,resume_url,id)
+        )
+        row = cur.fetchone()
+        put_conn(conn)
+        return row
+    except Exception as ex:
+        print(f"herr {str(ex)}")
+
+def delete_teacher(id, bucket_name):
+    try:
+        conn = get_conn()
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        cur.execute("DELETE FROM teachers WHERE id=%s RETURNING *;", (id,))
+        removed_row = cur.fetchone()
+        remove_file_from_storage(bucket_name, [removed_row['photo'], removed_row['resume']])
+        put_conn(conn)
+        return True
+    except Exception as ex:
+        print(f"Herereree {str(ex)}")
 
 def insert_gallery(event_name, description, url):
+    try:
+        conn = get_conn()
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        cur.execute("INSERT INTO files (category, description, file_url) VALUES (%s,%s,%s) RETURNING *;",
+                    (event_name, description, url))
+        row = cur.fetchone()
+        put_conn(conn)
+        return row
+    except Exception as ex:
+        print(f"Hrereertrr {str(ex)}")
+
+def delete_gallery( bucket_name, id):
     conn = get_conn()
     cur = conn.cursor(cursor_factory=RealDictCursor)
-    cur.execute("INSERT INTO files (event_name, description, url) VALUES (%s,%s,%s) RETURNING *;",
-                (event_name, description, url))
+    cur.execute("DELETE FROM files WHERE id=%s RETURNING *;", (id,))
     row = cur.fetchone()
-    put_conn(conn)
-    return row
-
-def delete_gallery(id):
-    conn = get_conn()
-    cur = conn.cursor()
-    cur.execute("DELETE FROM files WHERE id=%s;", (id,))
+    remove_file_from_storage( bucket_name, [row['file_url']])
     put_conn(conn)
     return True
 
@@ -132,10 +160,12 @@ def insert_facilities(category, photo):
     put_conn(conn)
     return row
 
-def delete_facilities(id):
+def delete_facilities(bucket_name, id):
     conn = get_conn()
-    cur = conn.cursor()
-    cur.execute("DELETE FROM facilities WHERE id=%s;", (id,))
+    cur = conn.cursor(cursor_factory=RealDictCursor)
+    cur.execute("DELETE FROM facilities WHERE id=%s RETURNING *;", (id,))
+    row = cur.fetchone()
+    remove_file_from_storage(bucket_name, [row['photo']])
     put_conn(conn)
     return True
 
@@ -147,3 +177,45 @@ def get_facilities():
     put_conn(conn)
     print(row[0])
     return row[0]
+
+
+def insert_achiever(name, description, image_url, level, year, _class, _percentage, _type, rank):
+    try:
+        conn = get_conn()
+        print(_class)
+        print(_type)
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        cur.execute("INSERT INTO achievers (name, description, photo, type, class,percentage, year, level, rank) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING *;",
+                    (name, description, image_url, _type, _class, _percentage, year, level, rank))
+        row = cur.fetchone()
+        put_conn(conn)
+        return row
+    except Exception as ex:
+        print(str(ex))
+
+def update_achiever(id, name, description, image_url, level, year, _class, _percentage, _type, rank, img_updated, bucket_name):
+    conn = get_conn()
+    cur = conn.cursor(cursor_factory=RealDictCursor)
+    if img_updated:
+        cur.execute("SELECT photo from achievers where id=%s ;",
+                    (id,))
+        data = cur.fetchone()
+        remove_file_from_storage(bucket_name, [data["photo"]])
+
+    cur.execute("UPDATE achievers SET name=%s, description=%s, photo=%s, type=%s, class=%s, percentage=%s, year=%s, level=%s, rank=%s WHERE id=%s RETURNING *;",
+                (name, description, image_url, _type, _class, _percentage, year, level, rank, id))
+    row = cur.fetchone()
+    put_conn(conn)
+    return row
+
+def delete_achiever(id, bucket_name):
+    try:
+        conn = get_conn()
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        cur.execute("DELETE FROM achievers WHERE id=%s RETURNING *;", (id,) )
+        row = cur.fetchone()
+        remove_file_from_storage(bucket_name, [row['photo']])
+        put_conn(conn)
+        return row
+    except Exception as ex:
+        print(f"here -- {str(ex)}")

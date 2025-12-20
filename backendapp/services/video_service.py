@@ -15,3 +15,7 @@ def upload_video_service(video):
         return queries.insert_video(url)
     finally:
         remove_local_file(local_path)
+
+def delete_video_service(id):
+    client.storage.from_(BUCKET).remove([id])
+    return queries.delete_video(id)
