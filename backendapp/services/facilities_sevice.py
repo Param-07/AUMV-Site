@@ -6,16 +6,12 @@ BUCKET = "AUMV-facilities"
 def fetch_facilities():
     return queries.get_facilities()
 
-# def fetch_teacher_by_id(id):
-#     return queries.fetch_by_id('teachers', id)
-
 def add_facilities(form_data, photo):
-    local_photo = local_resume = None
+    local_photo = None
     try:
         if photo:
             local_photo, photo_filename = save_file_locally(photo)
-            client.storage.from_(BUCKET).upload(photo_filename, local_photo)
-            photo_url = get_public_url_for_upload(client, BUCKET, photo_filename)
+            photo_url = get_public_url_for_upload(BUCKET, photo_filename, local_photo)
         else:
             photo_url = None
         facilities = queries.insert_facilities(
@@ -24,7 +20,6 @@ def add_facilities(form_data, photo):
         return facilities
     finally:
         remove_local_file(local_photo)
-        remove_local_file(local_resume)
 
 def remove_facilities(id):
-    return queries.delete_facilities(id)
+    return queries.delete_facilities(BUCKET, id)

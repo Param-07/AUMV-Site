@@ -32,8 +32,8 @@ def create_teacher():
 @jwt_required()
 def update_teacher(id):
     try:
-        photo = request.files.get('photo')
-        resume = request.files.get('resume')
+        photo = request.files.get('photo') or request.form.get('photo')
+        resume = request.files.get('resume') or request.form.get('resume')
         data = request.form.to_dict()
         teacher = modify_teacher(id, data, photo, resume)
         return jsonify({'message': 'updated', 'teacher': teacher}), 200

@@ -7,8 +7,10 @@ def get_conn():
 
 def put_conn(conn):
     try:
+        print("commiting")
         conn.commit()
-    except Exception:
+    except Exception as ex:
+        print(f"exception {ex}")
         pass
     finally:
         conn.close()
