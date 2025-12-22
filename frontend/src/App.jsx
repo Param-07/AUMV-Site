@@ -23,6 +23,7 @@ import Achievers from "./adminPages/Achievers";
 
 import { AppDataProvider, useAppData } from "./context/AppDataContext";
 import AdminFacilities from "./adminPages/AdminFacilities";
+import AchieversPublic from "./pages/Achievers";
 
 function HomePage() {
   return (
@@ -43,7 +44,7 @@ function PublicLayout() {
         <Route path="/facilities" element={<Facilities />} />
         <Route path="/gallery" element={<Gallery />} />
         <Route path="/admission" element={<Addmission />} />
-        <Route path="/academics" element={<TopScholars />} />
+        <Route path="/academics" element={<AchieversPublic />} />
       </Routes>
       <Footer />
     </>
