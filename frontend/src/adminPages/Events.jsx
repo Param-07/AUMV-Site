@@ -338,12 +338,24 @@ export default function EventsPage() {
         </div>
       )}
 
-      {/* LOADING OVERLAY */}
-      {loading && (
-        <div className="fixed inset-0 flex items-center justify-center bg-slate-950/80 backdrop-blur-xl z-50 animate-fadeIn">
-          <div className="flex flex-col items-center gap-5">
-            <div className="w-16 h-16 border-4 border-cyan-400/30 border-t-cyan-400 animate-spin rounded-full shadow-[0_0_20px_rgba(6,182,212,0.7)]"></div>
-            <p className="text-cyan-200 text-lg font-medium tracking-wide">{loadingMessage}</p>
+      {loading  && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/80 backdrop-blur-xl z-[200] animate-fadeIn">
+          <div className="flex flex-col items-center gap-6">
+            
+            {/* 🔥 Neon Ring Loader */}
+            <div className="relative">
+              {/* outer rotate ring */}
+              <div className="w-20 h-20 rounded-full border-4 border-transparent border-t-purple-400 animate-[spin_1.2s_linear_infinite]"></div>
+              {/* inner glow ring */}
+              <div className="absolute inset-0 rounded-full border-4 border-purple-500/20 backdrop-blur-md shadow-[0_0_20px_rgba(168,85,247,0.55)]"></div>
+              {/* pulsing core */}
+              <div className="absolute inset-[22%] rounded-full bg-purple-500/60 animate-pulse shadow-[0_0_16px_rgba(168,85,247,0.8)]"></div>
+            </div>
+
+            {/* 🔥 Dynamic text */}
+            <p className="text-purple-200 text-lg font-semibold tracking-wide animate-pulse drop-shadow-lg">
+              {loadingMessage || "Please wait..."}
+            </p>
           </div>
         </div>
       )}

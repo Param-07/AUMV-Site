@@ -169,6 +169,14 @@ def delete_facilities(bucket_name, id):
     put_conn(conn)
     return True
 
+def delete_video(id):
+    conn = get_conn()
+    cur = conn.cursor(cursor_factory=RealDictCursor)
+    cur.execute("DELETE FROM videos WHERE id=%s RETURNING *;", (id,))
+    row = cur.fetchone()
+    put_conn(conn)
+    return row
+
 def get_facilities():
     conn = get_conn()
     cur = conn.cursor()
@@ -215,6 +223,45 @@ def delete_achiever(id, bucket_name):
         cur.execute("DELETE FROM achievers WHERE id=%s RETURNING *;", (id,) )
         row = cur.fetchone()
         remove_file_from_storage(bucket_name, [row['photo']])
+        put_conn(conn)
+        return row
+    except Exception as ex:
+        print(f"here -- {str(ex)}")
+
+def insert_hero(category, image_url):
+    try:
+        conn = get_conn()
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        cur.execute("INSERT INTO hero_table (category, url) VALUES (%s,%s) RETURNING *;",
+                    (category, image_url))
+        row = cur.fetchone()
+        put_conn(conn)
+        return row
+    except Exception as ex:
+        print(str(ex))
+
+def update_hero(id, category, image_url, img_updated, bucket_name):
+    conn = get_conn()
+    cur = conn.cursor(cursor_factory=RealDictCursor)
+    if img_updated:
+        cur.execute("SELECT photo from hero_table where id=%s ;",
+                    (id,))
+        data = cur.fetchone()
+        remove_file_from_storage(bucket_name, [data["url"]])
+
+    cur.execute("UPDATE hero_table SET category=%s, url=%s WHERE id=%s RETURNING *;",
+                (category, image_url, id))
+    row = cur.fetchone()
+    put_conn(conn)
+    return row
+
+def delete_hero(id, bucket_name):
+    try:
+        conn = get_conn()
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        cur.execute("DELETE FROM hero_table WHERE id=%s RETURNING *;", (id,) )
+        row = cur.fetchone()
+        remove_file_from_storage(bucket_name, [row['url']])
         put_conn(conn)
         return row
     except Exception as ex:

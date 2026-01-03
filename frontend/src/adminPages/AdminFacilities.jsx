@@ -15,6 +15,7 @@ export default function AdminFacilities() {
   const [groups, setGroups] = useState([]); // grouped data
   const [loading, setLoading] = useState(false);
   const [localLoading, setLocalLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -39,12 +40,14 @@ export default function AdminFacilities() {
   const loadFacilities = async () => {
     try {
       setLoading(true);
+      setLoadingMessage("Loading Facilities...");
       const data = await apiRequest("GET", "/facilities/");
       setGroups(data.facilities || []);
     } catch {
       toast.error("Failed to load facilities");
     } finally {
       setLoading(false);
+      setLoadingMessage("");
     }
   };
 
@@ -62,6 +65,7 @@ export default function AdminFacilities() {
 
     try {
       setLocalLoading(true);
+      setLoadingMessage("Uploading Facility...");
 
       const form = new FormData();
       form.append("category", formData.category);
@@ -77,12 +81,15 @@ export default function AdminFacilities() {
       toast.error("Upload failed");
     } finally {
       setLocalLoading(false);
+      setLoadingMessage("");
     }
   };
 
   const handleDelete = async (id) => {
     try {
       setLocalLoading(true);
+      setLoadingMessage("Deleting Facility...");
+
       await apiRequest("DELETE", `/facilities/delete/${id}`);
 
       setGroups((prev) =>
@@ -97,6 +104,7 @@ export default function AdminFacilities() {
       toast.error("Delete failed");
     } finally {
       setLocalLoading(false);
+      setLoadingMessage("");
     }
   };
 
@@ -247,15 +255,24 @@ export default function AdminFacilities() {
         </div>
       )}
 
-      {(localLoading || loading) && (
-        <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/70 backdrop-blur-sm">
-          <div className="flex flex-col items-center gap-4">
+      {(loading || localLoading) && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/80 backdrop-blur-xl z-[200] animate-fadeIn">
+          <div className="flex flex-col items-center gap-6">
+            
+            {/* 🔥 Neon Ring Loader */}
             <div className="relative">
-              <div className="w-20 h-20 rounded-full border-4 border-transparent border-t-cyan-400 animate-spin" />
-              <div className="absolute inset-0 rounded-full border-4 border-cyan-500/10 blur" />
-              <div className="absolute inset-4 rounded-full bg-cyan-400/20 animate-pulse" />
+              {/* outer rotate ring */}
+              <div className="w-20 h-20 rounded-full border-4 border-transparent border-t-purple-400 animate-[spin_1.2s_linear_infinite]"></div>
+              {/* inner glow ring */}
+              <div className="absolute inset-0 rounded-full border-4 border-purple-500/20 backdrop-blur-md shadow-[0_0_20px_rgba(168,85,247,0.55)]"></div>
+              {/* pulsing core */}
+              <div className="absolute inset-[22%] rounded-full bg-purple-500/60 animate-pulse shadow-[0_0_16px_rgba(168,85,247,0.8)]"></div>
             </div>
-            <p className="text-cyan-200 font-medium">Working...</p>
+
+            {/* 🔥 Dynamic text */}
+            <p className="text-purple-200 text-lg font-semibold tracking-wide animate-pulse drop-shadow-lg">
+              {loadingMessage || "Please wait..."}
+            </p>
           </div>
         </div>
       )}

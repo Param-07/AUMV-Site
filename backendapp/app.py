@@ -11,6 +11,7 @@ from routes.gallery_routes import gallery_bp
 from routes.video_routes import video_bp
 from routes.achiever_routes import achiever_bp
 from routes.facilities_routes import facilities_bp
+from routes.mainPage_routes import mainPage_bp
 import logging
 
 def create_app(config_object=Config):
@@ -30,6 +31,7 @@ def create_app(config_object=Config):
     app.register_blueprint(video_bp, url_prefix="/admin/videos")
     app.register_blueprint(achiever_bp, url_prefix="/admin/achievers")
     app.register_blueprint(facilities_bp, url_prefix="/admin/facilities")
+    app.register_blueprint(mainPage_bp, url_prefix="/admin/mainPage")
 
     @app.errorhandler(Exception)
     def handle_exception(e):

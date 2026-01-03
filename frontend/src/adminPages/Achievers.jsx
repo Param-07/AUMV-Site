@@ -39,16 +39,23 @@ export default function Achievers() {
   const [editing, setEditing] = useState(null);
   const [formData, setFormData] = useState({ type: "Academic" });
   const [photoPreview, setPhotoPreview] = useState(null);
+  const [deleteModal, setDeleteModal] = useState({ open: false, achiever: null });
+  const [loadingMessage, setLoadingMessage] = useState("");
+  const [localLoading, setLocalLoading] = useState(false);
 
   const loadAchievers = async () => {
     setLoading(true);
+    setLoadingMessage("Loading achievers...");
     try {
       const res = await apiRequest("GET", "/achievers/getAchievers");
       if (res.message === "success") setAchievers(res.achievers || []);
     } catch {
       toast.error("Failed to load achievers");
     }
-    setLoading(false);
+    finally{
+      setLoading(false);
+      setLoadingMessage("");
+    }
   };
 
   useEffect(() => {
@@ -94,29 +101,75 @@ export default function Achievers() {
     }
 
     try {
+      setLocalLoading(true);
+      setLoadingMessage(editing ? "Updating achiever..." : "Adding achiever...");
+
       const finalData = new FormData();
       Object.entries(formData).forEach(([Key, value])=>{
         finalData.append(Key, value);
       });
-      console.log(formData);
+
       const endpoint = editing ? `/achievers/editAchiever/${editing?.id}` : "/achievers/addAchiever";
       const method = editing ? "PUT" : "POST";
-      await apiRequest(
+
+      const response = await apiRequest(
         method,
         endpoint,
         finalData
       );
-      resetForm(activeTab);
-      loadAchievers();
+      setAchievers((prev) => {
+        if (editing) {
+          prev.map((a) => (a.id === editing.id ? { ...a, ...response.achievers } : a));
+        }
+        else{
+          [...prev, response.achievers];
+        }
+      });
     } catch {
       toast.error("Something went wrong");
+    }
+    finally{
+      resetForm(activeTab);
+      setLocalLoading(false);
+      setLoadingMessage("");
     }
   };
 
   const remove = async (id) => {
-    await apiRequest("DELETE", `/achievers/deleteAchiever/${id}`);
-    loadAchievers();
+    try{
+      setLocalLoading(true);
+      setLoadingMessage("Deleting achiever...");
+      const response = await apiRequest("DELETE", `/achievers/deleteAchiever/${id}`);
+    }
+    catch(error){
+      toast.error("Failed to delete achiever");
+    }
+    finally{
+      setAchievers((prev) => prev.filter((a) => a.id !== id));
+      setLocalLoading(false);
+      setLoadingMessage("");
+    }
   };
+
+  const openDeleteModal = (achiever) =>
+    setDeleteModal({ open: true, achiever });
+
+  const closeDeleteModal = () =>
+    setDeleteModal({ open: false, achiever: null });
+
+  const confirmDelete = () => {
+    if (deleteModal.achiever) {
+        remove(deleteModal.achiever.id)
+    }
+    closeDeleteModal();
+  };
+
+
+  const cardGlass =
+    "bg-white/5 backdrop-blur-xl border border-cyan-400/10 shadow-[0_18px_45px_rgba(0,0,0,0.65)]";
+  const chipInactive =
+    "bg-white/5 border border-cyan-200/20 text-slate-200 hover:border-cyan-300/40";
+  const mutedText = "text-slate-300";
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-50 p-6">
@@ -224,7 +277,8 @@ export default function Achievers() {
                 <Edit size={14} /> Edit
               </button>
               <button
-                onClick={() => remove(a.id)}
+                // onClick={() => remove(a.id)}
+                onClick={() => openDeleteModal(a)}
                 className="px-4 py-1.5 rounded-full text-xs font-semibold bg-red-500 hover:bg-red-600 text-white"
               >
                 <Trash2 size={14} /> Delete
@@ -370,9 +424,59 @@ export default function Achievers() {
         </div>
       )}
 
-      {loading && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center">
-          Loading...
+      {deleteModal.open && (
+        <div className="fixed inset-0 z-60 flex items-center justify-center bg-slate-950/70 backdrop-blur-xl animate-fadeIn">
+          <div
+            className={`${cardGlass} rounded-2xl p-6 max-w-sm w-[92%] animate-scaleIn`}
+          >
+            <h3 className="text-lg font-semibold tracking-tight text-slate-50">
+              Confirm Delete
+            </h3>
+            <p className={`text-sm mt-2 ${mutedText}`}>
+              Are you sure you want to delete{" "}
+              <span className="font-semibold text-sky-200">
+                {deleteModal.teacher?.name || deleteModal.teacher?.title}
+              </span>
+              ?
+            </p>
+
+            <div className="flex justify-end gap-3 mt-6">
+              <button
+                onClick={closeDeleteModal}
+                className="px-4 py-2 rounded-lg text-sm bg-slate-950/50 border border-slate-700 text-slate-100 hover:bg-slate-900/80 transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="px-4 py-2 rounded-lg text-sm bg-red-500 hover:bg-red-600 text-white font-semibold shadow-md"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {(loading || localLoading) && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/80 backdrop-blur-xl z-[200] animate-fadeIn">
+          <div className="flex flex-col items-center gap-6">
+            
+            {/* 🔥 Neon Ring Loader */}
+            <div className="relative">
+              {/* outer rotate ring */}
+              <div className="w-20 h-20 rounded-full border-4 border-transparent border-t-purple-400 animate-[spin_1.2s_linear_infinite]"></div>
+              {/* inner glow ring */}
+              <div className="absolute inset-0 rounded-full border-4 border-purple-500/20 backdrop-blur-md shadow-[0_0_20px_rgba(168,85,247,0.55)]"></div>
+              {/* pulsing core */}
+              <div className="absolute inset-[22%] rounded-full bg-purple-500/60 animate-pulse shadow-[0_0_16px_rgba(168,85,247,0.8)]"></div>
+            </div>
+
+            {/* 🔥 Dynamic text */}
+            <p className="text-purple-200 text-lg font-semibold tracking-wide animate-pulse drop-shadow-lg">
+              {loadingMessage || "Please wait..."}
+            </p>
+          </div>
         </div>
       )}
     </div>
