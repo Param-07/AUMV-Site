@@ -6,8 +6,11 @@ import SmartImage from "./SmartImages";
 const HeroSection = () => {
   const { hero } = useAppData();
   const [current, setCurrent] = useState(0);
+  var slides = hero && hero.length > 0 ? hero : [{ url: School }];
+  if(hero.length>0){
+    slides = hero.filter((i)=> i.category === "Hero");
+  }
 
-  const slides = hero && hero.length > 0 ? hero : [{ url: School }];
 
   useEffect(() => {
     if (!slides || slides.length === 0) return;

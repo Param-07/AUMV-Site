@@ -9,16 +9,20 @@ export default function VideoGallery() {
   const [confirmDelete, setConfirmDelete] = useState(null);
   const [uploadFile, setUploadFile] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState("");
 
   const fetchVideos = async () => {
     try {
       setLoading(true);
+      setLoadingMessage("Loading Videos...");
+
       const data = await apiRequest("GET", "/videos/getVideos");
       setVideos(data.videos || []);
     } catch {
       toast.error("Failed to load videos");
     } finally {
       setLoading(false);
+      setLoadingMessage("");
     }
   };
 
@@ -39,6 +43,7 @@ export default function VideoGallery() {
 
     try {
       setLoading(true);
+      setLoadingMessage("Uploading Video...");
 
       const form = new FormData();
       form.append("video", uploadFile);
@@ -53,14 +58,18 @@ export default function VideoGallery() {
       toast.error("Upload failed");
     } finally {
       setLoading(false);
+      setLoadingMessage("");
     }
   };
 
   const handleDelete = async () => {
     if (!confirmDelete) return;
     try {
-      const res = await apiRequest("DELETE", `/deleteVideo/${confirmDelete.id}`);
-      if (res.message === "Deleted") {
+      setLoading(true);
+      setLoadingMessage("Deleting Video...");
+
+      const res = await apiRequest("DELETE", `/videos/deleteVideo/${confirmDelete.id}`);
+      if (res.message === "success") {
         setVideos((prev) => prev.filter((v) => v.id !== confirmDelete.id));
         toast.success("Video deleted");
       }
@@ -68,6 +77,8 @@ export default function VideoGallery() {
       toast.error("Failed to delete");
     } finally {
       setConfirmDelete(null);
+      setLoading(false);
+      setLoadingMessage("");
     }
   };
 
@@ -198,6 +209,28 @@ export default function VideoGallery() {
                 Delete
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {loading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/80 backdrop-blur-xl z-[200] animate-fadeIn">
+          <div className="flex flex-col items-center gap-6">
+            
+            {/* 🔥 Neon Ring Loader */}
+            <div className="relative">
+              {/* outer rotate ring */}
+              <div className="w-20 h-20 rounded-full border-4 border-transparent border-t-purple-400 animate-[spin_1.2s_linear_infinite]"></div>
+              {/* inner glow ring */}
+              <div className="absolute inset-0 rounded-full border-4 border-purple-500/20 backdrop-blur-md shadow-[0_0_20px_rgba(168,85,247,0.55)]"></div>
+              {/* pulsing core */}
+              <div className="absolute inset-[22%] rounded-full bg-purple-500/60 animate-pulse shadow-[0_0_16px_rgba(168,85,247,0.8)]"></div>
+            </div>
+
+            {/* 🔥 Dynamic text */}
+            <p className="text-purple-200 text-lg font-semibold tracking-wide animate-pulse drop-shadow-lg">
+              {loadingMessage || "Please wait..."}
+            </p>
           </div>
         </div>
       )}

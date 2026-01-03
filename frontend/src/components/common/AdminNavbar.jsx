@@ -16,6 +16,7 @@ import {
   RefreshCcw,
   Sun,
   Moon,
+  Home
 } from "lucide-react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
@@ -41,6 +42,7 @@ const AdminNavbar = () => {
 
   const menuItems = [
     { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
+    { icon: Home, label: "Main Page", path: "/mainpage" },
     { icon: Users, label: "Teachers", path: "/teachers" },
     { icon: Trophy, label: "Achievers", path: "/achievers" },
     { icon: CalendarDays, label: "News/Events", path: "/events" },

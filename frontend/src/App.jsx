@@ -24,6 +24,7 @@ import Achievers from "./adminPages/Achievers";
 import { AppDataProvider, useAppData } from "./context/AppDataContext";
 import AdminFacilities from "./adminPages/AdminFacilities";
 import AchieversPublic from "./pages/Achievers";
+import MainPageManager from "./adminPages/MainPageManager";
 
 function HomePage() {
   return (
@@ -57,6 +58,7 @@ function AdminLayout() {
       <Route path="/" element={<AdminNavbar />}>
         <Route index element={<Dashboard />} />
         <Route path="dashboard" element={<Dashboard />} />
+        <Route path="mainpage" element={<MainPageManager />} />
         <Route path="teachers" element={<Teachers />} />
         <Route path="adminGallery" element={<AdminGallery />} />
         <Route path="events" element={<EventsPage />} />
@@ -72,7 +74,7 @@ function AppRouter() {
   const location = useLocation();
   const token = localStorage.getItem("token");
 
-  const adminPaths = ["/dashboard", "/teachers", "/adminGallery", "/events", "/videos", "/achievers", "/adminfacilities"];
+  const adminPaths = ["/dashboard", "/teachers", "/adminGallery", "/events", "/videos", "/achievers", "/adminfacilities", "/mainpage"];
   const isAdminRoute = adminPaths.some((p) => location.pathname.startsWith(p));
 
   if (location.pathname === "/login") {
