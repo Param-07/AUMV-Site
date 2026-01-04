@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Plus, Trash2, X, Play, Upload } from "lucide-react";
+import { Plus, Trash2, X, Play, Upload, Video } from "lucide-react";
 import { apiRequest } from "../utils/ApiCall";
 import toast, { Toaster } from "react-hot-toast";
 
@@ -48,7 +48,7 @@ export default function VideoGallery() {
       const form = new FormData();
       form.append("video", uploadFile);
 
-      const res = await apiRequest("POST", "/addVideo", form);
+      const res = await apiRequest("POST", "/videos/addVideo", form);
       setVideos((prev) => [...prev, res.video]);
 
       toast.success("Video uploaded");
@@ -89,11 +89,17 @@ export default function VideoGallery() {
       <div className="max-w-6xl mx-auto">
         {/* ---- HEADER ---- */}
         <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-3xl font-semibold tracking-tight">Video Gallery</h1>
-            <p className="text-slate-400 text-sm mt-1">
-              Manage and upload school event videos
-            </p>
+          <div className="flex items-center gap-4">
+            <div className="relative h-12 w-12 rounded-2xl flex items-center justify-center bg-gradient-to-br from-cyan-400 via-sky-500 to-blue-700 shadow-lg">
+              <Video size={24} className="text-slate-950" />
+              <div className="absolute -inset-0.5 rounded-2xl bg-cyan-400/50 blur-lg opacity-60 pointer-events-none" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-semibold tracking-tight">Video Gallery</h1>
+              <p className="text-sm text-slate-400">
+                Manage and upload school event videos
+              </p>
+            </div>
           </div>
 
           <button

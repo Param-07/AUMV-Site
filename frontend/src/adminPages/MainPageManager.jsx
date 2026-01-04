@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Plus, Edit, Trash2, X, Upload } from "lucide-react";
+import React, { useEffect, useState, useMemo } from "react";
+import { Plus, Edit, Trash2, X, Upload, Home } from "lucide-react";
 import SmartImage from "../components/SmartImages";
 import { apiRequest } from "../utils/ApiCall";
 import toast, { Toaster } from "react-hot-toast";
@@ -14,6 +14,7 @@ const CATEGORY_OPTIONS = [
 
 export default function MainPageManager() {
   const [items, setItems] = useState([]);
+  const [activeCategory, setActiveCategory] = useState(CATEGORY_OPTIONS[0]);
   const [popup, setPopup] = useState(false);
   const [editing, setEditing] = useState(null);
   const [formData, setFormData] = useState({});
@@ -39,6 +40,11 @@ export default function MainPageManager() {
   useEffect(() => {
     loadItems();
   }, []);
+
+  const filteredItems = useMemo(() => {
+    if (activeCategory === "All") return items;
+    return items.filter((i) => i.category === activeCategory);
+  }, [items, activeCategory]);
 
   const resetForm = () => {
     setPopup(false);
@@ -132,12 +138,19 @@ export default function MainPageManager() {
 
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-3xl font-semibold">Main Page Content</h1>
-          <p className="text-slate-300 text-sm">
-            Manage About, Principal, Director & Vision sections
-          </p>
+        <div className="flex items-center gap-4">
+            <div className="relative h-12 w-12 rounded-2xl flex items-center justify-center bg-gradient-to-br from-cyan-400 via-sky-500 to-blue-700 shadow-lg">
+              <Home size={24} className="text-slate-950" />
+              <div className="absolute -inset-0.5 rounded-2xl bg-cyan-400/50 blur-lg opacity-60 pointer-events-none" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-semibold tracking-tight">Main Page Content</h1>
+              <p className="text-sm text-slate-400">
+                Manage About, Principal, Director & Vision sections
+              </p>
+            </div>
         </div>
+
         <button
           onClick={() => setPopup(true)}
           className="flex items-center gap-2 bg-gradient-to-r from-cyan-400 via-sky-500 to-blue-700 text-slate-950 px-5 py-2 rounded-full font-semibold shadow-lg"
@@ -146,9 +159,26 @@ export default function MainPageManager() {
         </button>
       </div>
 
+      {/* CATEGORY TABS */}
+      <div className="flex justify-center gap-3 mb-8 flex-wrap">
+        {CATEGORY_OPTIONS.map((cat) => (
+          <button
+            key={cat}
+            onClick={() => setActiveCategory(cat)}
+            className={`px-5 py-2 rounded-full text-sm font-semibold transition ${
+              activeCategory === cat
+                ? "bg-gradient-to-r from-cyan-400 to-blue-600 text-slate-950 shadow-lg"
+                : "bg-white/5 border border-cyan-300/20 text-slate-200 hover:border-cyan-300/40"
+            }`}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
+
       {/* Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {items.map(item => (
+        {filteredItems.map((item) => (
           <div
             key={item.id}
             className="bg-white/5 backdrop-blur-xl border border-cyan-400/10 rounded-2xl p-5 shadow-xl"
@@ -187,7 +217,6 @@ export default function MainPageManager() {
           </div>
         ))}
       </div>
-
       {/* Popup */}
       {popup && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-xl">

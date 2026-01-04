@@ -13,7 +13,7 @@ export default function LoadingScreen() {
   useEffect(() => {
     const interval = setInterval(() => {
       setIndex((prev) => (prev + 1) % slides.length);
-    }, 2500);
+    }, 1000);
 
     return () => clearInterval(interval);
   }, []);
@@ -29,7 +29,7 @@ export default function LoadingScreen() {
             src={src}
             className={`
               absolute inset-0 w-full h-full object-cover transition-opacity duration-[1500ms]
-              ${index === i ? "opacity-40" : "opacity-0"}
+              ${index === i ? "opacity-20" : "opacity-0"}
             `}
             alt=""
           />
@@ -41,24 +41,13 @@ export default function LoadingScreen() {
 
       {/* Animated Logo */}
       <div className="relative flex flex-col items-center gap-6">
-        <div className="animate-bounce">
+        <div className="animate-pulse">
           <img
             src={AlokSchool}
             alt="College Logo"
             className="w-32 h-32 object-contain drop-shadow-[0_0_25px_rgba(255,255,255,0.6)]"
           />
         </div>
-
-        <h1 className="text-4xl md:text-6xl font-bold text-white tracking-wider drop-shadow-lg">
-          ALOK COLLEGE
-        </h1>
-
-        {/* Neon Loader */}
-        <div className="w-16 h-16 border-4 border-purple-500/25 border-t-purple-500 animate-spin rounded-full shadow-[0_0_15px_rgba(168,85,247,0.8)]"></div>
-
-        <p className="text-purple-200 text-sm tracking-widest animate-pulse">
-          Preparing your experience…
-        </p>
       </div>
     </div>
   );

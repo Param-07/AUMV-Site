@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Trophy, GraduationCap, Sparkles } from "lucide-react";
 import SmartImage from "../components/SmartImages";
+import useScrollToTop from "../hooks/useScrollToTop";
 import { apiRequest } from "../utils/ApiCall";
 import { motion } from "framer-motion";
 
@@ -13,6 +14,7 @@ const badgeColors = {
 };
 
 export default function AchieversPublic() {
+  useScrollToTop();
   const [achievers, setAchievers] = useState([]);
   const [activeTab, setActiveTab] = useState("Academic");
   const [year, setYear] = useState("All");

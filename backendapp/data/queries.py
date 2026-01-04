@@ -144,12 +144,17 @@ def fetch_categories():
     return row[0]
 
 def insert_video(url):
-    conn = get_conn()
-    cur = conn.cursor(cursor_factory=RealDictCursor)
-    cur.execute("INSERT INTO videos (url) VALUES (%s) RETURNING *;", (url,))
-    row = cur.fetchone()
-    put_conn(conn)
-    return row
+    try:
+        conn = get_conn()
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        cur.execute("INSERT INTO videos (video_url) VALUES (%s) RETURNING *;",
+                    (url,))
+        row = cur.fetchone()
+        put_conn(conn)
+        return row
+    except Exception as ex:
+        print("here")
+        print(str(ex))
 
 def insert_facilities(category, photo):
     conn = get_conn()

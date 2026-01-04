@@ -90,12 +90,12 @@ const AdminGallery = () => {
       const response = await apiRequest("POST", "/gallery/upload", finalData);
 
       if (response.message === "success") {
-        setData((prev) => [...prev, response.images]);
+        setData((prev) => [...prev, response.data]);
 
-        if (response.categories !== null) {
-          const _categories = response.categories.split(",").map((item) => item.trim());
-          setCategories(_categories);
-        }
+        // if (response.categories !== null) {
+        //   const _categories = response.categories.split(",").map((item) => item.trim());
+        //   setCategories(_categories);
+        // }
 
         toast.success("Image uploaded successfully!");
       } else {

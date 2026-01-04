@@ -37,7 +37,7 @@ const Footer = () => {
   return (
     <footer className="bg-[#0F172A] text-white pt-14 px-4" id="contact">
       {/* CTA Banner */}
-      <div className="max-w-7xl mx-auto mb-10 px-4">
+      {/* <div className="max-w-7xl mx-auto mb-10 px-4">
         <div className="bg-gradient-to-r from-indigo-700 to-purple-700 rounded-2xl text-center py-6 shadow-lg">
           <h3 className="font-semibold text-lg md:text-xl mb-2">
             Admissions Open for Academic Year 2024–25
@@ -49,7 +49,7 @@ const Footer = () => {
             Apply Now <ArrowUpRight size={18} />
           </a>
         </div>
-      </div>
+      </div> */}
 
       {/* Main Footer */}
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12">

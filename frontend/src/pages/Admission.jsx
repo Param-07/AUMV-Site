@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { ChevronLeft, FileText, User, Book, Users, CheckCircle, UploadCloud, AlertTriangle, Info, Loader2, Home } from 'lucide-react';
 import { HashLink } from "react-router-hash-link";
+import useScrollToTop from "../hooks/useScrollToTop";
 import logo from "../assets/images/logo.png"; 
 
 const MainIcon = () => (
@@ -532,6 +533,7 @@ const StepComponents = {
 };
 
 export default function Addmission() {
+    useScrollToTop();
     const [currentStep, setCurrentStep] = useState(1);
     const [formData, setFormData] = useState(INITIAL_FORM_STATE);
     const [validationErrors, setValidationErrors] = useState({});
