@@ -114,8 +114,8 @@ function AppContent() {
 
         setTimeout(() => {
           setLoadingScreen(false);
-          setTimeout(() => setShowSkeleton(false), 900);
-        }, 2000);
+          setTimeout(() => setShowSkeleton(false), 250);
+        }, 250);
 
       } catch (error) {
         console.error("Preload error:", error);

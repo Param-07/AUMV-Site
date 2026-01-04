@@ -49,7 +49,7 @@ const AdminNavbar = () => {
     { icon: Bell, label: "Facilities", path: "/adminfacilities" },
     { icon: Images, label: "Gallery", path: "/adminGallery" },
     { icon: Video, label: "Video Gallery", path: "/videos" },
-    { icon: Settings, label: "Settings", path: "/settings" },
+    // { icon: Settings, label: "Settings", path: "/settings" },
   ];
 
   return (

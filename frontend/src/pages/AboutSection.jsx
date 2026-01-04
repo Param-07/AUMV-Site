@@ -112,7 +112,7 @@ export default function AboutSection() {
           >
             {/* Image Block */}
             <motion.div
-              className="w-full md:w-1/2 relative"
+              className="w-full md:w-1/2 relative overflow-hidden"
               initial={{ x: section.reverse ? 130 : -130, opacity: 0 }}
               whileInView={{ x: 0, opacity: 1 }}
               transition={{ duration: 0.7, ease: "easeOut" }}
@@ -126,6 +126,7 @@ export default function AboutSection() {
                 />
               </div>
 
+              {/* Decorative accent card (now safely clipped) */}
               <div className="absolute inset-0 -z-10 translate-x-6 translate-y-6 bg-indigo-300/20 rounded-2xl" />
             </motion.div>
 

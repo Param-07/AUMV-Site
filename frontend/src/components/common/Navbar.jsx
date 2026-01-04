@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Menu,
   X,
@@ -36,17 +36,27 @@ const NavLink = ({
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
+  const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
 
   const handleDropdownToggle = (dropdown) =>
     setOpenDropdown(openDropdown === dropdown ? null : dropdown);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 0);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const isAdmissionsPage = location.pathname === "/admissions";
 
   return (
     <>
       {/* Top Bar */}
-      <div className="bg-slate-900 text-slate-100 text-sm py-2 px-4 hidden md:block">
+      <div className={`fixed top-0 left-0 right-0 z-50 bg-slate-900 text-slate-100 text-sm py-2 px-4 hidden md:block transition-transform duration-300 ${isScrolled ? "-translate-y-full" : "translate-y-0"}`}>
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center gap-6">
             <span className="flex items-center gap-2">
@@ -66,7 +76,7 @@ const Navbar = () => {
             <a href="#" className="hover:text-amber-200 transition-colors">
               Jobs
             </a>
-            <a href="/login" className="hover:text-amber-200 transition-colors">
+            <a href="/login" target="_blank" rel="noopener noreferrer" className="hover:text-amber-200 transition-colors">
               Login
             </a>
           </div>
@@ -74,10 +84,9 @@ const Navbar = () => {
       </div>
 
       {/* Main Navbar */}
-      <nav className="sticky top-0 z-40 bg-white/90 backdrop-blur-xl border-b border-slate-200 shadow-sm">
+      <nav className={`fixed left-0 right-0 z-40 bg-white/90 backdrop-blur-xl border-b border-slate-200 shadow-sm transition-all duration-300 ${isScrolled ? "top-0" : "top-[40px]"}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-3 md:py-4">
-            {/* Brand — CLICKABLE NOW */}
+          <div className="flex justify-between items-center py-2 md:py-2.5">
             <Link to="/" className="flex items-center gap-3 group cursor-pointer">
               <div className="w-12 h-12 rounded-full overflow-hidden bg-slate-100 flex items-center justify-center ring-2 ring-indigo-700/20 shadow-md transition-transform group-hover:scale-[1.04]">
                 <img src={logo} alt="School Logo" className="w-full h-full object-contain p-1" />

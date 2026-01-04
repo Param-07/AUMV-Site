@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useAppData } from "../context/AppDataContext";
 import SmartImage from "../components/SmartImages";
+import useScrollToTop from "../hooks/useScrollToTop";
 import { Image as IconImage, GalleryVerticalEnd, Images, Film, Sparkles } from "lucide-react";
 
 
@@ -20,6 +21,7 @@ const buildOptimizedUrl = (src, width) => {
 
 export default function Gallery() {
   const { gallery, videos } = useAppData();
+  useScrollToTop();
 
   const [activeModal, setActiveModal] = useState(null);
   const [currentSlides, setCurrentSlides] = useState({});
@@ -95,7 +97,7 @@ export default function Gallery() {
     <div className="bg-gradient-to-b from-[#F4F1FF] via-[#F8F6FF] to-[#EFEAFF]">
 
       {/* VIDEO GALLERY */}
-      <section className="py-14 bg-gradient-to-r from-purple-700 to-orange-500 shadow-lg">
+      <section id="video-gallery" className="py-14 bg-gradient-to-r from-purple-700 to-orange-500 shadow-lg">
         <h1 className="text-4xl font-bold text-center text-white mb-10 flex items-center justify-center gap-3 drop-shadow-lg">
           <Film className="h-9" /> Video Gallery
         </h1>
@@ -142,7 +144,7 @@ export default function Gallery() {
       </div>
 
       {/* IMAGE GALLERY */}
-      <section className="py-14">
+      <section id="photo-gallery" className="py-14">
         <h1 className="text-4xl font-bold text-center text-purple-800 mb-10 flex items-center justify-center gap-3">
           <GalleryVerticalEnd className="h-8" /> Our School Gallery
         </h1>

@@ -320,6 +320,7 @@ const ManagementPages = ({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5">
                 {processedData.map((item, index) => (
+                  console.log("Gallery item:", item),
                   <div
                     key={index}
                     className={`group rounded-2xl overflow-hidden ${cardGlass} relative`}

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Plus, Edit, Trash2, X, Upload } from "lucide-react";
+import { Plus, Edit, Trash2, X, Upload, Trophy} from "lucide-react";
 import SmartImage from "../components/SmartImages";
 import { apiRequest } from "../utils/ApiCall";
 import toast, { Toaster } from "react-hot-toast";
@@ -177,14 +177,18 @@ export default function Achievers() {
 
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-semibold tracking-tight">
-            Achievers
-          </h1>
-          <p className="text-sm text-slate-300">
-            Manage academic & extracurricular achievers
-          </p>
-        </div>
+        <div className="flex items-center gap-4">
+            <div className="relative h-12 w-12 rounded-2xl flex items-center justify-center bg-gradient-to-br from-cyan-400 via-sky-500 to-blue-700 shadow-lg">
+              <Trophy size={24} className="text-slate-950" />
+              <div className="absolute -inset-0.5 rounded-2xl bg-cyan-400/50 blur-lg opacity-60 pointer-events-none" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-semibold tracking-tight">Achievers</h1>
+              <p className="text-sm text-slate-400">
+                Manage academic & extracurricular achievers
+              </p>
+            </div>
+          </div>
 
         <button
           onClick={() => {
@@ -198,7 +202,7 @@ export default function Achievers() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-3 mb-8">
+      <div className="flex justify-center gap-3 mb-8 flex-wrap">
         {["Academic", "Extra Curricular"].map((tab) => (
           <button
             key={tab}
@@ -225,7 +229,7 @@ export default function Achievers() {
             className="bg-white/5 backdrop-blur-xl border border-cyan-400/10 rounded-2xl p-5 shadow-xl"
           >
             <div className="relative flex justify-center">
-              <div className="h-24 w-24 rounded-full overflow-hidden ring-2 ring-cyan-400/70">
+              <div className="h-24 w-24 rounded-full overflow-x-hidden ring-2 ring-cyan-400/70">
                 <SmartImage
                   src={a.photo}
                   alt={a.name}
