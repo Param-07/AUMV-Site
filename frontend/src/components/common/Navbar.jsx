@@ -76,9 +76,15 @@ const Navbar = () => {
             <a href="#" className="hover:text-amber-200 transition-colors">
               Jobs
             </a>
-            <a href="/login" target="_blank" rel="noopener noreferrer" className="hover:text-amber-200 transition-colors">
+            <a
+              href="/#/login"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-amber-200 transition-colors"
+            >
               Login
             </a>
+
           </div>
         </div>
       </div>
