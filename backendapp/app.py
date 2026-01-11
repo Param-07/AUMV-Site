@@ -44,6 +44,11 @@ def create_app(config_object=Config):
 
 app = create_app()
 
+@app.route("/", methods=["GET"])
+def health():
+    return {"status": "ok running smoothly"}
+
+
 if __name__ == "__main__":
     app = create_app()
     app.run(host='0.0.0.0', port=int(os.getenv('PORT', 8000)), debug=app.config['DEBUG'])
