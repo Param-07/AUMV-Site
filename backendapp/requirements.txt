@@ -3,7 +3,7 @@ Flask-Cors==3.0.10
 python-dotenv==1.0.0
 flask-jwt-extended==4.4.4
 supabase==1.0.0
-psycopg==2.9.7
+psycopg
 werkzeug==2.2.3
 flask-bcrypt==1.0.1
 python-dateutil==2.8.2
