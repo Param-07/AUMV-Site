@@ -3,7 +3,7 @@ import Navbar from "./components/common/Navbar";
 import Footer from "./components/common/Footer";
 import AnnouncementBar from "./components/AnnouncementBar";
 import HeroSection from "./components/HeroSection";
-import AboutSection from "./Pages/AboutSection";
+import AboutSection from "./pages/AboutSection";
 import Facilities from "./pages/Facilities";
 import Addmission from "./pages/Admission";
 import Gallery from "./pages/Gallery";
