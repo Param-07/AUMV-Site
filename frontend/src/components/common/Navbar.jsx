@@ -19,12 +19,15 @@ const NavLink = ({
   hasDropdown = false,
   isHash = false,
   className = "",
+  onClick,
 }) => {
   const Component = isHash ? HashLink : Link;
+
   return (
     <Component
       smooth
       to={to}
+      onClick={onClick}
       className={`relative block px-3 py-2 text-[15px] font-medium text-slate-700 transition-colors duration-200 hover:text-indigo-900 ${className}`}
     >
       {children}
@@ -32,6 +35,7 @@ const NavLink = ({
     </Component>
   );
 };
+
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -246,7 +250,7 @@ const Navbar = () => {
           } bg-white/95 backdrop-blur-xl border-t border-slate-200`}
         >
           <div className="px-4 py-4 text-[15px] space-y-2 text-slate-800">
-            <NavLink to="/" className="block">Home</NavLink>
+            <NavLink to="/" className="block" onClick={() => {setIsMenuOpen(false); setOpenDropdown(null);}}>Home</NavLink>
 
             {/* --- Mobile Dropdowns --- */}
             {[
@@ -323,6 +327,10 @@ const Navbar = () => {
                         to={to}
                         key={i}
                         className="block px-3 py-1.5 text-[14px] text-slate-600 hover:text-indigo-900"
+                        onClick={() => {
+                          setIsMenuOpen(false);
+                          setOpenDropdown(null);
+                        }}
                       >
                         {name}
                       </HashLink>
@@ -331,6 +339,17 @@ const Navbar = () => {
                 )}
               </div>
             ))}
+
+            {/* Mobile Login Link */}
+            <div className="border-t border-slate-200 pt-3 mt-3">
+              <Link
+                to="/login"
+                className="block px-3 py-2 text-sm font-medium text-indigo-800 hover:text-indigo-900 hover:bg-indigo-50 rounded-lg transition"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Login
+              </Link>
+            </div>
           </div>
         </div>
       </nav>
