@@ -541,6 +541,11 @@ export default function Addmission() {
     const [isSubmitted, setIsSubmitted] = useState(false);
     const TotalSteps = STEPS.length;
 
+    // Ensure page scrolls to top when component mounts or step changes
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [currentStep]);
+
     const handleChange = useCallback((field) => (event) => {
         let value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
         if (event.target.type === 'radio') {

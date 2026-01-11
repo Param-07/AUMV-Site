@@ -98,20 +98,30 @@ function AppContent() {
   const { setGallery, setHero, setVideos, setFacilities} = useAppData();
 
   useEffect(() => {
+    // Skip API calls if on login page
+    if (location.pathname === "/login" || location.pathname === "/adminLogin") {
+      setLoadingScreen(false);
+      setShowSkeleton(false);
+      return;
+    }
+
     const loadData = async () => {
       try {
+        var starttime = new Date().getTime();
         const [galleryRes, videosRes, facilitiesRes] = await Promise.all([
           apiRequest("GET", "/gallery/"),
           apiRequest("GET", "/videos/getVideos"),
           apiRequest("GET", "/facilities/"),
-          // apiRequest("GET", "/gallery/"),
         ]);
 
-        setGallery(galleryRes.images ?? []);
+        setGallery(galleryRes.images.get_gallery_grouped ?? []);
         setVideos(videosRes.videos ?? []);
         setHero(galleryRes.hero_images ?? []);
-        setFacilities(facilitiesRes.facilities ?? []);
+        setFacilities(facilitiesRes.facilities.get_facilities_grouped ?? []);
 
+        var endtime = new Date().getTime();
+        var elapsed = endtime - starttime;
+        console.log("Data load time:", elapsed, "ms");
         setTimeout(() => {
           setLoadingScreen(false);
           setTimeout(() => setShowSkeleton(false), 250);
@@ -124,7 +134,7 @@ function AppContent() {
     };
 
     loadData();
-  }, []);
+  }, [location.pathname]);
 
   if (loadingScreen) return <LoadingScreen />;
 
