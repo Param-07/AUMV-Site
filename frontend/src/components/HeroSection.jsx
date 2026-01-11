@@ -59,13 +59,13 @@ const HeroSection = () => {
 
         <div className="mt-6 flex gap-4 flex-wrap justify-center">
           <a
-            href="/admission"
+            href="/#/admission"
             className="px-6 py-3 rounded-full font-semibold bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-500/30 hover:shadow-indigo-600/50 transition transform hover:-translate-y-[2px]"
           >
             Apply for Admission
           </a>
           <a
-            href="/academics"
+            href="/#/academics"
             className="px-6 py-3 rounded-full font-semibold border border-white/80 text-white hover:bg-white hover:text-black transition shadow-lg"
           >
             Explore Academics
