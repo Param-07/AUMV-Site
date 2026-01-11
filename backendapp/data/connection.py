@@ -1,21 +1,17 @@
-import psycopg2
+import psycopg
+from psycopg.rows import dict_row
 from config import Config
 
+DATABASE_URL = Config.DATABASE_URL
+
 def get_conn():
-    conn = psycopg2.connect(Config.DATABASE_URL)
-    return conn
+    return psycopg.connect(
+        DATABASE_URL,
+        row_factory=dict_row,   
+        autocommit=True        
+    )
 
 def put_conn(conn):
-    try:
-        print("commiting")
-        conn.commit()
-    except Exception as ex:
-        print(f"exception {ex}")
-        pass
-    finally:
-        conn.close()
-
-def close_conn(conn):
     try:
         conn.close()
     except Exception:
