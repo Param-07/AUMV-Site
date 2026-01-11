@@ -19,10 +19,10 @@ const AdminGallery = () => {
 
       if (response.message === "success") {
         if (response.categories !== null) {
-          const _categories = response.categories.split(",").map((item) => item.trim());
+          const _categories = response.categories.get_unique_event_names.split(",").map((item) => item.trim());
           setCategories(_categories);
         }
-        setData(response.admin_images);
+        setData(response.admin_images || []);
       } else {
         setError({
           type: "error",

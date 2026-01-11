@@ -84,7 +84,7 @@ const Navbar = () => {
       </div>
 
       {/* Main Navbar */}
-      <nav className={`fixed left-0 right-0 z-40 bg-white/90 backdrop-blur-xl border-b border-slate-200 shadow-sm transition-all duration-300 ${isScrolled ? "top-0" : "top-[40px]"}`}>
+      <nav className={`fixed left-0 right-0 z-40 bg-white/90 backdrop-blur-xl border-b border-slate-200 shadow-sm transition-all duration-300 top-0 ${isScrolled ? "md:top-0" : "md:top-[40px]"}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-2 md:py-2.5">
             <Link to="/" className="flex items-center gap-3 group cursor-pointer">

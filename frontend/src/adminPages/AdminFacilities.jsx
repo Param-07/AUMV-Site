@@ -42,7 +42,7 @@ export default function AdminFacilities() {
       setLoading(true);
       setLoadingMessage("Loading Facilities...");
       const data = await apiRequest("GET", "/facilities/");
-      setGroups(data.facilities || []);
+      setGroups(data.facilities.get_facilities_grouped || []);
     } catch {
       toast.error("Failed to load facilities");
     } finally {

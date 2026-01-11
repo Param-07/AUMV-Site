@@ -7,6 +7,7 @@ import SmartImage from "../components/SmartImages";
 const Facilities = () => {
   useScrollToTop();
   const { facilities = [] } = useAppData();
+  console.log("Facilities data:", facilities);
 
   const defaultDescriptions = {
     "Computer Lab": [

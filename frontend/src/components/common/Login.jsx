@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import logo from "../../assets/images/logo.png";
+import alokSchoolBg from "../../assets/images/AlokSchool.png";
 import { login } from "../../utils/ApiCall";
 import { useNavigate } from "react-router-dom";
+import { Mail, Lock } from "lucide-react";
 
 const Login = () => {
   const [role, setRole] = useState("admin");
@@ -51,32 +53,33 @@ const Login = () => {
   };
 
   return (
-    <div className="h-screen w-screen overflow-hidden flex items-center justify-center bg-gray-50">
-      <div className="w-full max-w-md px-4">
+    <div 
+      className="fixed inset-0 overflow-hidden flex bg-cover bg-center"
+      style={{ backgroundImage: `url('${alokSchoolBg}')` }}
+    >
+      {/* Dark overlay */}
+      <div className="absolute inset-0 bg-black/50"></div>
+      
+      <div className="ml-auto w-full max-w-md px-4 py-4 relative z-10 flex flex-col justify-center">
         <div className="flex flex-col items-center gap-4">
-          {/* Logo */}
-          <div className="rounded-full h-16 w-16 bg-slate-600 overflow-hidden">
-            <img src={logo} alt="Logo" className="h-full w-full object-cover" />
-          </div>
-
-          {/* Heading */}
-          <div className="text-center flex flex-col gap-2">
-            <h1 className="font-bold text-2xl text-purple-900">
-              Welcome Back
-            </h1>
-            <p className="text-gray-500 text-sm">
-              Sign in to access your school portal
-            </p>
-            <p className="text-amber-600 text-sm">विद्या ददाति विनयम्</p>
-          </div>
-
           {/* Login Card */}
-          <div className="w-full bg-white shadow-[0_4px_15px_rgba(0,0,0,0.1)] rounded-xl p-6">
-            <h1 className="text-lg font-bold text-purple-900 mb-4 text-center">
-              Login to Your Account
-            </h1>
+          <div className="w-full bg-white/50 shadow-[0_4px_15px_rgba(0,0,0,0.1)] rounded-xl p-6 backdrop-blur-sm">
+            {/* Logo */}
+            <div className="flex flex-col justify-center items-center mb-6 bg-gradient-to-r from-purple-600 to-purple-700 rounded-lg py-6 px-6">
+              <div className="flex justify-center items-center mb-3">
+                <div className="rounded-full h-16 w-16 bg-white overflow-hidden shadow-lg flex-shrink-0">
+                  <img src={logo} alt="Logo" className="h-full w-full object-cover" />
+                </div>
+                <div className="text-2xl text-white mx-3">|</div>
+                <div className="text-center">
+                  <h3 className="text-lg font-bold text-white tracking-tight">ALOK INTER</h3>
+                  <p className="text-xs text-purple-100 uppercase tracking-wider">College</p>
+                </div>
+              </div>
+              {/* Tagline inside background */}
+              <p className="text-amber-300 text-sm font-semibold">विद्या ददाति विनयम्</p>
+            </div>
 
-            {/* Role Tabs */}
             <div className="grid grid-cols-1 border border-gray-600 rounded-full overflow-hidden text-sm text-center mb-4">
               {["admin"].map((r) => (
                 <p
@@ -94,40 +97,46 @@ const Login = () => {
             </div>
 
             {/* Form */}
-            <form className="flex flex-col gap-2" onSubmit={handleSubmit}>
-              <label className="text-sm">{label}</label>
-              <input
-                type="email"
-                name="email"
-                placeholder={placeholder}
-                required
-                onChange={handleChange}
-                className="h-9 rounded-lg pl-3 border border-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400"
-              />
+            <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+              <label className="text-sm font-semibold text-gray-700">{label}</label>
+              <div className="flex items-center border-2 border-gray-300 rounded-lg pl-3 bg-white/80 hover:border-purple-400 transition focus-within:ring-2 focus-within:ring-purple-400 focus-within:border-purple-400">
+                <Mail className="w-5 h-5 text-purple-600 font-bold" strokeWidth={2.5} />
+                <input
+                  type="email"
+                  name="email"
+                  placeholder={placeholder}
+                  required
+                  onChange={handleChange}
+                  className="h-10 flex-1 border-none focus:outline-none pl-3 bg-transparent text-gray-700 placeholder-gray-500"
+                />
+              </div>
 
-              <label className="text-sm">Password</label>
-              <input
-                type="password"
-                name="password"
-                placeholder="Enter your password"
-                required
-                onChange={handleChange}
-                className="h-9 rounded-lg pl-3 border border-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-400"
-              />
+              <label className="text-sm font-semibold text-gray-700">Password</label>
+              <div className="flex items-center border-2 border-gray-300 rounded-lg pl-3 bg-white/80 hover:border-purple-400 transition focus-within:ring-2 focus-within:ring-purple-400 focus-within:border-purple-400">
+                <Lock className="w-5 h-5 text-purple-600 font-bold" strokeWidth={2.5} />
+                <input
+                  type="password"
+                  name="password"
+                  placeholder="Enter your password"
+                  required
+                  onChange={handleChange}
+                  className="h-10 flex-1 border-none focus:outline-none pl-3 bg-transparent text-gray-700 placeholder-gray-500"
+                />
+              </div>
 
               <div className="flex justify-between mt-2 text-xs">
-                <label className="flex items-center gap-1">
-                  <input type="checkbox" />
-                  Remember me
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" className="rounded" />
+                  <span className="text-gray-700">Remember me</span>
                 </label>
-                <span className="text-amber-600 cursor-pointer hover:underline">
+                <span className="text-purple-600 cursor-pointer hover:underline font-medium">
                   Forgot password?
                 </span>
               </div>
 
               <button
                 type="submit"
-                className="h-9 w-full text-base font-bold text-white bg-purple-900 mt-3 rounded-lg hover:bg-purple-800 transition"
+                className="h-11 w-full text-base font-bold text-white bg-gradient-to-r from-purple-700 to-purple-900 mt-4 rounded-lg hover:from-purple-800 hover:to-purple-950 transition shadow-lg hover:shadow-xl transform hover:scale-105 duration-200"
               >
                 {buttonText}
               </button>

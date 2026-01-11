@@ -5,20 +5,6 @@ import useScrollToTop from "../hooks/useScrollToTop";
 import { Image as IconImage, GalleryVerticalEnd, Images, Film, Sparkles } from "lucide-react";
 
 
-// helper for optimized img
-const buildOptimizedUrl = (src, width) => {
-  if (!src) return "";
-  try {
-    const url = new URL(src);
-    if (width) url.searchParams.set("width", String(width));
-    url.searchParams.set("quality", "80");
-    url.searchParams.set("format", "webp");
-    return url.toString();
-  } catch {
-    return src;
-  }
-};
-
 export default function Gallery() {
   const { gallery, videos } = useAppData();
   useScrollToTop();
@@ -179,19 +165,22 @@ export default function Gallery() {
                     setOffset({ x: 0, y: 0 });
                   }}
                 >
-                  {group.images.map((img, i) => {
-                    const url = buildOptimizedUrl(img.src, 1200);
-                    return (
-                      <img
-                        key={i}
-                        src={url}
+                  {group.images.map((img, i) => (
+                    <div
+                      key={i}
+                      className={`absolute inset-0 w-full h-full transition-opacity duration-1000 ${
+                        currentSlides[idx] === i ? "opacity-100" : "opacity-0"
+                      }`}
+                    >
+                      <SmartImage
+                        src={img.src}
                         alt={img.heading}
-                        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
-                          currentSlides[idx] === i ? "opacity-100" : "opacity-0"
-                        }`}
+                        width={1200}
+                        wrapperClassName="w-full h-full"
+                        className="w-full h-full object-cover"
                       />
-                    );
-                  })}
+                    </div>
+                  ))}
 
                   <div className="absolute bottom-0 w-full bg-black/55 p-4 text-center text-white text-lg font-semibold flex justify-center items-center gap-2 backdrop-blur-sm">
                     <Images className="h-5" /> {group.category}
@@ -262,15 +251,17 @@ export default function Gallery() {
                       className="mx-auto overflow-hidden rounded-xl shadow-lg bg-gray-200 border border-gray-300"
                       style={{ height: "65vh", cursor: zoom > 1 ? "grab" : "default" }}
                     >
-                      <img
-                        src={buildOptimizedUrl(img.src, 1600)}
+                      <SmartImage
+                        src={img.src}
                         alt={img.heading}
+                        width={1600}
+                        wrapperClassName="w-full h-full"
+                        className="w-full h-full object-contain select-none"
                         style={{
                           transform: `scale(${zoom}) translate(${offset.x / zoom}px, ${offset.y / zoom}px)`,
                           transition: isDragging.current ? "none" : "0.3s",
+                          pointerEvents: "none",
                         }}
-                        className="w-full h-full object-contain select-none"
-                        draggable={false}
                       />
                     </div>
 
