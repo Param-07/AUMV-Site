@@ -23,7 +23,7 @@ def add_achiever(achiever, photo):
             photo_url = None
         return queries.insert_achiever(achiever.get('name'), achiever.get('description'), photo_url,
                     achiever.get('level'), achiever.get('year'), achiever.get('class'), achiever.get('percentage'),
-                    achiever.get('type'), achiever.get('rank'))
+                    achiever.get('type'), achiever.get('rank'), achiever.get('board'), achiever.get('branch'))
     except Exception as e:
         return {'error': str(e)}, 500
     finally:
@@ -41,7 +41,7 @@ def edit_achiever(id, achiever, photo):
             photo_url = photo
         return queries.update_achiever(id, achiever.get('name'), achiever.get('description'), photo_url,
                     achiever.get('level'), achiever.get('year'), achiever.get('class'), achiever.get('percentage'),
-                    achiever.get('type'), achiever.get('rank'), img_updated, BUCKET)
+                    achiever.get('type'), achiever.get('rank'), img_updated, BUCKET, achiever.get('board'), achiever.get('branch'))
     except Exception as e:
         return {'error': str(e)}, 500
     finally:

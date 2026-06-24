@@ -128,12 +128,12 @@ const Navbar = () => {
                     isHash: true,
                   },
                   {
-                    label: "Academics",
+                    label: "Achievements",
                     to: "/academics",
                     dropdown: [
-                      { label: "Top Scholars", to: "/academics#top-scholars" },
-                      { label: "Syllabus", to: "/academics#syllabus" },
-                      { label: "Academic Calendar", to: "/academics#calendar" },
+                      { label: "High School Toppers", to: "/academics#top-scholars-10" },
+                      { label: "Intermediate Toppers", to: "/academics#top-scholars-12" },
+                      { label: "Hall of Fame", to: "/academics#hall-of-fame" },
                     ],
                   },
                   {
@@ -265,11 +265,11 @@ const Navbar = () => {
               },
               {
                 key: "academics",
-                label: "Academics",
+                label: "Achievements",
                 items: [
-                  ["Top Scholars", "/academics#top-scholars"],
-                  ["Syllabus", "/academics#syllabus"],
-                  ["Academic Calendar", "/academics#calendar"],
+                  ["High School Toppers", "/academics#top-scholars-10"],
+                  ["Intermediate Toppers", "/academics#top-scholars-12"],
+                  ["Hall of Fame", "/academics#hall-of-fame"],
                 ],
               },
               {

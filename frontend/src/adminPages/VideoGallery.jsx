@@ -83,7 +83,7 @@ export default function VideoGallery() {
   };
 
   return (
-    <div className="min-h-screen p-6 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-50">
+    <div className="min-h-screen p-6 bg-white text-slate-900">
       <Toaster position="top-right" />
 
       <div className="max-w-6xl mx-auto">

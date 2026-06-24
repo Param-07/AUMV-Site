@@ -133,7 +133,7 @@ export default function MainPageManager() {
   const mutedText = "text-slate-300";
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-50 p-6">
+    <div className="max-h-full bg-white text-slate-900 p-6">
       <Toaster position="top-right" />
 
       {/* Header */}

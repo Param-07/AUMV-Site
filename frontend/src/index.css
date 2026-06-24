@@ -10,12 +10,12 @@
   }
   
   body {
-    @apply pt-[112px];
+    @apply pt-[0px];
   }
   
   @media (max-width: 768px) {
     body {
-      @apply pt-[76px];
+      @apply pt-[0px];
     }
   }
 }

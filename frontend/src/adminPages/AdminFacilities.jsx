@@ -109,7 +109,7 @@ export default function AdminFacilities() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 text-slate-50 p-6">
+    <div className="min-h-screen bg-white text-slate-900 p-6">
       <Toaster position="top-right" />
 
       <div className="max-w-7xl mx-auto">

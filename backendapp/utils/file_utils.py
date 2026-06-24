@@ -3,6 +3,7 @@ from utils.supabase_client import client
 from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
 from config import Config
+import mimetypes
 
 def ensure_temp_dir():
     os.makedirs(Config.UPLOAD_TEMP_DIR, exist_ok=True)
@@ -23,7 +24,12 @@ def remove_local_file(path):
 
 def get_public_url_for_upload(bucket: str, target_name, photo_path):
     try:
-        client.storage.from_(bucket).upload(target_name, photo_path)
+        mime_type = mimetypes.guess_type(photo_path)
+        if mime_type[0] == 'application/pdf' or mime_type[0] == 'application/msword' or mime_type[0] == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+            client.storage.from_(bucket).upload(target_name, photo_path, file_options={ "headers" : { "Content-Type": mime_type[0] } })
+        else:
+            client.storage.from_(bucket).upload(target_name, photo_path)
+
         resp = client.storage.from_(bucket).get_public_url(target_name)
         return resp
     except Exception as e:
