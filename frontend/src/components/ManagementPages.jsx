@@ -182,7 +182,7 @@ const ManagementPages = ({
 
   const rootClass = darkMode
     ? "bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-50"
-    : "bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-slate-50";
+    : "bg-white text-slate-900";
 
   const cardGlass =
     "bg-white/5 backdrop-blur-xl border border-cyan-400/10 shadow-[0_18px_45px_rgba(0,0,0,0.65)]";

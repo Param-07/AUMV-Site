@@ -8,8 +8,12 @@ export default function VideoGallery() {
   const [modalOpen, setModalOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(null);
   const [uploadFile, setUploadFile] = useState(null);
+  const [formData, setFormData] = useState({ name: "" });
   const [loading, setLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("");
+
+  const inputCls =
+    "w-full p-3 rounded-lg bg-white border border-slate-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 transition";
 
   const fetchVideos = async () => {
     try {
@@ -47,16 +51,22 @@ export default function VideoGallery() {
 
       const form = new FormData();
       form.append("video", uploadFile);
+      form.append("title", formData.name);
+
+      form.forEach((value, key) => {
+        console.log(key, value);
+      });
 
       const res = await apiRequest("POST", "/videos/addVideo", form);
       setVideos((prev) => [...prev, res.video]);
 
       toast.success("Video uploaded");
-      setUploadFile(null);
-      setModalOpen(false);
     } catch {
       toast.error("Upload failed");
     } finally {
+      setUploadFile(null);
+      setFormData({ name: "" });
+      setModalOpen(false);
       setLoading(false);
       setLoadingMessage("");
     }
@@ -83,7 +93,7 @@ export default function VideoGallery() {
   };
 
   return (
-    <div className="min-h-screen p-6 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-50">
+    <div className="min-h-screen p-6 bg-white text-slate-900">
       <Toaster position="top-right" />
 
       <div className="max-w-6xl mx-auto">
@@ -178,6 +188,15 @@ export default function VideoGallery() {
               </span>
               <input type="file" className="hidden" accept="video/*" onChange={handleFileSelect} />
             </label>
+            <label className="flex items-center gap-3 bg-slate-950/40 border border-slate-700/60 text-slate-300 px-4 py-3 rounded-2xl cursor-pointer hover:bg-slate-900/60 transition">
+            <input
+                  name="name"
+                  placeholder="Student / Team Name"
+                  value={formData.name || ""}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  className={inputCls}
+                />
+              </label>
 
             <button
               disabled={loading}

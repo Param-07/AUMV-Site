@@ -126,7 +126,7 @@ export default function EventsPage() {
   });
 
   return (
-    <div className={`min-h-screen p-6 transition-all duration-300 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-50`}>
+    <div className={`min-h-screen p-6 transition-all duration-300 bg-white text-slate-900`}>
       <Toaster position="top-right" />
 
       {/* HEADER */}

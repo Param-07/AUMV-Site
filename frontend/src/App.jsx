@@ -42,7 +42,7 @@ function PublicLayout() {
       <Navbar />
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/facilities" element={<Facilities />} />
+        <Route path="/facilities/:facilityId?" element={<Facilities />} />
         <Route path="/gallery" element={<Gallery />} />
         <Route path="/admission" element={<Addmission />} />
         <Route path="/academics" element={<AchieversPublic />} />
@@ -99,8 +99,12 @@ function AppContent() {
 
   useEffect(() => {
     // Skip API calls if on login page
-    if (location.pathname === "/login" || location.pathname === "/adminLogin") {
-      setLoadingScreen(false);
+    if (location.hash === "#/login" || location.pathname === "/adminLogin") {
+      // setLoadingScreen(false);
+      setTimeout(() => {
+          setLoadingScreen(false);
+          setTimeout(() => setShowSkeleton(false), 450);
+        }, 250);
       setShowSkeleton(false);
       return;
     }
@@ -118,10 +122,7 @@ function AppContent() {
         setVideos(videosRes.videos ?? []);
         setHero(galleryRes.hero_images ?? []);
         setFacilities(facilitiesRes.facilities.get_facilities_grouped ?? []);
-
-        var endtime = new Date().getTime();
-        var elapsed = endtime - starttime;
-        console.log("Data load time:", elapsed, "ms");
+        
         setTimeout(() => {
           setLoadingScreen(false);
           setTimeout(() => setShowSkeleton(false), 250);

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Plus, Edit, Trash2, X, Upload, Trophy} from "lucide-react";
+import { Plus, Edit, Trash2, X, Upload, Trophy, UploadIcon } from "lucide-react";
 import SmartImage from "../components/SmartImages";
 import { apiRequest } from "../utils/ApiCall";
 import toast, { Toaster } from "react-hot-toast";
@@ -11,25 +11,23 @@ const badgeStyles = {
 };
 
 const CATEGORY_OPTIONS = [
-  "Sports",
-  "Cultural",
-  "Music",
-  "Dance",
-  "Drama",
-  "Art",
-  "Science",
-  "Robotics",
-  "Literary",
-  "Other",
+  "Sports", "Cultural", "Music", "Dance", "Drama",
+  "Art", "Science", "Robotics", "Literary", "Other",
 ];
 
 const LEVEL_OPTIONS = [
-  "School",
-  "District",
-  "State",
-  "National",
-  "International",
+  "School", "District", "State", "National", "International",
 ];
+
+const CLASS_OPTIONS = [
+  "10th", "12th"
+];
+
+const BRANCH_OPTIONS = [
+  "Science", "Humanities"
+];
+
+const BOARD_OPTIONS = ["CBSE", "UP Board"];
 
 export default function Achievers() {
   const [achievers, setAchievers] = useState([]);
@@ -42,6 +40,19 @@ export default function Achievers() {
   const [deleteModal, setDeleteModal] = useState({ open: false, achiever: null });
   const [loadingMessage, setLoadingMessage] = useState("");
   const [localLoading, setLocalLoading] = useState(false);
+  const [yearError, setYearError] = useState("");
+  const [percentageError, setPercentageError] = useState("");
+
+  const yearRegex = /^\d{4}-\d{2}$/; // Format: 2025-26
+  const validateYear = (year) => {
+    if (!year) return false; // Allow empty
+    if (!yearRegex.test(year)) {
+      setYearError("Format: YYYY-YY (e.g., 2025-26)");
+      return false;
+    }
+    setYearError("");
+    return true;
+  };
 
   const loadAchievers = async () => {
     setLoading(true);
@@ -51,8 +62,7 @@ export default function Achievers() {
       if (res.message === "success") setAchievers(res.achievers || []);
     } catch {
       toast.error("Failed to load achievers");
-    }
-    finally{
+    } finally {
       setLoading(false);
       setLoadingMessage("");
     }
@@ -84,6 +94,16 @@ export default function Achievers() {
       }
     } else {
       setFormData((p) => ({ ...p, [name]: value }));
+      if (name === "year") {
+        validateYear(value);
+      }
+      else if (name === "percentage") {
+        if (value < 0 || value > 100) {
+          setPercentageError("Percentage must be between 0 and 100");
+        } else {
+          setPercentageError("");
+        }
+      }
     }
   };
 
@@ -105,30 +125,27 @@ export default function Achievers() {
       setLoadingMessage(editing ? "Updating achiever..." : "Adding achiever...");
 
       const finalData = new FormData();
-      Object.entries(formData).forEach(([Key, value])=>{
-        finalData.append(Key, value);
+      Object.entries(formData).forEach(([key, value]) => {
+        finalData.append(key, value);
       });
 
-      const endpoint = editing ? `/achievers/editAchiever/${editing?.id}` : "/achievers/addAchiever";
+      const endpoint = editing
+        ? `/achievers/editAchiever/${editing?.id}`
+        : "/achievers/addAchiever";
       const method = editing ? "PUT" : "POST";
 
-      const response = await apiRequest(
-        method,
-        endpoint,
-        finalData
-      );
-      setAchievers((prev) => {
-        if (editing) {
-          prev.map((a) => (a.id === editing.id ? { ...a, ...response.achievers } : a));
-        }
-        else{
-          [...prev, response.achievers];
-        }
-      });
+      const response = await apiRequest(method, endpoint, finalData);
+
+      if (editing) {
+        setAchievers((prev) =>
+          prev.map((a) => (a.id === editing.id ? { ...a, ...response.achievers } : a))
+        );
+      } else {
+        setAchievers((prev) => [...prev, response.achievers]);
+      }
     } catch {
       toast.error("Something went wrong");
-    }
-    finally{
+    } finally {
       resetForm(activeTab);
       setLocalLoading(false);
       setLoadingMessage("");
@@ -136,72 +153,64 @@ export default function Achievers() {
   };
 
   const remove = async (id) => {
-    try{
+    try {
       setLocalLoading(true);
       setLoadingMessage("Deleting achiever...");
-      const response = await apiRequest("DELETE", `/achievers/deleteAchiever/${id}`);
-    }
-    catch(error){
+      await apiRequest("DELETE", `/achievers/deleteAchiever/${id}`);
+    } catch {
       toast.error("Failed to delete achiever");
-    }
-    finally{
+    } finally {
       setAchievers((prev) => prev.filter((a) => a.id !== id));
       setLocalLoading(false);
       setLoadingMessage("");
     }
   };
 
-  const openDeleteModal = (achiever) =>
-    setDeleteModal({ open: true, achiever });
-
-  const closeDeleteModal = () =>
-    setDeleteModal({ open: false, achiever: null });
+  const openDeleteModal = (achiever) => setDeleteModal({ open: true, achiever });
+  const closeDeleteModal = () => setDeleteModal({ open: false, achiever: null });
 
   const confirmDelete = () => {
-    if (deleteModal.achiever) {
-        remove(deleteModal.achiever.id)
-    }
+    if (deleteModal.achiever) remove(deleteModal.achiever.id);
     closeDeleteModal();
   };
 
-
-  const cardGlass =
-    "bg-white/5 backdrop-blur-xl border border-cyan-400/10 shadow-[0_18px_45px_rgba(0,0,0,0.65)]";
-  const chipInactive =
-    "bg-white/5 border border-cyan-200/20 text-slate-200 hover:border-cyan-300/40";
-  const mutedText = "text-slate-300";
+  /* ── shared style tokens ── */
+  const inputCls =
+    "w-full p-3 rounded-lg bg-white border border-slate-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 transition";
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-50 p-6">
+    <div className="min-h-screen bg-white text-slate-900 p-6">
       <Toaster position="top-right" />
 
-      {/* Header */}
+      {/* ── Header ── */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
         <div className="flex items-center gap-4">
-            <div className="relative h-12 w-12 rounded-2xl flex items-center justify-center bg-gradient-to-br from-cyan-400 via-sky-500 to-blue-700 shadow-lg">
-              <Trophy size={24} className="text-slate-950" />
-              <div className="absolute -inset-0.5 rounded-2xl bg-cyan-400/50 blur-lg opacity-60 pointer-events-none" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-semibold tracking-tight">Achievers</h1>
-              <p className="text-sm text-slate-400">
-                Manage academic & extracurricular achievers
-              </p>
-            </div>
+          <div className="relative h-12 w-12 rounded-2xl flex items-center justify-center bg-gradient-to-br from-cyan-400 via-sky-500 to-blue-700 shadow-lg">
+            <Trophy size={24} className="text-white" />
+            <div className="absolute -inset-0.5 rounded-2xl bg-cyan-400/30 blur-lg opacity-60 pointer-events-none" />
           </div>
+          <div>
+            <h1 className="text-3xl font-semibold tracking-tight text-slate-900">
+              Achievers
+            </h1>
+            <p className="text-sm text-slate-400">
+              Manage academic &amp; extracurricular achievers
+            </p>
+          </div>
+        </div>
 
         <button
           onClick={() => {
             resetForm(activeTab);
             setPopup(true);
           }}
-          className="flex items-center gap-2 bg-gradient-to-r from-cyan-400 via-sky-500 to-blue-700 text-slate-950 px-5 py-2 rounded-full text-sm font-semibold shadow-lg"
+          className="flex items-center gap-2 bg-gradient-to-r from-cyan-400 via-sky-500 to-blue-700 text-white px-5 py-2 rounded-full text-sm font-semibold shadow-lg hover:opacity-90 transition"
         >
           <Plus size={16} /> Add Achiever
         </button>
       </div>
 
-      {/* Tabs */}
+      {/* ── Tabs ── */}
       <div className="flex justify-center gap-3 mb-8 flex-wrap">
         {["Academic", "Extra Curricular"].map((tab) => (
           <button
@@ -210,10 +219,10 @@ export default function Achievers() {
               setActiveTab(tab);
               setFormData({ type: tab });
             }}
-            className={`px-5 py-2 rounded-full text-sm font-semibold transition ${
+            className={`px-5 py-2 rounded-full text-sm font-semibold transition border ${
               activeTab === tab
-                ? "bg-gradient-to-r from-cyan-400 to-blue-600 text-slate-950 shadow-lg"
-                : "bg-white/5 border border-cyan-300/20 text-slate-200 hover:border-cyan-300/40"
+                ? "bg-gradient-to-r from-cyan-400 to-blue-600 text-white border-transparent shadow-md"
+                : "bg-white border-slate-200 text-slate-600 hover:border-cyan-300"
             }`}
           >
             {tab}
@@ -221,15 +230,15 @@ export default function Achievers() {
         ))}
       </div>
 
-      {/* Cards */}
+      {/* ── Cards ── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredAchievers.map((a) => (
           <div
             key={a.id}
-            className="bg-white/5 backdrop-blur-xl border border-cyan-400/10 rounded-2xl p-5 shadow-xl"
+            className="bg-white border border-slate-100 rounded-2xl p-5 shadow-md hover:shadow-lg transition"
           >
             <div className="relative flex justify-center">
-              <div className="h-24 w-24 rounded-full overflow-x-hidden ring-2 ring-cyan-400/70">
+              <div className="h-24 w-24 rounded-full overflow-hidden ring-2 ring-cyan-400/70">
                 <SmartImage
                   src={a.photo}
                   alt={a.name}
@@ -237,7 +246,6 @@ export default function Achievers() {
                   className="w-full h-full object-cover"
                 />
               </div>
-
               {a.rank && (
                 <span
                   className={`absolute -top-2 -right-2 px-3 py-1 text-xs rounded-full font-bold ${badgeStyles[a.rank]}`}
@@ -248,21 +256,17 @@ export default function Achievers() {
             </div>
 
             <div className="text-center mt-4">
-              <h3 className="font-semibold text-lg">{a.name}</h3>
-              <p className="text-cyan-300 text-sm">{a.achievement}</p>
+              <h3 className="font-semibold text-lg text-slate-900">{a.name}</h3>
+              <p className="text-cyan-500 text-sm">{a.achievement}</p>
 
               {a.percentage && (
-                <p className="text-emerald-300 text-sm mt-1">
-                  {a.percentage}%
-                </p>
+                <p className="text-emerald-500 text-sm mt-1">{a.percentage}%</p>
               )}
-
               {a.level && (
                 <p className="text-slate-400 text-sm">{a.level}</p>
               )}
-
               {a.description && (
-                <p className="text-slate-300 text-xs mt-2 line-clamp-3">
+                <p className="text-slate-500 text-xs mt-2 line-clamp-3">
                   {a.description}
                 </p>
               )}
@@ -276,14 +280,13 @@ export default function Achievers() {
                   setPhotoPreview(a.photo);
                   setPopup(true);
                 }}
-                className="px-4 py-1.5 rounded-full text-xs font-semibold bg-cyan-500 hover:bg-cyan-400 text-slate-950"
+                className="flex items-center gap-1 px-4 py-1.5 rounded-full text-xs font-semibold bg-cyan-500 hover:bg-cyan-400 text-white transition"
               >
                 <Edit size={14} /> Edit
               </button>
               <button
-                // onClick={() => remove(a.id)}
                 onClick={() => openDeleteModal(a)}
-                className="px-4 py-1.5 rounded-full text-xs font-semibold bg-red-500 hover:bg-red-600 text-white"
+                className="flex items-center gap-1 px-4 py-1.5 rounded-full text-xs font-semibold bg-red-500 hover:bg-red-600 text-white transition"
               >
                 <Trash2 size={14} /> Delete
               </button>
@@ -292,31 +295,43 @@ export default function Achievers() {
         ))}
       </div>
 
-      {/* Popup */}
+      {/* ── Add / Edit Popup ── */}
       {popup && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-xl">
-          <div className="bg-white/5 backdrop-blur-xl border border-cyan-400/10 w-[95%] max-w-3xl max-h-[90vh] rounded-3xl shadow-2xl overflow-hidden">
-            <div className="flex justify-end px-4 py-3">
-              <button onClick={() => resetForm(activeTab)}>
-                <X />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm">
+          <div className="bg-white border border-slate-200 w-[95%] max-w-3xl max-h-[90vh] rounded-3xl shadow-2xl overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+              <h2 className="text-lg font-semibold text-slate-800">
+                {editing ? "Edit Achiever" : "Add Achiever"}
+              </h2>
+              <button
+                onClick={() => resetForm(activeTab)}
+                className="text-slate-400 hover:text-slate-600 transition"
+              >
+                <X size={20} />
               </button>
             </div>
 
             <form
               onSubmit={submit}
-              className="px-6 pb-6 overflow-y-auto max-h-[calc(90vh-56px)] grid grid-cols-1 md:grid-cols-3 gap-6"
+              className="px-6 pb-6 pt-4 overflow-y-auto max-h-[calc(90vh-72px)] grid grid-cols-1 md:grid-cols-3 gap-6"
             >
-              {/* Image */}
+              {/* Image upload */}
               <div className="flex flex-col items-center gap-4">
-                <div className="w-28 h-28 rounded-2xl overflow-hidden bg-slate-900/70 border border-cyan-300/40">
-                  <img
-                    src={photoPreview || "/placeholder.png"}
-                    alt="Preview"
-                    className="w-full h-full object-cover"
-                  />
+                <div className="w-28 h-28 rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 flex items-center justify-center">
+                  {photoPreview ? (
+                    <img
+                      src={photoPreview}
+                      alt="Preview"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center justify-center gap-2 text-slate-400">
+                      <Upload size={32} />
+                      <span className="text-xs text-center">No image</span>
+                    </div>
+                  )}
                 </div>
-
-                <label className="flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-950/40 border border-slate-700 cursor-pointer text-sm">
+                <label className="flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-50 border border-slate-200 cursor-pointer text-sm text-slate-600 hover:bg-slate-100 transition">
                   <Upload size={16} />
                   Upload Photo
                   <input
@@ -336,14 +351,14 @@ export default function Achievers() {
                   placeholder="Student / Team Name"
                   value={formData.name || ""}
                   onChange={handleChange}
-                  className="w-full p-3 rounded-lg bg-slate-950/40 border border-slate-700"
+                  className={inputCls}
                 />
 
                 <select
                   name="rank"
                   value={formData.rank || ""}
                   onChange={handleChange}
-                  className="w-full p-3 rounded-lg bg-slate-950/40 border border-slate-700"
+                  className={inputCls}
                 >
                   <option value="">Rank (optional)</option>
                   <option>1st</option>
@@ -353,21 +368,55 @@ export default function Achievers() {
 
                 {activeTab === "Academic" && (
                   <>
-                    <input
+                    <select
                       name="class"
-                      placeholder="Class"
                       value={formData.class || ""}
                       onChange={handleChange}
-                      className="w-full p-3 rounded-lg bg-slate-950/40 border border-slate-700"
-                    />
+                      className={inputCls}
+                    >
+                      <option value="">Select Class</option>
+                      {CLASS_OPTIONS.map((c) => (
+                        <option key={c}>{c}</option>
+                      ))}
+                    </select>
+
+                    {formData.class === "12th" && (
+                      <select
+                        name="branch"
+                        value={formData.branch || ""}
+                        onChange={handleChange}
+                        className={inputCls}
+                      >
+                        <option value="">Select Branch</option>
+                        {BRANCH_OPTIONS.map((b) => (
+                          <option key={b}>{b}</option>
+                        ))}
+                      </select>
+                    )}
+
                     <input
                       name="percentage"
                       type="number"
                       placeholder="Percentage"
                       value={formData.percentage || ""}
                       onChange={handleChange}
-                      className="w-full p-3 rounded-lg bg-slate-950/40 border border-slate-700"
+                      className={inputCls}
                     />
+                    {percentageError && (
+                      <p className="text-red-500 text-sm mt-1">{percentageError}</p>
+                    )}
+
+                    <select
+                      name="board"
+                      value={formData.board || ""}
+                      onChange={handleChange}
+                      className={inputCls}
+                    >
+                      <option value="">Select Board</option>
+                      {BOARD_OPTIONS.map((b) => (
+                        <option key={b}>{b}</option>
+                      ))}
+                    </select>
                   </>
                 )}
 
@@ -377,7 +426,7 @@ export default function Achievers() {
                       name="category"
                       value={formData.category || ""}
                       onChange={handleChange}
-                      className="w-full p-3 rounded-lg bg-slate-950/40 border border-slate-700"
+                      className={inputCls}
                     >
                       <option value="">Select Category</option>
                       {CATEGORY_OPTIONS.map((c) => (
@@ -389,7 +438,7 @@ export default function Achievers() {
                       name="level"
                       value={formData.level || ""}
                       onChange={handleChange}
-                      className="w-full p-3 rounded-lg bg-slate-950/40 border border-slate-700"
+                      className={inputCls}
                     >
                       <option value="">Select Level</option>
                       {LEVEL_OPTIONS.map((l) => (
@@ -399,26 +448,31 @@ export default function Achievers() {
                   </>
                 )}
 
-                <input
-                  name="year"
-                  type="number"
-                  placeholder="Year"
-                  value={formData.year || ""}
-                  onChange={handleChange}
-                  className="w-full p-3 rounded-lg bg-slate-950/40 border border-slate-700"
-                />
+                <div>
+                  <input
+                    name="year"
+                    placeholder="Academic session / Year (e.g., 2025-26)"
+                    value={formData.year || ""}
+                    onChange={handleChange}
+                    className={`${inputCls} ${yearError ? "border-red-500 focus:ring-red-400" : ""}`}
+                  />
+                  {yearError && (
+                    <p className="text-red-500 text-sm mt-1">{yearError}</p>
+                  )}
+                </div>
 
                 <textarea
                   name="description"
                   placeholder="Description"
                   value={formData.description || ""}
                   onChange={handleChange}
-                  className="w-full p-3 rounded-lg bg-slate-950/40 border border-slate-700"
+                  className={inputCls}
+                  rows={3}
                 />
 
                 <button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-cyan-400 via-sky-500 to-blue-700 text-slate-950 py-3 rounded-lg font-semibold shadow-lg"
+                  className="w-full bg-gradient-to-r from-cyan-400 via-sky-500 to-blue-700 text-white py-3 rounded-lg font-semibold shadow-md hover:opacity-90 transition"
                 >
                   {editing ? "Update Achiever" : "Add Achiever"}
                 </button>
@@ -428,18 +482,15 @@ export default function Achievers() {
         </div>
       )}
 
+      {/* ── Delete Confirmation Modal ── */}
       {deleteModal.open && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center bg-slate-950/70 backdrop-blur-xl animate-fadeIn">
-          <div
-            className={`${cardGlass} rounded-2xl p-6 max-w-sm w-[92%] animate-scaleIn`}
-          >
-            <h3 className="text-lg font-semibold tracking-tight text-slate-50">
-              Confirm Delete
-            </h3>
-            <p className={`text-sm mt-2 ${mutedText}`}>
+        <div className="fixed inset-0 z-60 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm">
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 max-w-sm w-[92%] shadow-xl">
+            <h3 className="text-lg font-semibold text-slate-800">Confirm Delete</h3>
+            <p className="text-sm mt-2 text-slate-500">
               Are you sure you want to delete{" "}
-              <span className="font-semibold text-sky-200">
-                {deleteModal.teacher?.name || deleteModal.teacher?.title}
+              <span className="font-semibold text-slate-700">
+                {deleteModal.achiever?.name || deleteModal.achiever?.title}
               </span>
               ?
             </p>
@@ -447,13 +498,13 @@ export default function Achievers() {
             <div className="flex justify-end gap-3 mt-6">
               <button
                 onClick={closeDeleteModal}
-                className="px-4 py-2 rounded-lg text-sm bg-slate-950/50 border border-slate-700 text-slate-100 hover:bg-slate-900/80 transition"
+                className="px-4 py-2 rounded-lg text-sm bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200 transition"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmDelete}
-                className="px-4 py-2 rounded-lg text-sm bg-red-500 hover:bg-red-600 text-white font-semibold shadow-md"
+                className="px-4 py-2 rounded-lg text-sm bg-red-500 hover:bg-red-600 text-white font-semibold shadow-sm transition"
               >
                 Delete
               </button>
@@ -462,22 +513,16 @@ export default function Achievers() {
         </div>
       )}
 
+      {/* ── Global Loading Overlay ── */}
       {(loading || localLoading) && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/80 backdrop-blur-xl z-[200] animate-fadeIn">
+        <div className="fixed inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm z-[200]">
           <div className="flex flex-col items-center gap-6">
-            
-            {/* 🔥 Neon Ring Loader */}
             <div className="relative">
-              {/* outer rotate ring */}
-              <div className="w-20 h-20 rounded-full border-4 border-transparent border-t-purple-400 animate-[spin_1.2s_linear_infinite]"></div>
-              {/* inner glow ring */}
-              <div className="absolute inset-0 rounded-full border-4 border-purple-500/20 backdrop-blur-md shadow-[0_0_20px_rgba(168,85,247,0.55)]"></div>
-              {/* pulsing core */}
-              <div className="absolute inset-[22%] rounded-full bg-purple-500/60 animate-pulse shadow-[0_0_16px_rgba(168,85,247,0.8)]"></div>
+              <div className="w-20 h-20 rounded-full border-4 border-transparent border-t-cyan-500 animate-[spin_1.2s_linear_infinite]" />
+              <div className="absolute inset-0 rounded-full border-4 border-cyan-200/40" />
+              <div className="absolute inset-[22%] rounded-full bg-cyan-400/30 animate-pulse" />
             </div>
-
-            {/* 🔥 Dynamic text */}
-            <p className="text-purple-200 text-lg font-semibold tracking-wide animate-pulse drop-shadow-lg">
+            <p className="text-cyan-600 text-lg font-semibold tracking-wide animate-pulse">
               {loadingMessage || "Please wait..."}
             </p>
           </div>

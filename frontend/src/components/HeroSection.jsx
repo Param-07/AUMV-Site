@@ -13,15 +13,26 @@ const HeroSection = () => {
 
 
   useEffect(() => {
-    if (!slides || slides.length === 0) return;
-    const interval = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % slides.length);
-    }, 4500);
-    return () => clearInterval(interval);
+  if (!slides.length) return;
+
+  const interval = setInterval(nextSlide, 6000);
+
+  return () => clearInterval(interval);
   }, [slides]);
 
+  const [direction, setDirection] = useState(1);
+
+  const nextSlide = () => {
+    setDirection(1);
+    setCurrent((prev) => (prev + 1) % slides.length);
+  };
+
+  const prevSlide = () => {
+    setDirection(-1);
+    setCurrent((prev) => (prev - 1 + slides.length) % slides.length);
+  };
   return (
-    <section className="relative h-[380px] md:h-[470px] lg:h-[520px] overflow-hidden">
+    <section className="relative h-[380px] md:h-[470px] lg:h-[520px] overflow-hidden" style={{ marginTop: "95px" }}>
       {/* Slides */}
       <div className="absolute inset-0">
       {slides.map((item, index) => {
@@ -78,10 +89,10 @@ const HeroSection = () => {
         {slides.map((_, index) => (
           <div
             key={index}
-            onClick={() => setCurrent(index)}
-            className={`w-3 h-3 rounded-full cursor-pointer transition-all ${
-              current === index ? "bg-white scale-110 shadow-md" : "bg-white/50"
-            }`}
+           onClick={() => {
+          setDirection(index > current ? 1 : -1);
+          setCurrent(index);
+        }}
           ></div>
         ))}
       </div>

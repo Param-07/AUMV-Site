@@ -164,11 +164,11 @@ def fetch_categories():
         put_conn(conn)
 
 
-def insert_video(url):
+def insert_video(url, name):
     conn = get_conn()
     try:
         cur = conn.cursor()
-        cur.execute("INSERT INTO videos (video_url) VALUES (%s) RETURNING *;", (url,))
+        cur.execute("INSERT INTO videos (video_url, title) VALUES (%s, %s) RETURNING *;", (url, name))
         return cur.fetchone()
     finally:
         put_conn(conn)
@@ -196,12 +196,14 @@ def delete_facilities(bucket_name, id):
         put_conn(conn)
 
 
-def delete_video(id):
+def delete_video(id, bucket_name):
     conn = get_conn()
     try:
         cur = conn.cursor()
         cur.execute("DELETE FROM videos WHERE id=%s RETURNING *;", (id,))
-        return cur.fetchone()
+        row = cur.fetchone()
+        remove_file_from_storage(bucket_name, [row["video_url"]])
+        return row
     finally:
         put_conn(conn)
 
@@ -216,21 +218,21 @@ def get_facilities():
         put_conn(conn)
 
 
-def insert_achiever(name, description, image_url, level, year, _class, _percentage, _type, rank):
+def insert_achiever(name, description, image_url, level, year, _class, _percentage, _type, rank, board, branch):
     conn = get_conn()
     try:
         cur = conn.cursor()
         cur.execute(
-            "INSERT INTO achievers (name, description, photo, type, class, percentage, year, level, rank) "
-            "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING *;",
-            (name, description, image_url, _type, _class, _percentage, year, level, rank)
+            "INSERT INTO achievers (name, description, photo, type, class, percentage, year, level, rank, board, branch) "
+            "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING *;",
+            (name, description, image_url, _type, _class, _percentage, year, level, rank, board, branch)
         )
         return cur.fetchone()
     finally:
         put_conn(conn)
 
 
-def update_achiever(id, name, description, image_url, level, year, _class, _percentage, _type, rank, img_updated, bucket_name):
+def update_achiever(id, name, description, image_url, level, year, _class, _percentage, _type, rank, img_updated, bucket_name, board, branch):
     conn = get_conn()
     try:
         cur = conn.cursor()
@@ -240,9 +242,9 @@ def update_achiever(id, name, description, image_url, level, year, _class, _perc
             remove_file_from_storage(bucket_name, [data["photo"]])
 
         cur.execute(
-            "UPDATE achievers SET name=%s, description=%s, photo=%s, type=%s, class=%s, percentage=%s, year=%s, level=%s, rank=%s "
+            "UPDATE achievers SET name=%s, description=%s, photo=%s, type=%s, class=%s, percentage=%s, year=%s, level=%s, rank=%s, board=%s, branch=%s "
             "WHERE id=%s RETURNING *;",
-            (name, description, image_url, _type, _class, _percentage, year, level, rank, id)
+            (name, description, image_url, _type, _class, _percentage, year, level, rank, board, branch, id)
         )
         return cur.fetchone()
     finally:

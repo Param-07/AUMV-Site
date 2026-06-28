@@ -21,17 +21,29 @@ const NavLink = ({
   className = "",
   onClick,
 }) => {
+  // If this item has a dropdown, render a button instead
+  if (hasDropdown) {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        className={`relative flex items-center px-3 py-2 text-[15px] font-medium text-slate-700 transition-colors duration-200 hover:text-indigo-900 ${className}`}
+      >
+        {children}
+        <ChevronDown className="ml-1 h-4 w-4" />
+      </button>
+    );
+  }
+
   const Component = isHash ? HashLink : Link;
 
   return (
     <Component
       smooth
       to={to}
-      onClick={onClick}
       className={`relative block px-3 py-2 text-[15px] font-medium text-slate-700 transition-colors duration-200 hover:text-indigo-900 ${className}`}
     >
       {children}
-      {hasDropdown && <ChevronDown className="inline-block ml-1 h-4 w-4" />}
     </Component>
   );
 };
@@ -128,12 +140,12 @@ const Navbar = () => {
                     isHash: true,
                   },
                   {
-                    label: "Academics",
+                    label: "Achievements",
                     to: "/academics",
                     dropdown: [
-                      { label: "Top Scholars", to: "/academics#top-scholars" },
-                      { label: "Syllabus", to: "/academics#syllabus" },
-                      { label: "Academic Calendar", to: "/academics#calendar" },
+                      { label: "High School Toppers", to: "/academics#top-scholars-10" },
+                      { label: "Intermediate Toppers", to: "/academics#top-scholars-12" },
+                      { label: "Hall of Fame", to: "/academics#hall-of-fame" },
                     ],
                   },
                   {
@@ -148,10 +160,9 @@ const Navbar = () => {
                     label: "Facilities",
                     to: "/facilities",
                     dropdown: [
-                      { label: "Computer Lab", to: "/facilities#computer-lab" },
-                      { label: "Library", to: "/facilities#library" },
-                      { label: "Transport", to: "/facilities#transport" },
-                      { label: "Sports Complex", to: "/facilities#sports" },
+                      { label: "Computer Lab", to: "/facilities/computer-lab" },
+                      { label: "Library", to: "/facilities/library" },
+                      { label: "Playground", to: "/facilities/playground" },
                     ],
                   },
                   {
@@ -177,9 +188,18 @@ const Navbar = () => {
                   },
                 ].map(({ label, to, dropdown, isHash }, idx) => (
                   <div key={idx} className="relative group">
-                    <NavLink to={to} hasDropdown={!!dropdown} isHash={isHash} className="group">
+                    <NavLink
+                      to={to}
+                      hasDropdown={!!dropdown}
+                      isHash={isHash}
+                      className="group"
+                      onClick={() =>
+                          dropdown &&
+                          handleDropdownToggle(label)
+                      }
+                  >
                       {label}
-                    </NavLink>
+                  </NavLink>
 
                     {/* --- Dropdown */}
                     {dropdown && (
@@ -265,11 +285,11 @@ const Navbar = () => {
               },
               {
                 key: "academics",
-                label: "Academics",
+                label: "Achievements",
                 items: [
-                  ["Top Scholars", "/academics#top-scholars"],
-                  ["Syllabus", "/academics#syllabus"],
-                  ["Academic Calendar", "/academics#calendar"],
+                  ["High School Toppers", "/academics#top-scholars-10"],
+                  ["Intermediate Toppers", "/academics#top-scholars-12"],
+                  ["Hall of Fame", "/academics#hall-of-fame"],
                 ],
               },
               {

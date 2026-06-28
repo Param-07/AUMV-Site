@@ -27,6 +27,7 @@ import {
 const Dashboard = () => {
   const navigate = useNavigate();
   const [darkMode, setDarkMode] = useState(false);
+  const username = localStorage.getItem("username") || "Admin";
 
   const [activities, setActivities] = useState([
     {
@@ -160,7 +161,7 @@ const Dashboard = () => {
           className="flex-1 p-6 md:p-8 rounded-2xl bg-gradient-to-r from-indigo-900 via-indigo-700 to-indigo-600 text-white shadow-lg"
         >
           <h1 className="text-2xl md:text-3xl font-bold tracking-wide">
-            Welcome back, Sir 👋
+            Welcome back, {username} 👋
           </h1>
           <p className="mt-1 text-indigo-200 text-sm md:text-base">
             Here is a quick overview of what’s happening on your school website
