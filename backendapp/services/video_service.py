@@ -6,15 +6,15 @@ BUCKET = 'AUMV-videos'
 def fetch_videos():
     return queries.fetch_all('videos')
 
-def upload_video_service(video):
+def upload_video_service(video, title):
     local_path = None
     try:
         local_path, filename = save_file_locally(video)
         url = get_public_url_for_upload(BUCKET, filename, local_path)
-        return queries.insert_video(url)
+        return queries.insert_video(url, title)
     finally:
         remove_local_file(local_path)
 
 def delete_video_service(id):
-    client.storage.from_(BUCKET).remove([id])
-    return queries.delete_video(id)
+    # client.storage.from_(BUCKET).remove([id])
+    return queries.delete_video(id, BUCKET)

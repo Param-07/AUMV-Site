@@ -1,171 +1,230 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { motion } from "framer-motion";
+import { useNavigate, useParams } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { Building2 } from "lucide-react";
 import useScrollToTop from "../hooks/useScrollToTop";
 import { useAppData } from "../context/AppDataContext";
 import SmartImage from "../components/SmartImages";
 
 const Facilities = () => {
   useScrollToTop();
+
   const { facilities = [] } = useAppData();
-  console.log("Facilities data:", facilities);
+
+  const navigate = useNavigate();
+  const { facilityId } = useParams();
 
   const defaultDescriptions = {
     "Computer Lab": [
-      "Our state-of-the-art Computer Lab is equipped with modern systems and internet.",
-      "Students get hands-on programming exposure and digital skills training.",
+      "Our modern Computer Lab provides students with hands-on experience in programming, digital literacy, and emerging technologies.",
+      "Equipped with high-speed internet and updated systems, it helps students build strong technical foundations."
     ],
+
     Library: [
-      "A peaceful knowledge hub with academic and non-fiction books.",
-      "Students develop reading habits and independent research skills.",
+      "The library serves as a center for learning, exploration, and research.",
+      "Students have access to a wide collection of academic, reference, and recreational books."
     ],
-    Transport: [
-      "Safe and reliable transportation facilities covering all local areas.",
-      "GPS-enabled buses with experienced drivers ensure safe travel.",
-    ],
-    Sports: [
-      "Dedicated playgrounds and sports areas for physical development.",
-      "Students regularly participate in inter-school tournaments.",
-    ],
+
+    Playground: [
+      "Our spacious playground encourages physical fitness, teamwork, and sportsmanship.",
+      "Students participate in various outdoor activities and inter-school competitions throughout the year."
+    ]
   };
 
-  const grouped = useMemo(() => {
-    return facilities.reduce((acc, item) => {
-      if (!acc[item.category]) acc[item.category] = [];
-      item.facilities?.forEach((f) => {
-        if (f?.src) acc[item.category].push(f.src);
-      });
-      return acc;
-    }, {});
+  const sections = useMemo(() => {
+    return facilities.map((item) => ({
+      id: item.category.toLowerCase().replace(/\s+/g, "-"),
+      title: item.category,
+      images: item.facilities?.map((f) => f.src) || [],
+      text: defaultDescriptions[item.category] || [
+        "This facility plays an important role in supporting students' overall growth and development."
+      ]
+    }));
   }, [facilities]);
 
-  const sections = useMemo(() => {
-    return Object.keys(grouped).map((category, idx) => ({
-      id: category.toLowerCase().replace(/\s+/g, "-"),
-      title: category,
-      text:
-        defaultDescriptions[category] || [
-          "This facility is actively used by students.",
-        ],
-      images: grouped[category],
-      reverse: idx % 2 !== 0,
-    }));
-  }, [grouped]);
-
-  const [currentSlide, setCurrentSlide] = useState({});
+  const [activeFacility, setActiveFacility] = useState(0);
+  const [currentImage, setCurrentImage] = useState(0);
 
   useEffect(() => {
     if (!sections.length) return;
 
-    const timers = sections.map((section, idx) => {
-      if (!section.images.length) return null;
-      return setInterval(() => {
-        setCurrentSlide((prev) => ({
-          ...prev,
-          [idx]: ((prev[idx] ?? 0) + 1) % section.images.length,
-        }));
-      }, 3500);
-    });
+    if (!facilityId) {
+      setActiveFacility(0);
+      return;
+    }
 
-    return () => timers.forEach((t) => t && clearInterval(t));
-  }, [sections]);
+    const index = sections.findIndex(
+      (section) => section.id === facilityId
+    );
+
+    if (index >= 0) {
+      setActiveFacility(index);
+      setCurrentImage(0);
+    }
+  }, [facilityId, sections]);
+
+  const selectedFacility = sections[activeFacility];
+
+  useEffect(() => {
+    if (!selectedFacility?.images?.length) return;
+
+    const timer = setInterval(() => {
+      setCurrentImage(
+        (prev) => (prev + 1) % selectedFacility.images.length
+      );
+    }, 3500);
+
+    return () => clearInterval(timer);
+  }, [selectedFacility]);
+
+  const handleFacilityChange = (index) => {
+    navigate(`/facilities/${sections[index].id}`);
+  };
+
+  if (!sections.length) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <p className="text-gray-500 text-lg">
+          No facilities available.
+        </p>
+      </div>
+    );
+  }
 
   return (
-    <section className="relative bg-gradient-to-b from-white to-gray-50 py-16 md:py-24 overflow-hidden">
-      <div className="absolute top-0 left-0 w-52 h-52 bg-indigo-300/20 rounded-full blur-3xl" />
-      <div className="absolute bottom-10 right-0 w-64 h-64 bg-purple-300/20 rounded-full blur-3xl" />
+    <section className="relative bg-gradient-to-b from-white via-slate-50 to-white py-16 md:py-24 overflow-hidden" style={{ marginTop: "95px" }}>
+      <div className="absolute top-0 left-0 w-72 h-72 bg-indigo-200/20 rounded-full blur-3xl" />
+      <div className="absolute bottom-0 right-0 w-80 h-80 bg-purple-200/20 rounded-full blur-3xl" />
 
       <div className="max-w-7xl mx-auto px-4">
-        <motion.h1
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
+        <motion.div
+          initial={{ opacity: 0, y: 35 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7 }}
-          viewport={{ once: true }}
-          className="text-center text-4xl md:text-5xl font-extrabold text-indigo-900 mb-14"
+          className="text-center mb-14"
         >
-          World-Class Facilities for Holistic Growth
-        </motion.h1>
+          <h1 className="text-4xl md:text-5xl font-extrabold text-indigo-900 mb-4">
+            {activeFacility === 0 ? "Facilities At AIC" : sections[activeFacility].title}
+          </h1>
 
-        {sections.map((section, idx) => (
-          <div
-            key={section.id}
-            id={section.id}
-            className={`flex flex-col md:flex-row items-center gap-10 md:gap-20 mb-24 ${
-              section.reverse ? "md:flex-row-reverse" : ""
-            }`}
-          >
-            <motion.div
-              className="w-full md:w-1/2 relative"
-              initial={{ x: section.reverse ? 120 : -120, opacity: 0 }}
-              whileInView={{ x: 0, opacity: 1 }}
-              transition={{ duration: 0.7 }}
-              viewport={{ once: true }}
-            >
-              <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl shadow-xl bg-gray-200">
-                {section.images.map((img, slideIndex) => (
+          <p className="text-gray-600 max-w-3xl mx-auto text-lg">
+            Discover the infrastructure and learning spaces that help
+            students achieve academic excellence and holistic growth.
+          </p>
+        </motion.div>
+
+        <div className="grid lg:grid-cols-[1fr_320px] gap-10">
+          {/* LEFT SECTION */}
+          <div>
+            {/* IMAGE SLIDER */}
+            <div className="relative aspect-[16/9] overflow-hidden shadow-2xl bg-gray-200">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentImage}
+                  initial={{ opacity: 0, scale: 1.03 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.7 }}
+                  className="absolute inset-0"
+                >
                   <SmartImage
-                    key={slideIndex}
-                    src={img}
-                    alt={section.title}
-                    width={1200}
-                    wrapperClassName="absolute inset-0"
-                    className={`w-full h-full object-cover transition-opacity duration-1000 ${
-                      (currentSlide[idx] ?? 0) === slideIndex
-                        ? "opacity-100"
-                        : "opacity-0"
+                    src={selectedFacility.images[currentImage]}
+                    alt={selectedFacility.title}
+                    width={1400}
+                    wrapperClassName="w-full h-full"
+                    className="w-full h-full object-cover"
+                  />
+                </motion.div>
+              </AnimatePresence>
+            </div>
+
+            {/* DOTS */}
+            {selectedFacility.images.length > 1 && (
+              <div className="flex justify-center gap-2 mt-5">
+                {selectedFacility.images.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setCurrentImage(idx)}
+                    className={`w-3 h-3 rounded-full transition-all ${
+                      currentImage === idx
+                        ? "bg-indigo-600 scale-110"
+                        : "bg-gray-300"
                     }`}
                   />
                 ))}
               </div>
+            )}
 
-              <div className="absolute inset-0 -z-10 translate-x-6 translate-y-6 bg-indigo-200/25 rounded-2xl" />
-
-              {section.images.length > 1 && (
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-                  {section.images.map((_, i) => (
-                    <button
-                      key={i}
-                      onClick={() =>
-                        setCurrentSlide((prev) => ({ ...prev, [idx]: i }))
-                      }
-                      className={`w-3 h-3 rounded-full transition ${
-                        (currentSlide[idx] ?? 0) === i
-                          ? "bg-indigo-600 scale-110"
-                          : "bg-white/60"
-                      }`}
-                    />
-                  ))}
-                </div>
-              )}
-            </motion.div>
-
+            {/* DESCRIPTION */}
             <motion.div
-              className="w-full md:w-1/2"
-              initial={{ opacity: 0, y: 45 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.15 }}
-              viewport={{ once: true }}
+              key={activeFacility}
+              initial={{ opacity: 0, y: 25 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="bg-white rounded-3xl shadow-lg mt-8 p-8"
             >
-              <h2 className="text-3xl md:text-4xl font-bold text-indigo-800 mb-4">
-                {section.title}
-              </h2>
+              <div className="flex items-center gap-3 mb-4">
+                <Building2 className="w-7 h-7 text-indigo-600" />
 
-              {section.text.map((para, i) => (
+                <h2 className="text-3xl font-bold text-indigo-900">
+                  {selectedFacility.title}
+                </h2>
+              </div>
+
+              {selectedFacility.text.map((paragraph, index) => (
                 <p
-                  key={i}
-                  className="text-gray-700 text-lg leading-relaxed mb-4"
+                  key={index}
+                  className="text-gray-700 leading-relaxed text-lg mb-4"
                 >
-                  {para}
+                  {paragraph}
                 </p>
               ))}
+
+              <div className="mt-6 text-sm text-gray-500">
+                Facility {activeFacility + 1} of {sections.length}
+              </div>
             </motion.div>
           </div>
-        ))}
-      </div>
 
-      <div className="absolute bottom-0 left-0 right-0 overflow-hidden">
-        <svg viewBox="0 0 1440 80" className="w-full fill-white">
-          <path d="M0,64L120,58.7C240,53,480,43,720,48C960,53,1200,75,1320,85.3L1440,96L1440,0L0,0Z" />
-        </svg>
+          {/* RIGHT SIDEBAR */}
+          <div>
+            <div className="sticky top-24 bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
+              <div className="bg-gradient-to-r from-indigo-700 to-indigo-600 text-white p-5">
+                <h3 className="text-xl font-bold">
+                  School Facilities
+                </h3>
+
+                <p className="text-indigo-100 text-sm mt-1">
+                  Select a facility to explore
+                </p>
+              </div>
+
+              <div className="p-3">
+                {sections.map((facility, index) => (
+                  <button
+                    key={facility.id}
+                    onClick={() => handleFacilityChange(index)}
+                    className={`w-full text-left p-4 rounded-2xl mb-2 transition-all duration-300 ${
+                      activeFacility === index
+                        ? "bg-indigo-600 text-white shadow-lg"
+                        : "hover:bg-indigo-50 text-gray-700"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium">
+                        {facility.title}
+                      </span>
+
+                      {activeFacility === index && (
+                        <span className="text-sm">●</span>
+                      )}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );

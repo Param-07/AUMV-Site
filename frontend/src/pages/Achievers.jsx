@@ -149,18 +149,21 @@ export default function AchieversPublic() {
       }));
   }, [filtered]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-indigo-600 text-xl font-semibold">
-          Loading Achievers...
-        </div>
-      </div>
-    );
-  }
+  const ContentLoader = () => (
+  <div className="flex flex-col items-center justify-center py-24">
+    <div className="relative">
+      <div className="w-16 h-16 border-4 border-indigo-200 rounded-full"></div>
 
+      <div className="absolute inset-0 w-16 h-16 border-4 border-transparent border-t-indigo-600 rounded-full animate-spin"></div>
+    </div>
+
+    <p className="mt-6 text-lg font-semibold text-gray-600">
+      Loading achievers...
+    </p>
+  </div>
+);
   return (
-    <section className="bg-white py-16">
+    <section className="bg-white py-16" style={{ marginTop: "95px" }}>
       <div className="max-w-7xl mx-auto px-4">
 
         {/* HEADER */}
@@ -175,7 +178,7 @@ export default function AchieversPublic() {
         </div>
 
         {/* TABS */}
-        <div className="flex justify-center gap-4 mb-8">
+        {/* <div className="flex justify-center gap-4 mb-8">
           {["Academic", "Extra Curricular"].map((tab) => (
             <button
               key={tab}
@@ -195,7 +198,7 @@ export default function AchieversPublic() {
               {tab}
             </button>
           ))}
-        </div>
+        </div> */}
 
         {/* YEAR FILTER */}
         <div className="flex justify-center gap-4 mb-16 flex-wrap">
@@ -230,7 +233,7 @@ export default function AchieversPublic() {
 
 
         {/* TOPPER OF THE YEAR */}
-        {activeTab === "Academic" && topper && (
+        {/* {activeTab === "Academic" && topper && (
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -279,12 +282,15 @@ export default function AchieversPublic() {
               </div>
             </div>
           </motion.div>
-        )} 
+        )}  */}
 
         {/* CLASS WISE */}
-        <div className="space-y-20">
+        {loading ? (
+          <ContentLoader />
+        ) : (
+          <div className="space-y-20">
           {sortedClasses.map((cls) => (
-            <div key={cls.className} className="flex justify-end pr-8">
+            <div key={cls.className} className="w-full">
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {cls.students.map((student) => (
                   <motion.div
@@ -330,6 +336,7 @@ export default function AchieversPublic() {
             </div>
           ))}
         </div>
+        )}
 
       </div>
     </section>

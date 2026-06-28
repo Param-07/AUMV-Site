@@ -164,11 +164,11 @@ def fetch_categories():
         put_conn(conn)
 
 
-def insert_video(url):
+def insert_video(url, name):
     conn = get_conn()
     try:
         cur = conn.cursor()
-        cur.execute("INSERT INTO videos (video_url) VALUES (%s) RETURNING *;", (url,))
+        cur.execute("INSERT INTO videos (video_url, title) VALUES (%s, %s) RETURNING *;", (url, name))
         return cur.fetchone()
     finally:
         put_conn(conn)
@@ -196,12 +196,14 @@ def delete_facilities(bucket_name, id):
         put_conn(conn)
 
 
-def delete_video(id):
+def delete_video(id, bucket_name):
     conn = get_conn()
     try:
         cur = conn.cursor()
         cur.execute("DELETE FROM videos WHERE id=%s RETURNING *;", (id,))
-        return cur.fetchone()
+        row = cur.fetchone()
+        remove_file_from_storage(bucket_name, [row["video_url"]])
+        return row
     finally:
         put_conn(conn)
 

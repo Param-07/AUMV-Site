@@ -13,7 +13,8 @@ def get_videos():
 def upload_video():
     try:
         video = request.files.get('video')
-        resp = upload_video_service(video)
+        title = request.form.get('title')
+        resp = upload_video_service(video, title)
         return jsonify({'message': 'success', 'video': resp}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
