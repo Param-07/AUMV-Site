@@ -1,11 +1,11 @@
 from werkzeug.datastructures import FileStorage
 from utils.file_utils import get_public_url_for_upload, remove_local_file, save_file_locally
 from data import queries
-from utils.supabase_client import client
+from utils.supabase_client import get_storage_client
 BUCKET = 'AUMV-hero'
 
 def upload_file(file, bucket_name):
-    return client.storage.from_(bucket_name).upload(file.filename, file)
+    return get_storage_client().from_(bucket_name).upload(file.filename, file)
 
 def fetch_hero():
     return queries.fetch_all('hero_table')
