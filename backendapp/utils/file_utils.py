@@ -1,5 +1,5 @@
 import os
-from utils.supabase_client import client
+from utils.supabase_client import get_storage_client
 from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
 from config import Config
@@ -24,24 +24,26 @@ def remove_local_file(path):
 
 def get_public_url_for_upload(bucket: str, target_name, photo_path):
     try:
+        storage_client = get_storage_client()
         mime_type = mimetypes.guess_type(photo_path)
         if mime_type[0] == 'application/pdf' or mime_type[0] == 'application/msword' or mime_type[0] == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
-            client.storage.from_(bucket).upload(target_name, photo_path, file_options={ "headers" : { "Content-Type": mime_type[0] } })
+            storage_client.from_(bucket).upload(target_name, photo_path, file_options={ "headers" : { "Content-Type": mime_type[0] } })
         else:
-            client.storage.from_(bucket).upload(target_name, photo_path)
+            storage_client.from_(bucket).upload(target_name, photo_path)
 
-        resp = client.storage.from_(bucket).get_public_url(target_name)
+        resp = storage_client.from_(bucket).get_public_url(target_name)
         return resp
     except Exception as e:
        print(str(e))
 
 def remove_file_from_storage(bucket: str, target_name):
     try:
+        storage_client = get_storage_client()
         files = []
         for target in target_name:
             files.append(target.split('/')[-1])
         
-        response = client.storage.from_(bucket).remove(files)
+        response = storage_client.from_(bucket).remove(files)
         return response
     except Exception as e:
         print(str(e))
