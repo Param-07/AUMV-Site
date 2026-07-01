@@ -53,10 +53,6 @@ export default function VideoGallery() {
       form.append("video", uploadFile);
       form.append("title", formData.name);
 
-      form.forEach((value, key) => {
-        console.log(key, value);
-      });
-
       const res = await apiRequest("POST", "/videos/addVideo", form);
       setVideos((prev) => [...prev, res.video]);
 

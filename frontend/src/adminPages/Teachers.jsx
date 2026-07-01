@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ManagementPages from "../components/ManagementPages";
 import { Users } from "lucide-react";
-import { addTeacher, editTeachers, getTeachers, deleteTeacherData, apiRequest} from "../utils/ApiCall";
+import { apiRequest} from "../utils/ApiCall";
 import toast, { Toaster } from "react-hot-toast";
 
 const Teachers = () => {
@@ -18,7 +18,6 @@ const Teachers = () => {
         setLoadingMessage("Loading Teachers Data...");
         const response = await apiRequest("GET", "/teachers/");
         setTeacersData(response.teachers);
-        console.log(data);
       }
       catch(error){
         setError({
@@ -53,7 +52,6 @@ const Teachers = () => {
     Object.entries(formData).forEach(([Key, value])=>{
       finalData.append(Key, value);
     });
-    console.log(finalData);
     if(formData.mode === "add"){
       try{
         setLoading(true);
@@ -63,7 +61,6 @@ const Teachers = () => {
         toast.success("Added successfully!");
       }
       catch(error){
-        console.log(error);
         setError({
           type: "error",
           title: "Upload Error",
