@@ -404,9 +404,9 @@ const DocumentUploadCard = ({ label, subtext, isUploaded, onUploadToggle, onFile
 };
 
 const Step4 = ({ formData, setFormData, errors }) => {
-    const handleFileChange = (docKey) => (file) => {
-        console.log(`File selected for ${docKey}:`, file.name);
-    };
+    // const handleFileChange = (docKey) => (file) => {
+    //     console.log(`File selected for ${docKey}:`, file.name);
+    // };
 
     const handleUploadToggle = (docKey) => () => {
         setFormData(prev => ({ ...prev, [docKey]: !prev[docKey] }));

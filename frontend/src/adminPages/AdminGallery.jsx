@@ -92,11 +92,6 @@ const AdminGallery = () => {
       if (response.message === "success") {
         setData((prev) => [...prev, response.data]);
 
-        // if (response.categories !== null) {
-        //   const _categories = response.categories.split(",").map((item) => item.trim());
-        //   setCategories(_categories);
-        // }
-
         toast.success("Image uploaded successfully!");
       } else {
         setError({
@@ -127,7 +122,7 @@ const AdminGallery = () => {
         setData((prev) => prev.filter((img) => img.id !== id));
 
         if (response.categories !== null) {
-          const _categories = response.categories.split(",").map((item) => item.trim());
+          const _categories = response.categories.get_unique_event_names.split(",").map((item) => item.trim());
           setCategories(_categories);
         }
 
@@ -139,11 +134,11 @@ const AdminGallery = () => {
           message: "File deletion failed. Try again.",
         });
       }
-    } catch {
+    } catch (error) {
       setError({
         type: "error",
         title: "Delete Error",
-        message: "Unexpected error occurred while deleting.",
+        message: error.response || "Unexpected error occurred while deleting.",
       });
     } finally {
       setLoading(false);

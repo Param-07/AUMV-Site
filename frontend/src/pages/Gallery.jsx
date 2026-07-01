@@ -23,7 +23,7 @@ export default function Gallery() {
 
    useEffect(() => {
     const hash = location.hash;
-    console.log("Current hash:", hash); // Debugging line
+    
     if (hash === "#/gallery#video-gallery") {
       setFilterClass("video");
     } else {

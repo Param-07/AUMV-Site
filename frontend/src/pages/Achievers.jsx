@@ -177,28 +177,6 @@ export default function AchieversPublic() {
           </p>
         </div>
 
-        {/* TABS */}
-        {/* <div className="flex justify-center gap-4 mb-8">
-          {["Academic", "Extra Curricular"].map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`px-6 py-3 rounded-full font-semibold transition-all ${
-                activeTab === tab
-                  ? "bg-indigo-600 text-white shadow-lg"
-                  : "bg-white border border-indigo-200 text-indigo-700"
-              }`}
-            >
-              {tab === "Academic" ? (
-                <GraduationCap className="inline h-4 mr-2" />
-              ) : (
-                <Sparkles className="inline h-4 mr-2" />
-              )}
-
-              {tab}
-            </button>
-          ))}
-        </div> */}
 
         {/* YEAR FILTER */}
         <div className="flex justify-center gap-4 mb-16 flex-wrap">
@@ -231,59 +209,6 @@ export default function AchieversPublic() {
           )}
         </div>
 
-
-        {/* TOPPER OF THE YEAR */}
-        {/* {activeTab === "Academic" && topper && (
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mb-20"
-          >
-            <div className="bg-gradient-to-r from-indigo-700 via-purple-700 to-pink-600 rounded-[32px] p-10 shadow-2xl">
-              <div className="flex flex-col md:flex-row items-center gap-8">
-
-                <div className="w-44 h-44 rounded-full overflow-hidden ring-8 ring-yellow-300">
-                  <SmartImage
-                    src={topper.photo}
-                    alt={topper.name}
-                    width={500}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-
-                <div className="text-white">
-                  <div className="flex items-center gap-3 mb-3">
-                    <Trophy
-                      size={40}
-                      className="text-yellow-300"
-                    />
-                    <h2 className="text-4xl font-black">
-                      Topper Of The Year
-                    </h2>
-                  </div>
-
-                  <h3 className="text-3xl font-bold">
-                    {topper.name}
-                  </h3>
-
-                  <p className="text-xl mt-2">
-                    Class {topper.class}
-                  </p>
-
-                  <p className="text-3xl font-black text-yellow-200 mt-3">
-                    {topper.percentage}%
-                  </p>
-
-                  <p className="opacity-80 mt-2">
-                    Session {topper.year}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        )}  */}
-
         {/* CLASS WISE */}
         {loading ? (
           <ContentLoader />
@@ -307,14 +232,6 @@ export default function AchieversPublic() {
                         className="w-full h-full object-cover"
                       />
                       
-                      {/* Rank Badge */}
-                      {/* <div className="absolute top-2 right-2">
-                        <span
-                          className={`px-2 py-0.5 rounded-full text-xs font-bold ${badgeColors[student.rank]}`}
-                        >
-                          {student.rank}
-                        </span>
-                      </div> */}
                     </div>
 
                     {/* 30% Text Area */}
