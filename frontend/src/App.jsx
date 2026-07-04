@@ -33,7 +33,7 @@ import AdmissionForm from "./components/admission/AdmissionForm";
 import CampusVisitForm from "./components/admission/CampusVisitForm";
 import AcademicResults from "./components/academicResults/AcademicResults";
 import StudentLife from "./components/studentLife/StudentLife";
-import Contact from "./components/contact/contact";
+import Contact from "./components/contact/Contact";
 
 function HomePage() {
   return (
