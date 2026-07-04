@@ -17,11 +17,11 @@ def login():
 
     user = _fetch_one(email)
     if not user:
-        return jsonify({"message": "Invalid credentials"}), 401
+        return jsonify({"message": "Invalid Email ID "}), 401
 
     # user["password"] is hashed
     if not bcrypt.check_password_hash(user["password"], password):
-        return jsonify({"message": "Invalid credentials"}), 401
+        return jsonify({"message": "Invalid Password"}), 401
 
     access_token = create_access_token(identity=user["username"], expires_delta=timedelta(minutes=45))
     refresh_token = create_refresh_token(identity=user["username"])

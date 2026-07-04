@@ -17,6 +17,9 @@ const Login = () => {
     };
   }, []);
 
+  const[loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
   const roleConfig = {
     admin: {
       label: "Admin Email",
@@ -33,6 +36,7 @@ const Login = () => {
   };
 
   const handleSubmit = async (e) => {
+    setLoading(true);
     e.preventDefault();
 
     const finalData = new FormData();
@@ -40,15 +44,24 @@ const Login = () => {
     finalData.append("password", formdata.password);
     finalData.append("role", role);
 
-    const response = await login(finalData);
+    try
+    {
+      const response = await login(finalData);
+      console.log("Login response:", response);
 
-    if (response.message === "Login successful") {
-      localStorage.setItem("token", response.access_token);
-      localStorage.setItem("r_token", response.refresh_token);
-      localStorage.setItem("username", response.username);
-      Navigate("/dashboard");
-    } else {
-      alert(response.error || "Login failed. Please try again.");
+      if (response.message === "Login successful") {
+        localStorage.setItem("token", response.access_token);
+        localStorage.setItem("r_token", response.refresh_token);
+        localStorage.setItem("username", response.username);
+        Navigate("/dashboard");
+      }
+    }
+    catch (error) {
+      setError("Invalid email id or password. Please try again.");
+      setformdata({});
+    }
+    finally {
+      setLoading(false);
     }
   };
 
@@ -133,13 +146,45 @@ const Login = () => {
                   Forgot password?
                 </span>
               </div>
+              {error && (
+               <div className="mb-1 p-1 rounded-lg text-red-700 text-sm font-medium animate-pulse">
+                {error}
+              </div>
+              )}
 
               <button
-                type="submit"
-                className="h-11 w-full text-base font-bold text-white bg-gradient-to-r from-purple-700 to-purple-900 mt-4 rounded-lg hover:from-purple-800 hover:to-purple-950 transition shadow-lg hover:shadow-xl transform hover:scale-105 duration-200"
-              >
-                {buttonText}
-              </button>
+                  type="submit"
+                  disabled={loading}
+                  className="h-11 w-full text-base font-bold text-white bg-gradient-to-r from-purple-700 to-purple-900 mt-4 rounded-lg hover:from-purple-800 hover:to-purple-950 transition shadow-lg hover:shadow-xl transform hover:scale-105 duration-200 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2"
+                >
+                  {loading ? (
+                    <>
+                      <svg
+                        className="w-5 h-5 animate-spin"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                        />
+                      </svg>
+                      Loading...
+                    </>
+                  ) : (
+                    buttonText
+                  )}
+            </button>
             </form>
 
             <p className="text-center text-xs text-gray-600 mt-3">
