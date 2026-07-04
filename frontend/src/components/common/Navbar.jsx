@@ -21,13 +21,22 @@ const NavLink = ({
   className = "",
   onClick,
 }) => {
-  // If this item has a dropdown, render a button instead
+  const location = useLocation();
+
+  const isActive = isHash
+    ? location.pathname + location.hash === to
+    : location.pathname === to;
+
   if (hasDropdown) {
     return (
       <button
         type="button"
         onClick={onClick}
-        className={`relative flex items-center px-3 py-2 text-[15px] font-medium text-slate-700 transition-colors duration-200 hover:text-indigo-900 ${className}`}
+        className={`relative flex items-center px-3 py-2 text-[15px] font-semibold transition-all duration-300 ${
+          isActive
+            ? "text-[#15157d]"
+            : "text-slate-600 hover:text-[#cca730]"
+        } ${className}`}
       >
         {children}
         <ChevronDown className="ml-1 h-4 w-4" />
@@ -41,9 +50,21 @@ const NavLink = ({
     <Component
       smooth
       to={to}
-      className={`relative block px-3 py-2 text-[15px] font-medium text-slate-700 transition-colors duration-200 hover:text-indigo-900 ${className}`}
+      className={`relative px-3 py-2 font-semibold transition-all duration-300 ${
+        isActive
+          ? "text-[#15157d]"
+          : "text-slate-600 hover:text-[#cca730]"
+      } ${className}`}
     >
       {children}
+
+      <span
+        className={`absolute left-3 right-3 -bottom-[2px] h-[2px] bg-[#cca730] transition-all duration-300 ${
+          isActive
+            ? "opacity-100 scale-x-100"
+            : "opacity-0 scale-x-0"
+        }`}
+      />
     </Component>
   );
 };
@@ -130,60 +151,28 @@ const Navbar = () => {
                 {[
                   { label: "Home", to: "/" },
                   {
-                    label: "About",
-                    to: "/#about",
-                    dropdown: [
-                      { label: "Principal's Message", to: "/#principal" },
-                      { label: "Director's Message", to: "/#director" },
-                      { label: "Vision & Mission", to: "/#vision" },
-                    ],
-                    isHash: true,
-                  },
-                  {
-                    label: "Achievements",
+                    label: "Academics",
                     to: "/academics",
-                    dropdown: [
-                      { label: "High School Toppers", to: "/academics#top-scholars-10" },
-                      { label: "Intermediate Toppers", to: "/academics#top-scholars-12" },
-                      { label: "Hall of Fame", to: "/academics#hall-of-fame" },
-                    ],
-                  },
-                  {
-                    label: "Admissions",
-                    to: "/admission",
-                    dropdown: [
-                      { label: "How to Apply", to: "/admission" },
-                      { label: "Scholarships", to: "/admission#scholarships" },
-                    ],
                   },
                   {
                     label: "Facilities",
                     to: "/facilities",
-                    dropdown: [
-                      { label: "Computer Lab", to: "/facilities/computer-lab" },
-                      { label: "Library", to: "/facilities/library" },
-                      { label: "Playground", to: "/facilities/playground" },
-                    ],
+                  },
+                  {
+                    label: "Admissions",
+                    to: "/admission",
                   },
                   {
                     label: "Gallery",
                     to: "/gallery",
-                    dropdown: [
-                      { label: "Video Gallery", to: "/gallery#video-gallery" },
-                      { label: "Photo Gallery", to: "/gallery#photo-gallery" },
-                    ],
+                  },
+                  {
+                    label: "Student Life",
+                    to: "/student-life",
                   },
                   {
                     label: "Contact",
-                    to: "/#contact",
-                    dropdown: [
-                      { label: "Contact Us", to: "/#contact" },
-                      {
-                        label: "Get Directions",
-                        external:
-                          "https://www.google.com/maps/dir/?api=1&destination=Alok+Inter+College+Chandauli",
-                      },
-                    ],
+                    to: "/contact",
                     isHash: true,
                   },
                 ].map(({ label, to, dropdown, isHash }, idx) => (
@@ -277,54 +266,30 @@ const Navbar = () => {
               {
                 key: "about",
                 label: "About",
-                items: [
-                  ["Principal's Message", "/#principal"],
-                  ["Director's Message", "/#director"],
-                  ["Vision & Mission", "/#vision"],
-                ],
               },
               {
                 key: "academics",
-                label: "Achievements",
-                items: [
-                  ["High School Toppers", "/academics#top-scholars-10"],
-                  ["Intermediate Toppers", "/academics#top-scholars-12"],
-                  ["Hall of Fame", "/academics#hall-of-fame"],
-                ],
-              },
-              {
-                key: "admissions",
-                label: "Admissions",
-                items: [
-                  ["How to Apply", "/admission"],
-                  ["Scholarships", "/admission#scholarships"],
-                ],
+                label: "Academics",
               },
               {
                 key: "facilities",
                 label: "Facilities",
-                items: [
-                  ["Computer Lab", "/facilities#computer-lab"],
-                  ["Library", "/facilities#library"],
-                  ["Transport", "/facilities#transport"],
-                  ["Sports Complex", "/facilities#sports"],
-                ],
+              },
+              {
+                key: "admissions",
+                label: "Admissions",
               },
               {
                 key: "gallery",
                 label: "Gallery",
-                items: [
-                  ["Video Gallery", "/gallery#video-gallery"],
-                  ["Photo Gallery", "/gallery#photo-gallery"],
-                ],
+              },
+              {
+                key: "student-life",
+                label: "Student Life",
               },
               {
                 key: "contact",
                 label: "Contact",
-                items: [
-                  ["Contact Us", "/#contact"],
-                  ["Get Directions", "/#contact"],
-                ],
               },
             ].map(({ key, label, items }) => (
               <div key={key}>

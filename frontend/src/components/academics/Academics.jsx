@@ -7,19 +7,25 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useLocation } from "react-router-dom";
-import SmartImage from "../components/SmartImages";
-import useScrollToTop from "../hooks/useScrollToTop";
-import { apiRequest } from "../utils/ApiCall";
+import SmartImage from "../SmartImages";
+import useScrollToTop from "../../hooks/useScrollToTop";
+import { apiRequest } from "../../utils/ApiCall";
+import AcademicsHero from "./AcademicsHero";
+import ScholasticPath from "./ScholasticPath";
+import AcademicFramework from "./AcademicFramework";
+import BoardResults from "./BoardResults";
+import Methodology from "./Methodology";
 
 const badgeColors = {
   "1st": "bg-yellow-400 text-black",
   "2nd": "bg-slate-300 text-black",
   "3rd": "bg-orange-400 text-black",
+
 };
 
 const BRANCH_OPTIONS = ["Science", "Humanities"];
 
-export default function AchieversPublic() {
+export default function Academics() {
   useScrollToTop();
   const location = useLocation();
 
@@ -163,100 +169,12 @@ export default function AchieversPublic() {
   </div>
 );
   return (
-    <section className="bg-white py-16" style={{ marginTop: "95px" }}>
-      <div className="max-w-7xl mx-auto px-4">
-
-        {/* HEADER */}
-        <div className="text-center mb-12">
-          <h1 className="text-5xl font-black text-indigo-900 mb-4">
-            Our Achievers
-          </h1>
-
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Celebrating excellence in academics and extracurricular achievements.
-          </p>
-        </div>
-
-
-        {/* YEAR FILTER */}
-        <div className="flex justify-center gap-4 mb-16 flex-wrap">
-          <select
-            value={year}
-            onChange={(e) => setYear(e.target.value)}
-            className="px-8 py-4 rounded-xl border-2 border-indigo-300 shadow-md text-base font-semibold bg-white text-indigo-900 hover:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition min-w-[300px]"
-          >
-            {years.map((y) => (
-              <option key={y} value={y}>
-                {y === "All" ? "All Years" : y}
-              </option>
-            ))}
-          </select>
-
-          {/* BRANCH FILTER - Only show for class 12th */}
-          {filterClass === "12th" && (
-            <select
-              value={selectedBranch}
-              onChange={(e) => setSelectedBranch(e.target.value)}
-              className="px-8 py-4 rounded-xl border-2 border-indigo-300 shadow-md text-base font-semibold bg-white text-indigo-900 hover:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition min-w-[200px]"
-            >
-              <option value="All">All Branches</option>
-              {BRANCH_OPTIONS.map((branch) => (
-                <option key={branch} value={branch}>
-                  {branch}
-                </option>
-              ))}
-            </select>
-          )}
-        </div>
-
-        {/* CLASS WISE */}
-        {loading ? (
-          <ContentLoader />
-        ) : (
-          <div className="space-y-20">
-          {sortedClasses.map((cls) => (
-            <div key={cls.className} className="w-full">
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {cls.students.map((student) => (
-                  <motion.div
-                    key={student.id}
-                    whileHover={{ y: -10 }}
-                    className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all flex flex-col h-64"
-                  >
-                    {/* 70% Image Area */}
-                    <div className="flex-[7] relative overflow-hidden bg-gradient-to-br from-indigo-500 to-purple-600">
-                      <SmartImage
-                        src={student.photo}
-                        alt={student.name}
-                        width={400}
-                        className="w-full h-full object-cover"
-                      />
-                      
-                    </div>
-
-                    {/* 30% Text Area */}
-                    <div className="flex-[3] bg-white p-2 flex flex-col justify-center items-center text-center">
-                      <div className="flex items-center gap-3 justify-center">
-                        <GraduationCap className="text-black-600" size={20} />
-                        <h4 className="text-lg font-bold text-black-800 line-clamp-1">
-                          {student.name}
-                        </h4>
-                      </div>
-
-                      <p className="text-lg font-black text-red-600 mt-1">
-                        {student.percentage}%
-                      </p>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-        )}
-
-      </div>
-    </section>
-  );
+    <>
+    <AcademicsHero />
+    <ScholasticPath />
+    <AcademicFramework />
+    <BoardResults />
+    <Methodology />
+    </>);
 }
 
