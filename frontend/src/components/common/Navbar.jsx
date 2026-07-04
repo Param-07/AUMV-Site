@@ -50,6 +50,7 @@ const NavLink = ({
     <Component
       smooth
       to={to}
+      onClick={onClick}
       className={`relative px-3 py-2 font-semibold transition-all duration-300 ${
         isActive
           ? "text-[#15157d]"
@@ -261,69 +262,29 @@ const Navbar = () => {
           <div className="px-4 py-4 text-[15px] space-y-2 text-slate-800">
             <NavLink to="/" className="block" onClick={() => {setIsMenuOpen(false); setOpenDropdown(null);}}>Home</NavLink>
 
-            {/* --- Mobile Dropdowns --- */}
+            {/* --- Mobile Menu Items --- */}
             {[
-              {
-                key: "about",
-                label: "About",
-              },
-              {
-                key: "academics",
-                label: "Academics",
-              },
-              {
-                key: "facilities",
-                label: "Facilities",
-              },
-              {
-                key: "admissions",
-                label: "Admissions",
-              },
-              {
-                key: "gallery",
-                label: "Gallery",
-              },
-              {
-                key: "student-life",
-                label: "Student Life",
-              },
-              {
-                key: "contact",
-                label: "Contact",
-              },
-            ].map(({ key, label, items }) => (
-              <div key={key}>
-                <button
-                  onClick={() => handleDropdownToggle(key)}
-                  className="w-full flex items-center justify-between px-3 py-2 font-medium text-slate-700 hover:text-indigo-900"
-                >
-                  {label}
-                  <ChevronDown
-                    className={`h-4 w-4 transition-transform ${
-                      openDropdown === key ? "rotate-180" : ""
-                    }`}
-                  />
-                </button>
-                {openDropdown === key && (
-                  <div className="pl-5 py-1 space-y-1">
-                    {items.map(([name, to], i) => (
-                      <HashLink
-                        smooth
-                        to={to}
-                        key={i}
-                        className="block px-3 py-1.5 text-[14px] text-slate-600 hover:text-indigo-900"
-                        onClick={() => {
-                          setIsMenuOpen(false);
-                          setOpenDropdown(null);
-                        }}
-                      >
-                        {name}
-                      </HashLink>
-                    ))}
-                  </div>
-                )}
-              </div>
+              { label: "Academics", to: "/academics" },
+              { label: "Facilities", to: "/facilities" },
+              { label: "Admissions", to: "/admission" },
+              { label: "Gallery", to: "/gallery" },
+              { label: "Student Life", to: "/student-life" },
+              { label: "Contact", to: "/contact", isHash: true },
+            ].map(({ label, to, isHash }, idx) => (
+              <NavLink
+                key={idx}
+                to={to}
+                isHash={isHash}
+                className="block"
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  setOpenDropdown(null);
+                }}
+              >
+                {label}
+              </NavLink>
             ))}
+
 
             {/* Mobile Login Link */}
             <div className="border-t border-slate-200 pt-3 mt-3">
