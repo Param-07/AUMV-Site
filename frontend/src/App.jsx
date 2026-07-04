@@ -4,8 +4,8 @@ import Footer from "./components/common/Footer";
 import AnnouncementBar from "./components/AnnouncementBar";
 import HeroSection from "./components/HeroSection";
 import AboutSection from "./pages/AboutSection";
-import Facilities from "./pages/Facilities";
-import Addmission from "./pages/Admission";
+import Facilities from "./components/facilities/Facilities";
+import Addmission from "./components/admission/Admission";
 import Gallery from "./pages/Gallery";
 import Login from "./components/common/Login";
 import Dashboard from "./adminPages/Dashboard";
@@ -20,18 +20,31 @@ import LoadingScreen from "./components/common/LoadingScreen";
 import SkeletonBlock from "./components/SkeletonBlock";
 import { apiRequest } from "./utils/ApiCall";
 import Achievers from "./adminPages/Achievers";
+import LegacySection from "./components/LegacySection";
 
 import { AppDataProvider, useAppData } from "./context/AppDataContext";
 import AdminFacilities from "./adminPages/AdminFacilities";
-import AchieversPublic from "./pages/Achievers";
+import Academics from "./components/academics/Academics";
 import MainPageManager from "./adminPages/MainPageManager";
+import LeadershipSection from "./components/LeadershipSection";
+import RecentHighlights from "./components/RecentHighlights";
+import CTASection from "./components/CTASection";
+import AdmissionForm from "./components/admission/AdmissionForm";
+import CampusVisitForm from "./components/admission/CampusVisitForm";
+import AcademicResults from "./components/academicResults/AcademicResults";
+import StudentLife from "./components/studentLife/StudentLife";
+import Contact from "./components/contact/contact";
 
 function HomePage() {
   return (
     <>
       <HeroSection />
       <AnnouncementBar />
-      <AboutSection />
+      <LegacySection />
+      <LeadershipSection />
+      <RecentHighlights />
+      <CTASection />
+      {/* <AboutSection /> */}
     </>
   );
 }
@@ -45,7 +58,12 @@ function PublicLayout() {
         <Route path="/facilities/:facilityId?" element={<Facilities />} />
         <Route path="/gallery" element={<Gallery />} />
         <Route path="/admission" element={<Addmission />} />
-        <Route path="/academics" element={<AchieversPublic />} />
+        <Route path="/academics" element={<Academics />} />
+        <Route path="/admission-form" element={<AdmissionForm />} />
+        <Route path="/campus-visit" element={<CampusVisitForm />} />
+        <Route path="/academic-results/:classId" element={<AcademicResults />} />
+        <Route path="/student-life" element={<StudentLife />} />
+        <Route path="/contact" element={<Contact />} />
       </Routes>
       <Footer />
     </>

@@ -1,100 +1,155 @@
 import React, { useState, useEffect } from "react";
-import School from "../assets/images/AlokSchool.png";
+import { motion, AnimatePresence } from "framer-motion";
 import { useAppData } from "../context/AppDataContext";
-import SmartImage from "./SmartImages";
+import School from "../assets/images/AlokSchool.png";
 
 const HeroSection = () => {
   const { hero } = useAppData();
+
   const [current, setCurrent] = useState(0);
-  var slides = hero && hero.length > 0 ? hero : [{ url: School }];
-  if(hero.length>0){
-    slides = hero.filter((i)=> i.category === "Hero");
+
+  let slides = [{ url: School }];
+
+  if (hero && hero.length > 0) {
+    const heroSlides = hero.filter((item) => item.category === "Hero");
+    if (heroSlides.length > 0) {
+      slides = heroSlides;
+    }
   }
 
-
   useEffect(() => {
-  if (!slides.length) return;
+    if (!slides.length) return;
 
-  const interval = setInterval(nextSlide, 6000);
+    const interval = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % slides.length);
+    }, 6000);
 
-  return () => clearInterval(interval);
-  }, [slides]);
+    return () => clearInterval(interval);
+  }, [slides.length]);
 
-  const [direction, setDirection] = useState(1);
-
-  const nextSlide = () => {
-    setDirection(1);
-    setCurrent((prev) => (prev + 1) % slides.length);
-  };
-
-  const prevSlide = () => {
-    setDirection(-1);
-    setCurrent((prev) => (prev - 1 + slides.length) % slides.length);
-  };
   return (
-    <section className="relative h-[380px] md:h-[470px] lg:h-[520px] overflow-hidden" style={{ marginTop: "95px" }}>
-      {/* Slides */}
-      <div className="absolute inset-0">
-      {slides.map((item, index) => {
-      const isActive = index === current;
-      const optimized = `${item.url}?width=1600&format=webp&quality=80`;
+    <section
+      className="relative h-[85vh] overflow-hidden"
+      style={{ marginTop: "95px" }}
+    >
+      {/* Background Slider */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={current}
+          initial={{ scale: 1.08, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 1.2 }}
+          className="absolute inset-0"
+        >
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{
+              backgroundImage: `url(${
+                slides[current]?.url
+              }?width=1800&format=webp&quality=85)`,
+            }}
+          />
+        </motion.div>
+      </AnimatePresence>
 
-      return (
-        <div
-          key={index}
-          className={`absolute inset-0 transition-opacity duration-[1100ms] ease-in-out ${
-            isActive ? "opacity-100" : "opacity-0"
-          }`}
-          style={{
-            backgroundImage: `url(${optimized})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-          }}
-        />
-      );
-      })}
-      </div>
+      {/* Premium Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-r from-[#15157d]/95 via-[#15157d]/75 to-[#15157d]/30" />
 
-      {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/65 via-black/40 to-black/60"></div>
+      {/* Decorative Accent */}
+      <div className="absolute top-0 right-0 w-[35vw] h-full bg-gradient-to-l from-[#cca730]/10 to-transparent" />
 
-      {/* HERO TEXT BLOCK */}
-      <div className="relative z-10 flex flex-col justify-center items-center h-full text-center px-4 animate-[fadeIn_1.4s_ease]">
-        <h1 className="text-white font-extrabold text-3xl md:text-5xl tracking-tight drop-shadow-lg">
-          Excellence in Education
-        </h1>
-        <p className="text-gray-200 mt-3 md:text-lg max-w-2xl leading-relaxed">
-          Empowering young minds with discipline, values, innovation, and lifelong learning.
-        </p>
-
-        <div className="mt-6 flex gap-4 flex-wrap justify-center">
-          <a
-            href="/#/admission"
-            className="px-6 py-3 rounded-full font-semibold bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-500/30 hover:shadow-indigo-600/50 transition transform hover:-translate-y-[2px]"
+      {/* Content */}
+      <div className="relative z-10 max-w-7xl mx-auto h-full px-6 md:px-10 flex items-center">
+        <div className="max-w-3xl">
+          <motion.span
+            initial={{ opacity: 0, y: 25 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="inline-block text-[#ffe088] uppercase tracking-[0.25em] text-sm font-semibold mb-5"
           >
-            Apply for Admission
-          </a>
-          <a
-            href="/#/academics"
-            className="px-6 py-3 rounded-full font-semibold border border-white/80 text-white hover:bg-white hover:text-black transition shadow-lg"
+            Established Excellence
+          </motion.span>
+
+          <motion.h1
+            initial={{ opacity: 0, y: 35 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-white font-black text-4xl md:text-6xl lg:text-7xl leading-tight"
           >
-            Explore Academics
-          </a>
+            Nurturing Minds,
+            <br />
+            Building Futures
+            <span className="block text-[#ffe088] mt-2">
+              In Chandauli
+            </span>
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 35 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.15 }}
+            className="mt-7 text-lg md:text-xl text-gray-200 max-w-2xl leading-relaxed"
+          >
+            A premier educational institution committed to academic
+            excellence, character development, innovation, and lifelong
+            learning for future generations.
+          </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0, y: 35 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.3 }}
+            className="flex flex-wrap gap-4 mt-10"
+          >
+            <a
+              href="/#/admission"
+              className="px-8 py-4 bg-red-700 hover:bg-red-800 text-white font-semibold rounded-lg shadow-xl transition-all duration-300 hover:-translate-y-1"
+            >
+              Explore Admissions
+            </a>
+
+            <a
+              href="/#/gallery"
+              className="px-8 py-4 border border-white/80 text-white font-semibold rounded-lg hover:bg-white hover:text-[#15157d] transition-all duration-300"
+            >
+              View Campus
+            </a>
+          </motion.div>
         </div>
       </div>
 
-      {/* INDICATORS */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
+      {/* Slide Indicators */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3 z-20">
         {slides.map((_, index) => (
-          <div
+          <button
             key={index}
-           onClick={() => {
-          setDirection(index > current ? 1 : -1);
-          setCurrent(index);
-        }}
-          ></div>
+            onClick={() => setCurrent(index)}
+            className={`transition-all duration-300 rounded-full ${
+              current === index
+                ? "w-10 h-3 bg-[#cca730]"
+                : "w-3 h-3 bg-white/50"
+            }`}
+          />
         ))}
+      </div>
+
+      {/* Scroll Indicator */}
+      <div className="absolute bottom-8 right-8 hidden lg:flex flex-col items-center text-white/80">
+        <span className="text-xs uppercase tracking-widest mb-2">
+          Scroll
+        </span>
+
+        <motion.div
+          animate={{
+            y: [0, 12, 0],
+          }}
+          transition={{
+            repeat: Infinity,
+            duration: 1.6,
+          }}
+          className="w-[2px] h-10 bg-white/60"
+        />
       </div>
     </section>
   );
