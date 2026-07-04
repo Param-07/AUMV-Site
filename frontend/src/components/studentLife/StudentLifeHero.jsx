@@ -3,7 +3,7 @@ import { Users, Award } from "lucide-react";
 
 const StudentLifeHero = () => {
   return (
-    <section className="relative py-24 overflow-hidden">
+    <section className="relative h-[520px] md:h-[620px] overflow-hidden">
       <div className="max-w-7xl mx-auto px-4">
 
         <div className="grid lg:grid-cols-2 gap-16 items-center">
@@ -96,7 +96,7 @@ const StudentLifeHero = () => {
               <img
                 src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1600"
                 alt="Student Life"
-                className="w-full h-[600px] object-cover"
+                className="w-full h-[500px] object-cover"
               />
             </div>
 

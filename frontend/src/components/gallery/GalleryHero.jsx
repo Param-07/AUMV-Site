@@ -9,7 +9,7 @@ const GalleryHero = ({
   setSelectedCategory,
 }) => {
   return (
-    <section className="max-w-7xl mx-auto px-4 pt-36 pb-10">
+    <section className="relative h-[520px] md:h-[620px] overflow-hidden" style={{ marginTop: "95px" }}>
       {/* HEADER */}
 
       <div className="flex flex-col lg:flex-row justify-between lg:items-end gap-8 mb-12">
