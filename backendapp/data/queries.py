@@ -218,21 +218,21 @@ def get_facilities():
         put_conn(conn)
 
 
-def insert_achiever(name, description, image_url, level, year, _class, _percentage, _type, rank, board, branch):
+def insert_achiever(name, image_url, year, _class, _percentage, board, branch):
     conn = get_conn()
     try:
         cur = conn.cursor()
         cur.execute(
-            "INSERT INTO achievers (name, description, photo, type, class, percentage, year, level, rank, board, branch) "
-            "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) RETURNING *;",
-            (name, description, image_url, _type, _class, _percentage, year, level, rank, board, branch)
+            "INSERT INTO achievers (name, photo, year, class, percentage, board, branch) "
+            "VALUES (%s,%s,%s,%s,%s,%s,%s) RETURNING *;",
+            (name, image_url, year, _class, _percentage, board, branch)
         )
         return cur.fetchone()
     finally:
         put_conn(conn)
 
 
-def update_achiever(id, name, description, image_url, level, year, _class, _percentage, _type, rank, img_updated, bucket_name, board, branch):
+def update_achiever(id, name, image_url, year, _class, _percentage, img_updated, bucket_name, board, branch):
     conn = get_conn()
     try:
         cur = conn.cursor()
@@ -242,9 +242,9 @@ def update_achiever(id, name, description, image_url, level, year, _class, _perc
             remove_file_from_storage(bucket_name, [data["photo"]])
 
         cur.execute(
-            "UPDATE achievers SET name=%s, description=%s, photo=%s, type=%s, class=%s, percentage=%s, year=%s, level=%s, rank=%s, board=%s, branch=%s "
+            "UPDATE achievers SET name=%s, photo=%s, year=%s, class=%s, percentage=%s, board=%s, branch=%s "
             "WHERE id=%s RETURNING *;",
-            (name, description, image_url, _type, _class, _percentage, year, level, rank, board, branch, id)
+            (name, image_url, year, _class, _percentage, board, branch, id)
         )
         return cur.fetchone()
     finally:

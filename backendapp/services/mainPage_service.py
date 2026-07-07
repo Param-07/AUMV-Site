@@ -14,7 +14,6 @@ def add_hero(hero, photo):
     local_photo = None
     try:
         if photo:
-            print("here2")
             local_photo, photo_filename = save_file_locally(photo)
             photo_url = get_public_url_for_upload(BUCKET, photo_filename, local_photo)
         else:

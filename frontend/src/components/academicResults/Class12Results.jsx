@@ -28,7 +28,6 @@ const Class12Results = () => {
   const class12Students = useMemo(() => {
     return achievers.filter(
       (a) =>
-        a.type === "Academic" &&
         String(a.class) === "12th"
     );
   }, [achievers]);

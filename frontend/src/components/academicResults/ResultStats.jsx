@@ -33,17 +33,12 @@ const ResultsStats = ({ classId }) => {
   const filtered = useMemo(() => {
     return achievers.filter(
       (a) =>
-        a.type === "Academic" &&
         String(a.class) ===
           (classId === "10" ? "10th" : "12th")
     );
   }, [achievers, classId]);
 
   const stats = useMemo(() => {
-    const topper = filtered.find(
-      (s) => s.rank === "1st"
-    );
-
     const highest =
       filtered.length > 0
         ? Math.max(
@@ -53,12 +48,17 @@ const ResultsStats = ({ classId }) => {
           )
         : 0;
 
+    const topperNames = filtered
+      .filter((s) => Number(s.percentage || 0) === highest)
+      .map((s) => s.name || "N/A")
+      .filter(Boolean);
+
     const above90 = filtered.filter(
       (s) => Number(s.percentage || 0) >= 90
     ).length;
 
     return {
-      topper,
+      topper: topperNames.length > 0 ? topperNames.join(", ") : "N/A",
       highest,
       above90,
       total: filtered.length,
@@ -87,7 +87,7 @@ const ResultsStats = ({ classId }) => {
     {
       title: "School Topper",
       value:
-        stats.topper?.name?.split(" ")[0] ||
+        stats.topper?.split(" ")[0] ||
         "N/A",
       icon: Star,
       color: "text-green-600",
