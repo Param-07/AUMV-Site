@@ -14,8 +14,9 @@ def get_achievers():
 def create_achiever():
     try:
         photo = request.files.get('photo')
-        achiever = add_achiever(request.form.to_dict(), photo)
-        return jsonify({'achievers': achiever}), 200
+        data = request.form.to_dict()
+        achiever = add_achiever(data, photo)
+        return jsonify({'message': "success",'achievers': achiever}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -23,10 +24,10 @@ def create_achiever():
 def update_achiever(id):
     try:
         photo = request.files.get('photo') or request.form.get('photo')
-        achiever = edit_achiever(id, request.form.to_dict(), photo)
-        return jsonify({'achievers': achiever}), 200
+        data = request.form.to_dict()
+        achiever = edit_achiever(id, data, photo)
+        return jsonify({'message': "success",'achievers': achiever}), 200
     except Exception as e:
-        print(str(e))
         return jsonify({'error': str(e)}), 500
 
 @jwt_required()

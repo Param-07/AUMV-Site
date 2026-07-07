@@ -1,29 +1,59 @@
 import React, { useEffect, useState } from "react";
-import { Plus, Trash2, X, Play, Upload, Video } from "lucide-react";
+import {
+  Plus,
+  Trash2,
+  X,
+  Play,
+  Upload,
+  Video,
+  RefreshCw,
+} from "lucide-react";
 import { apiRequest } from "../utils/ApiCall";
 import toast, { Toaster } from "react-hot-toast";
 
 export default function VideoGallery() {
   const [videos, setVideos] = useState([]);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [confirmDelete, setConfirmDelete] = useState(null);
-  const [uploadFile, setUploadFile] = useState(null);
-  const [formData, setFormData] = useState({ name: "" });
-  const [loading, setLoading] = useState(false);
-  const [loadingMessage, setLoadingMessage] = useState("");
 
-  const inputCls =
-    "w-full p-3 rounded-lg bg-white border border-slate-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 transition";
+  const [modalOpen, setModalOpen] =
+    useState(false);
+
+  const [confirmDelete, setConfirmDelete] =
+    useState(null);
+
+  const [uploadFile, setUploadFile] =
+    useState(null);
+
+  const [formData, setFormData] =
+    useState({
+      name: "",
+    });
+
+  const [loading, setLoading] =
+    useState(false);
+
+  const [loadingMessage, setLoadingMessage] =
+    useState("");
 
   const fetchVideos = async () => {
     try {
       setLoading(true);
-      setLoadingMessage("Loading Videos...");
+      setLoadingMessage(
+        "Loading Videos..."
+      );
 
-      const data = await apiRequest("GET", "/videos/getVideos");
-      setVideos(data.videos || []);
+      const data =
+        await apiRequest(
+          "GET",
+          "/videos/getVideos"
+        );
+
+      setVideos(
+        data.videos || []
+      );
     } catch {
-      toast.error("Failed to load videos");
+      toast.error(
+        "Failed to load videos"
+      );
     } finally {
       setLoading(false);
       setLoadingMessage("");
@@ -35,226 +65,531 @@ export default function VideoGallery() {
   }, []);
 
   const handleFileSelect = (e) => {
-    const file = e.target.files[0];
+    const file =
+      e.target.files?.[0];
+
     if (!file) return;
-    if (!file.type.startsWith("video/")) return toast.error("Only video files allowed");
+
+    if (
+      !file.type.startsWith(
+        "video/"
+      )
+    ) {
+      toast.error(
+        "Only video files allowed"
+      );
+      return;
+    }
+
     setUploadFile(file);
   };
 
+  const resetForm = () => {
+    setUploadFile(null);
+
+    setFormData({
+      name: "",
+    });
+
+    setModalOpen(false);
+  };
+
   const handleUpload = async () => {
-    if (!uploadFile) return toast.error("Select a video first");
-    if (videos.length >= 5) return toast.error("You can upload max 5 videos");
+    if (!uploadFile) {
+      return toast.error(
+        "Please select a video"
+      );
+    }
+
+    if (!formData.name) {
+      return toast.error(
+        "Please enter a title"
+      );
+    }
+
+    if (videos.length >= 5) {
+      return toast.error(
+        "Maximum 5 videos allowed"
+      );
+    }
 
     try {
       setLoading(true);
-      setLoadingMessage("Uploading Video...");
+      setLoadingMessage(
+        "Uploading Video..."
+      );
 
-      const form = new FormData();
-      form.append("video", uploadFile);
-      form.append("title", formData.name);
+      const form =
+        new FormData();
 
-      const res = await apiRequest("POST", "/videos/addVideo", form);
-      setVideos((prev) => [...prev, res.video]);
+      form.append(
+        "video",
+        uploadFile
+      );
 
-      toast.success("Video uploaded");
+      form.append(
+        "title",
+        formData.name
+      );
+
+      const res =
+        await apiRequest(
+          "POST",
+          "/videos/addVideo",
+          form
+        );
+
+      setVideos((prev) => [
+        ...prev,
+        res.video,
+      ]);
+
+      toast.success(
+        "Video uploaded successfully"
+      );
+
+      resetForm();
     } catch {
-      toast.error("Upload failed");
+      toast.error(
+        "Upload failed"
+      );
     } finally {
-      setUploadFile(null);
-      setFormData({ name: "" });
-      setModalOpen(false);
       setLoading(false);
       setLoadingMessage("");
     }
   };
 
-  const handleDelete = async () => {
-    if (!confirmDelete) return;
-    try {
-      setLoading(true);
-      setLoadingMessage("Deleting Video...");
+  const handleDelete =
+    async () => {
+      if (!confirmDelete)
+        return;
 
-      const res = await apiRequest("DELETE", `/videos/deleteVideo/${confirmDelete.id}`);
-      if (res.message === "success") {
-        setVideos((prev) => prev.filter((v) => v.id !== confirmDelete.id));
-        toast.success("Video deleted");
+      try {
+        setLoading(true);
+
+        setLoadingMessage(
+          "Deleting Video..."
+        );
+
+        const res =
+          await apiRequest(
+            "DELETE",
+            `/videos/deleteVideo/${confirmDelete.id}`
+          );
+
+        if (
+          res.message ===
+          "success"
+        ) {
+          setVideos((prev) =>
+            prev.filter(
+              (v) =>
+                v.id !==
+                confirmDelete.id
+            )
+          );
+
+          toast.success(
+            "Video deleted"
+          );
+        }
+      } catch {
+        toast.error(
+          "Failed to delete"
+        );
+      } finally {
+        setConfirmDelete(
+          null
+        );
+
+        setLoading(false);
+
+        setLoadingMessage("");
       }
-    } catch {
-      toast.error("Failed to delete");
-    } finally {
-      setConfirmDelete(null);
-      setLoading(false);
-      setLoadingMessage("");
-    }
-  };
+    };  return (
+    <div className="min-h-screen bg-slate-50 p-8">
 
-  return (
-    <div className="min-h-screen p-6 bg-white text-slate-900">
       <Toaster position="top-right" />
 
-      <div className="max-w-6xl mx-auto">
-        {/* ---- HEADER ---- */}
-        <div className="flex justify-between items-center mb-8">
+      <div className="max-w-7xl mx-auto">
+
+        {/* HEADER */}
+        <div className="flex justify-between items-end mb-8">
+
           <div className="flex items-center gap-4">
-            <div className="relative h-12 w-12 rounded-2xl flex items-center justify-center bg-gradient-to-br from-cyan-400 via-sky-500 to-blue-700 shadow-lg">
-              <Video size={24} className="text-slate-950" />
-              <div className="absolute -inset-0.5 rounded-2xl bg-cyan-400/50 blur-lg opacity-60 pointer-events-none" />
+
+            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg">
+
+              <Video
+                size={28}
+                className="text-white"
+              />
+
             </div>
+
             <div>
-              <h1 className="text-3xl font-semibold tracking-tight">Video Gallery</h1>
-              <p className="text-sm text-slate-400">
+
+              <h1 className="text-3xl font-bold text-slate-900">
+                Video Gallery
+              </h1>
+
+              <p className="text-slate-500 mt-1">
                 Manage and upload school event videos
               </p>
+
             </div>
+
           </div>
 
-          <button
-            onClick={() => setModalOpen(true)}
-            className="relative flex items-center gap-2 bg-gradient-to-r from-cyan-400 via-sky-500 to-blue-700 text-slate-950 px-5 py-2.5 rounded-full font-semibold shadow-[0_15px_40px_rgba(0,0,0,0.9)] hover:shadow-[0_20px_55px_rgba(0,0,0,1)] active:scale-95 transition"
-          >
-            <Plus size={18} />
-            Upload Video
-            <span className="absolute -inset-0.5 rounded-full bg-cyan-400/40 blur opacity-70 pointer-events-none" />
-          </button>
+          <div className="flex items-center gap-3">
+
+            <div className="hidden md:flex items-center bg-white border border-slate-200 rounded-xl px-4 py-2 shadow-sm">
+
+              <div className="pr-4 border-r border-slate-200">
+
+                <span className="block text-xs uppercase text-slate-500 font-semibold">
+                  Total Videos
+                </span>
+
+                <span className="block text-xl font-bold text-blue-600">
+                  {videos.length}
+                </span>
+
+              </div>
+
+              <div className="pl-4">
+
+                <span className="text-green-600 font-medium text-sm">
+                  Active
+                </span>
+
+              </div>
+
+            </div>
+
+            <button
+              onClick={fetchVideos}
+              className="flex items-center gap-2 px-4 py-2 border border-slate-300 rounded-lg bg-white hover:bg-slate-100 transition"
+            >
+              <RefreshCw size={16} />
+              Refresh
+            </button>
+
+            <button
+              onClick={() =>
+                setModalOpen(true)
+              }
+              className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md hover:shadow-lg transition"
+            >
+              <Plus size={18} />
+              Upload Video
+            </button>
+
+          </div>
+
         </div>
 
         {videos.length >= 5 && (
-          <p className="text-red-400 font-medium mb-4">
-            Limit reached — Maximum 5 videos allowed
-          </p>
+          <div className="mb-6 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg">
+            Maximum 5 videos allowed.
+          </div>
         )}
 
-        {/* ---- GRID DISPLAY ---- */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {videos.map((item) => (
-            <div
-              key={item.id}
-              className="group rounded-2xl bg-white/5 backdrop-blur-xl border border-cyan-400/10 shadow-[0_18px_45px_rgba(0,0,0,0.65)] hover:shadow-[0_25px_60px_rgba(0,0,0,0.75)] transition overflow-hidden"
-            >
-              <video
-                src={item.video_url}
-                controls
-                className="w-full h-52 object-cover bg-black"
-              />
+        {/* VIDEO GRID */}
+        {videos.length === 0 && !loading ? (
 
-              <div className="flex justify-between items-center p-4">
-                <p className="text-sm text-slate-300 truncate">{item.title || "Video"}</p>
+          <div className="bg-white border-2 border-dashed border-slate-300 rounded-xl p-16 text-center">
 
-                <button
-                  onClick={() => setConfirmDelete(item)}
-                  className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg transition shadow-md active:scale-95"
-                >
-                  <Trash2 size={16} />
-                </button>
-              </div>
-            </div>
-          ))}
+            <Play
+              size={50}
+              className="mx-auto text-slate-300 mb-4"
+            />
 
-          {!loading && videos.length === 0 && (
-            <div className="col-span-full text-center py-14 rounded-2xl bg-white/5 backdrop-blur-xl border border-cyan-400/20 text-slate-300 shadow-inner">
-              <Play size={35} className="mx-auto opacity-50 mb-3" />
-              No videos uploaded yet
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* ---- UPLOAD MODAL ---- */}
-      {modalOpen && (
-        <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-xl z-50 flex items-center justify-center animate-fadeIn">
-          <div className="w-[92%] max-w-md rounded-3xl bg-white/5 backdrop-blur-xl p-7 border border-cyan-400/10 shadow-[0_15px_45px_rgba(0,0,0,0.8)] relative animate-scaleIn">
-            <button
-              onClick={() => {
-                setModalOpen(false);
-                setUploadFile(null);
-              }}
-              className="absolute top-4 right-4 p-2 rounded-full bg-white/10 border border-slate-700 text-slate-100 hover:bg-white/20 transition"
-            >
-              <X size={20} />
-            </button>
-
-            <h2 className="text-xl font-semibold mb-5 tracking-tight text-slate-50">
-              Upload Video
-            </h2>
-
-            <label className="flex items-center gap-3 bg-slate-950/40 border border-slate-700/60 text-slate-300 px-4 py-3 rounded-2xl cursor-pointer hover:bg-slate-900/60 transition">
-              <Upload size={20} />
-              <span className="truncate">
-                {uploadFile ? uploadFile.name : "Choose a video file"}
-              </span>
-              <input type="file" className="hidden" accept="video/*" onChange={handleFileSelect} />
-            </label>
-            <label className="flex items-center gap-3 bg-slate-950/40 border border-slate-700/60 text-slate-300 px-4 py-3 rounded-2xl cursor-pointer hover:bg-slate-900/60 transition">
-            <input
-                  name="name"
-                  placeholder="Student / Team Name"
-                  value={formData.name || ""}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className={inputCls}
-                />
-              </label>
-
-            <button
-              disabled={loading}
-              onClick={handleUpload}
-              className="mt-6 w-full bg-gradient-to-r from-cyan-400 via-sky-500 to-blue-700 text-slate-950 py-2.5 rounded-xl font-semibold shadow-[0_10px_30px_rgba(0,0,0,0.9)] hover:shadow-[0_15px_45px_rgba(0,0,0,1)] disabled:bg-slate-600 active:scale-95 transition"
-            >
-              {loading ? "Uploading..." : "Upload"}
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* ---- DELETE CONFIRM MODAL ---- */}
-      {confirmDelete && (
-        <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-xl z-50 flex items-center justify-center animate-fadeIn">
-          <div className="w-[92%] max-w-sm rounded-3xl bg-white/5 backdrop-blur-xl p-6 border border-cyan-400/10 shadow-[0_15px_45px_rgba(0,0,0,0.8)] animate-scaleIn">
-            <h3 className="text-lg font-semibold tracking-tight text-slate-50">
-              Remove Video
+            <h3 className="text-xl font-semibold text-slate-800">
+              No Videos Found
             </h3>
-            <p className="text-sm text-slate-300 mt-2">
-              Are you sure you want to delete this video?
+
+            <p className="text-slate-500 mt-2">
+              Upload videos to get started.
             </p>
 
-            <div className="flex justify-end gap-3 mt-6">
+          </div>
+
+        ) : (
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+            {videos.map((item) => (              <div
+                key={item.id}
+                className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition"
+              >
+
+                {/* VIDEO */}
+                <div className="relative">
+
+                  <video
+                    src={item.video_url}
+                    controls
+                    className="w-full h-56 object-cover bg-black"
+                  />
+
+                  <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-sm rounded-lg px-2 py-1 shadow-sm border border-slate-200">
+
+                    <span className="text-xs font-medium text-slate-700">
+                      Video
+                    </span>
+
+                  </div>
+
+                </div>
+
+                {/* CONTENT */}
+                <div className="p-4">
+
+                  <h3 className="font-semibold text-slate-900 truncate">
+                    {item.title || "Untitled Video"}
+                  </h3>
+
+                  <p className="text-sm text-slate-500 mt-1">
+                    School Event Video
+                  </p>
+
+                  <div className="flex items-center justify-between mt-4 pt-4 border-t border-slate-100">
+
+                    <span className="text-xs text-slate-400">
+                      Video Gallery
+                    </span>
+
+                    <button
+                      onClick={() =>
+                        setConfirmDelete(item)
+                      }
+                      className="p-2 rounded-lg text-red-600 hover:bg-red-50 transition"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+
+                  </div>
+
+                </div>
+
+              </div>
+            ))}
+
+          </div>
+
+        )}
+
+      </div>      {/* UPLOAD MODAL */}
+      {modalOpen && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+
+          <div className="bg-white w-full max-w-sm rounded-xl shadow-2xl overflow-hidden">
+
+            {/* HEADER */}
+            <div className="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
+
+              <div>
+                <h2 className="text-lg font-semibold text-slate-900">
+                  Upload Video
+                </h2>
+
+                <p className="text-sm text-slate-500">
+                  Add a new video to the gallery
+                </p>
+              </div>
+
               <button
-                onClick={() => setConfirmDelete(null)}
-                className="px-4 py-2 rounded-lg bg-slate-950/50 border border-slate-700 text-slate-100 hover:bg-slate-900/80 transition"
+                onClick={resetForm}
+                className="p-2 rounded-md hover:bg-slate-100 transition"
+              >
+                <X size={18} />
+              </button>
+
+            </div>
+
+            {/* BODY */}
+            <div className="p-5">
+
+              <div className="space-y-4">
+
+                {/* VIDEO PICKER */}
+                <label className="flex justify-center cursor-pointer">
+
+                  <div className="w-32 h-32 rounded-lg border-2 border-dashed border-slate-300 bg-slate-50 overflow-hidden flex items-center justify-center hover:border-blue-500 hover:bg-blue-50 transition">
+
+                    {uploadFile ? (
+
+                      <div className="text-center px-2">
+
+                        <Video
+                          size={32}
+                          className="mx-auto text-blue-600 mb-2"
+                        />
+
+                        <p className="text-xs font-medium text-slate-700 break-words">
+                          {uploadFile.name}
+                        </p>
+
+                      </div>
+
+                    ) : (
+
+                      <div className="text-center text-slate-400">
+
+                        <Upload
+                          size={26}
+                          className="mx-auto mb-2"
+                        />
+
+                        <p className="text-xs font-medium">
+                          Choose Video
+                        </p>
+
+                      </div>
+
+                    )}
+
+                    <input
+                      type="file"
+                      accept="video/*"
+                      onChange={handleFileSelect}
+                      className="hidden"
+                    />
+
+                  </div>
+
+                </label>
+
+                {/* VIDEO TITLE */}
+                <div>
+
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Video Title
+                  </label>
+
+                  <input
+                    value={formData.name || ""}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        name: e.target.value,
+                      })
+                    }
+                    placeholder="Enter video title"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                  />
+
+                </div>
+
+              </div>
+
+            </div>
+
+            {/* FOOTER */}
+            <div className="px-5 py-4 border-t border-slate-200 bg-slate-50 flex justify-end gap-3">
+
+              <button
+                onClick={resetForm}
+                className="px-4 py-2 border border-slate-300 rounded-lg hover:bg-white transition"
               >
                 Cancel
               </button>
+
+              <button
+                disabled={loading}
+                onClick={handleUpload}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition disabled:opacity-50"
+              >
+                {loading
+                  ? "Uploading..."
+                  : "Upload"}
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+      )}      {/* DELETE CONFIRMATION MODAL */}
+      {confirmDelete && (
+        <div className="fixed inset-0 z-[60] bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
+
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-sm overflow-hidden">
+
+            <div className="p-6">
+
+              <div className="w-16 h-16 mx-auto rounded-full bg-red-100 flex items-center justify-center mb-4">
+
+                <Trash2
+                  size={28}
+                  className="text-red-600"
+                />
+
+              </div>
+
+              <h3 className="text-xl font-bold text-center text-slate-900">
+                Delete Video
+              </h3>
+
+              <p className="text-center text-slate-500 mt-2">
+                Are you sure you want to delete this video?
+              </p>
+
+              <p className="text-center font-semibold text-slate-800 mt-2 break-words">
+                {confirmDelete?.title || "Video"}
+              </p>
+
+            </div>
+
+            <div className="border-t border-slate-200 p-4 bg-slate-50 flex justify-end gap-3">
+
+              <button
+                onClick={() =>
+                  setConfirmDelete(null)
+                }
+                className="px-4 py-2 border border-slate-300 rounded-lg hover:bg-white transition"
+              >
+                Cancel
+              </button>
+
               <button
                 onClick={handleDelete}
-                className="px-4 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white font-semibold shadow-md"
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition"
               >
                 Delete
               </button>
+
             </div>
+
           </div>
+
         </div>
       )}
 
+      {/* LOADER */}
       {loading && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/80 backdrop-blur-xl z-[200] animate-fadeIn">
-          <div className="flex flex-col items-center gap-6">
-            
-            {/* 🔥 Neon Ring Loader */}
+        <div className="fixed inset-0 z-[100] bg-black/20 backdrop-blur-sm flex items-center justify-center">
+
+          <div className="bg-white rounded-xl shadow-xl px-8 py-6 flex flex-col items-center">
+
             <div className="relative">
-              {/* outer rotate ring */}
-              <div className="w-20 h-20 rounded-full border-4 border-transparent border-t-purple-400 animate-[spin_1.2s_linear_infinite]"></div>
-              {/* inner glow ring */}
-              <div className="absolute inset-0 rounded-full border-4 border-purple-500/20 backdrop-blur-md shadow-[0_0_20px_rgba(168,85,247,0.55)]"></div>
-              {/* pulsing core */}
-              <div className="absolute inset-[22%] rounded-full bg-purple-500/60 animate-pulse shadow-[0_0_16px_rgba(168,85,247,0.8)]"></div>
+
+              <div className="w-14 h-14 border-4 border-slate-200 rounded-full"></div>
+
+              <div className="absolute inset-0 w-14 h-14 border-4 border-transparent border-t-blue-600 rounded-full animate-spin"></div>
+
             </div>
 
-            {/* 🔥 Dynamic text */}
-            <p className="text-purple-200 text-lg font-semibold tracking-wide animate-pulse drop-shadow-lg">
-              {loadingMessage || "Please wait..."}
+            <p className="mt-4 text-sm font-medium text-slate-700">
+              {loadingMessage || "Loading..."}
             </p>
+
           </div>
+
         </div>
       )}
+
     </div>
   );
 }

@@ -57,7 +57,7 @@ def modify_teacher(id, form_data, photo, resume):
         )
         return teacher
     except Exception as ex:
-        print(str(ex))
+        return {'error': str(ex)}, 500
     finally:
         remove_local_file(local_photo)
         remove_local_file(local_resume)

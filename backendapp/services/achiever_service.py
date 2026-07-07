@@ -12,18 +12,15 @@ def fetch_achievers():
     return queries.fetch_all('achievers')
 
 def add_achiever(achiever, photo):
-    print(achiever)
     local_photo = None
     try:
         if photo:
-            print("here2")
             local_photo, photo_filename = save_file_locally(photo)
             photo_url = get_public_url_for_upload(BUCKET, photo_filename, local_photo)
         else:
             photo_url = None
-        return queries.insert_achiever(achiever.get('name'), achiever.get('description'), photo_url,
-                    achiever.get('level'), achiever.get('year'), achiever.get('class'), achiever.get('percentage'),
-                    achiever.get('type'), achiever.get('rank'), achiever.get('board'), achiever.get('branch'))
+        return queries.insert_achiever(achiever.get('name'), photo_url, achiever.get('year'), achiever.get('class'),
+                        achiever.get('percentage'), achiever.get('board'), achiever.get('branch'))
     except Exception as e:
         return {'error': str(e)}, 500
     finally:
@@ -39,9 +36,9 @@ def edit_achiever(id, achiever, photo):
             img_updated= True
         else:
             photo_url = photo
-        return queries.update_achiever(id, achiever.get('name'), achiever.get('description'), photo_url,
-                    achiever.get('level'), achiever.get('year'), achiever.get('class'), achiever.get('percentage'),
-                    achiever.get('type'), achiever.get('rank'), img_updated, BUCKET, achiever.get('board'), achiever.get('branch'))
+        return queries.update_achiever(id, achiever.get('name'), photo_url,
+                     achiever.get('year'), achiever.get('class'), achiever.get('percentage'),
+                     img_updated, BUCKET, achiever.get('board'), achiever.get('branch'))
     except Exception as e:
         return {'error': str(e)}, 500
     finally:

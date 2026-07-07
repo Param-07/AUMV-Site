@@ -33,7 +33,6 @@ const BoardResults = () => {
   const board10 = useMemo(() => {
     return achievers.filter(
       (a) =>
-        a.type === "Academic" &&
         String(a.class) === "10th"
     );
   }, [achievers]);
@@ -41,7 +40,6 @@ const BoardResults = () => {
   const board12 = useMemo(() => {
     return achievers.filter(
       (a) =>
-        a.type === "Academic" &&
         String(a.class) === "12th"
     );
   }, [achievers]);

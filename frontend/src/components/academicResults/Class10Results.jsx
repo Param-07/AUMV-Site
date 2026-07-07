@@ -29,7 +29,6 @@ const Class10Results = () => {
     return achievers
       .filter(
         (a) =>
-          a.type === "Academic" &&
           String(a.class) === "10th"
       )
       .sort(

@@ -34,7 +34,7 @@ def get_public_url_for_upload(bucket: str, target_name, photo_path):
         resp = storage_client.from_(bucket).get_public_url(target_name)
         return resp
     except Exception as e:
-       print(str(e))
+        return {'error': str(e)}, 500
 
 def remove_file_from_storage(bucket: str, target_name):
     try:
@@ -46,4 +46,4 @@ def remove_file_from_storage(bucket: str, target_name):
         response = storage_client.from_(bucket).remove(files)
         return response
     except Exception as e:
-        print(str(e))
+        return {'error': str(e)}, 500
