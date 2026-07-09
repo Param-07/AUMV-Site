@@ -16,7 +16,7 @@ def fetch_all(table_name):
     conn = get_conn()
     try:
         cur = conn.cursor()
-        cur.execute(f"SELECT * FROM {table_name};")
+        cur.execute(f"""SELECT * FROM "{table_name}";""")
         return cur.fetchall()
     finally:
         put_conn(conn)
@@ -299,5 +299,70 @@ def delete_hero(id, bucket_name):
         row = cur.fetchone()
         remove_file_from_storage(bucket_name, [row["url"]])
         return row
+    finally:
+        put_conn(conn)
+
+def addAdmissionInfo(studentName, dob, gender, admissionClass, address, fatherName, fatherOccupation, fatherPhone,
+                     motherName, motherOccupation, motherPhone, previousschool, board, percentage, agreeTerms, isCompleted):
+    conn = get_conn()
+    try:
+        cur = conn.cursor()
+        cur.execute("""INSERT INTO applications ("studentName", dob, gender, "admissionClass", address, "fatherName", "fatherOccupation", "fatherPhone",
+                     "motherName", "motherOccupation", "motherPhone", "previousSchool", board, percentage, "agreeTerms", "isCompleted") VALUES
+                    (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);""", 
+                    (studentName, dob, gender, admissionClass, address, fatherName, fatherOccupation, fatherPhone,
+                     motherName, motherOccupation, motherPhone, previousschool, board, percentage, agreeTerms, isCompleted))
+        return "Application recieved"
+    except Exception as exc:
+        return (str(exc))
+    finally:
+        put_conn(conn)
+
+def addInquiryInfo(name, contact, subject, message, isCompleted):
+    conn = get_conn()
+    try:
+        cur = conn.cursor()
+        cur.execute("""INSERT INTO "inquiryData" (name, contact, subject, message, "isCompleted") VALUES
+                    (%s, %s, %s, %s, %s);""", (name, contact, subject, message, isCompleted))
+        return "Inquiry recieved"
+    except Exception as exc:
+        return str(exc)
+    finally:
+        put_conn(conn)
+
+def addVisitInfo(visitorName, contactNumber, guests, visitDate, visitSlot, isCompleted):
+    conn = get_conn()
+    try:
+        cur = conn.cursor()
+        cur.execute("""INSERT into "campusVisit" ("visitorName", "contactNumber", guests, "visitDate", "visitSlot", "isCompleted")
+                    VALUES (%s, %s, %s, %s, %s, %s);""", (visitorName, contactNumber, guests, visitDate, visitSlot, isCompleted))
+        return "Visit recieved"
+    except Exception as exc:
+        return str(exc)
+    finally:
+        put_conn(conn)
+
+def markAsReadFormData(id, tableName):
+    conn = get_conn()
+    try:
+        cur = conn.cursor()
+        cur.execute(
+            f'UPDATE "{tableName}" SET "isCompleted" = %s WHERE id = %s RETURNING *;',
+            (True, id)
+        )
+        return cur.fetchone()
+    except Exception as exc:
+        print(str(exc))
+    finally:
+        put_conn(conn)
+
+def deleteFormData(id, tableName):
+    conn = get_conn()
+    try:
+        cur = conn.cursor()
+        cur.execute(f"""DELETE FROM "{tableName}" WHERE id=%s;""", (id,))
+        return "Deleted successfully"
+    except Exception as exc:
+        print(str(exc))
     finally:
         put_conn(conn)

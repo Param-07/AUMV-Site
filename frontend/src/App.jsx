@@ -21,6 +21,7 @@ import SkeletonBlock from "./components/SkeletonBlock";
 import { apiRequest } from "./utils/ApiCall";
 import Achievers from "./adminPages/Achievers";
 import LegacySection from "./components/LegacySection";
+import useScrollToTop from "./hooks/useScrollToTop";
 
 import { AppDataProvider, useAppData } from "./context/AppDataContext";
 import AdminFacilities from "./adminPages/AdminFacilities";
@@ -112,13 +113,15 @@ function AppRouter() {
 function AppContent() {
   const [loadingScreen, setLoadingScreen] = useState(true);
   const [showSkeleton, setShowSkeleton] = useState(true);
-
   const { setGallery, setHero, setVideos, setFacilities} = useAppData();
+  const location = useLocation();
+
+  // apply scroll-to-top globally for route changes
+  useScrollToTop();
 
   useEffect(() => {
     // Skip API calls if on login page
-    if (location.hash === "#/login" || location.pathname === "/adminLogin") {
-      // setLoadingScreen(false);
+    if (location.pathname === "/login" || location.pathname === "/adminLogin") {
       setTimeout(() => {
           setLoadingScreen(false);
           setTimeout(() => setShowSkeleton(false), 450);
@@ -174,9 +177,7 @@ function AppContent() {
           </div>
         </div>
       ) : (
-        <Router>
-          <AppRouter />
-        </Router>
+        <AppRouter />
       )}
     </div>
   );
@@ -184,8 +185,10 @@ function AppContent() {
 
 export default function App() {
   return (
-    <AppDataProvider>
-      <AppContent />
-    </AppDataProvider>
+    <Router>
+      <AppDataProvider>
+        <AppContent />
+      </AppDataProvider>
+    </Router>
   );
 }

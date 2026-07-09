@@ -136,14 +136,15 @@ const Methodology = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row justify-center gap-5">
-            <button className="bg-[#cca730] text-black px-8 py-4 font-semibold hover:scale-105 transition-all duration-300">
+            <a
+              href="#admission-form" className="bg-[#cca730] text-black px-8 py-4 font-semibold hover:scale-105 transition-all duration-300">
               Apply For Admission
-            </button>
+            </a>
 
-            <button className="border border-white px-8 py-4 font-semibold hover:bg-white hover:text-[#15157d] transition-all duration-300 flex items-center justify-center gap-2">
+            <a href="#/gallery" className="border border-white px-8 py-4 font-semibold hover:bg-white hover:text-[#15157d] transition-all duration-300 flex items-center justify-center gap-2">
               Explore Programs
               <ArrowRight size={18} />
-            </button>
+            </a>
           </div>
         </motion.div>
 

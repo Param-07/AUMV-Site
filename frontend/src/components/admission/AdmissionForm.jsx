@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   CheckCircle,
@@ -10,9 +10,11 @@ import {
   ChevronRight,
   ChevronLeft,
 } from "lucide-react";
+import { apiRequest } from "../../utils/ApiCall";
 
 const AdmissionForm = () => {
   const [currentStep, setCurrentStep] = useState(1);
+  const formRef = useRef(null);
 
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
@@ -35,6 +37,7 @@ const AdmissionForm = () => {
     board: "",
     percentage: "",
     agreeTerms: false,
+    isCompleted: false,
   });
 
   const updateField = (field, value) => {
@@ -47,29 +50,61 @@ const AdmissionForm = () => {
   const nextStep = () => {
     if (currentStep < 3) {
       setCurrentStep((prev) => prev + 1);
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth",
-      });
+      setTimeout(() => {
+        formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 50);
     }
   };
 
   const prevStep = () => {
     if (currentStep > 1) {
       setCurrentStep((prev) => prev - 1);
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth",
-      });
+      setTimeout(() => {
+        formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 50);
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     console.log(formData);
+    const finalData = new FormData();
+    Object.entries(
+        formData
+      ).forEach(([key, value]) => {
+          finalData.append(
+            key,
+            value
+          );
+        });
+    const response = await apiRequest("POST", "/admissionForm", finalData)
 
-    setShowSuccessModal(true);
+    if(response.message){
+      alert("Thank you!");
+      setFormData({
+        studentName: "",
+        dob: "",
+        gender: "",
+        admissionClass: "",
+        address: "",
+
+        fatherName: "",
+        fatherOccupation: "",
+        fatherPhone: "",
+
+        motherName: "",
+        motherOccupation: "",
+        motherPhone: "",
+
+        previousSchool: "",
+        board: "",
+        percentage: "",
+        agreeTerms: false,
+        isCompleted: false,
+      })
+      setCurrentStep(1);
+    }
   };
 
   return (
@@ -229,7 +264,7 @@ const AdmissionForm = () => {
 
             {/* RIGHT FORM PANEL */}
 
-            <div className="lg:col-span-8 bg-white border border-gray-200 shadow-sm p-6 md:p-10">
+            <div ref={formRef} className="lg:col-span-8 bg-white border border-gray-200 shadow-sm p-6 md:p-10">
 
               {/* STEP NAVIGATION */}
 
