@@ -50,7 +50,7 @@ const LeadershipSection = () => {
   ];
 
   return (
-    <section className="bg-gradient-to-b from-gray-50 to-white py-24">
+    <section className="bg-gradient-to-b from-gray-50 to-white pt-24 pb-10">
       <div className="max-w-7xl mx-auto px-4">
         {/* Heading */}
         <motion.div
@@ -58,7 +58,7 @@ const LeadershipSection = () => {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7 }}
           viewport={{ once: true }}
-          className="mb-20"
+          className="mb-16"
         >
           <span className="uppercase tracking-[0.25em] text-red-700 font-semibold text-sm block mb-3">
             Voices of Guidance
@@ -134,7 +134,7 @@ const LeadershipSection = () => {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7 }}
           viewport={{ once: true }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-20"
+          className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-10"
         >
           {[
             [yearsLegacy+"+", "Years Legacy"],

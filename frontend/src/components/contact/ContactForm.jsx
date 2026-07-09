@@ -1,13 +1,15 @@
 import { motion } from "framer-motion";
 import { CheckCircle2, Star } from "lucide-react";
 import { useState } from "react";
+import { apiRequest } from "../../utils/ApiCall";
 
 const ContactForm = () => {
   const [formData, setFormData] = useState({
     name: "",
-    email: "",
+    contact: "",
     subject: "Admission Inquiry",
     message: "",
+    isCompleted: false,
   });
 
   const handleChange = (e) => {
@@ -17,12 +19,38 @@ const ContactForm = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log(formData);
+    const finalData = new FormData();
+    Object.entries(formData).forEach(
+      ([key, value]) => {
+        finalData.append(key, value)
+      }
+    );
 
-    // API call here
+    try
+    {
+      const response = await  apiRequest("POST", "/inquiryForm", finalData);
+
+      if(response.message){
+        alert("Inquiry Submitted - we will reach out to you on ou number");
+        setFormData(
+          {
+            name: "",
+            contact: "",
+            subject: "Admission Inquiry",
+            message: "",
+            isCompleted: false,
+          }
+        )
+      }
+    }
+    catch(error)
+    {
+      alert(error);
+    }
+
   };
 
   return (
@@ -127,15 +155,15 @@ const ContactForm = () => {
 
                 <div>
                   <label className="block text-sm font-semibold text-slate-600 mb-2">
-                    Email Address
+                    Contact Number
                   </label>
 
                   <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
+                    type="tel"
+                    name="contact"
+                    value={formData.contact}
                     onChange={handleChange}
-                    placeholder="your@email.com"
+                    placeholder="+91 00000 00000"
                     className="w-full border-b-2 border-slate-300 focus:border-[#15157d] focus:outline-none py-3 bg-transparent"
                     required
                   />

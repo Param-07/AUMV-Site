@@ -8,6 +8,7 @@ import {
   MapPinned,
   GraduationCap,
 } from "lucide-react";
+import { apiRequest } from "../../utils/ApiCall";
 
 const CampusVisitForm = () => {
   const dates = Array.from({ length: 6 }, (_, i) => {
@@ -29,7 +30,18 @@ const CampusVisitForm = () => {
     visitorName: "",
     contactNumber: "",
     guests: "2 Guests",
+    visitDate: dates[0].fullDate.toISOString().slice(0, 10),
+    visitSlot: "",
+    isCompleted: false,
   });
+
+  useEffect(() => {
+    setFormData((prev) => ({
+      ...prev,
+      visitDate: selectedDate.toISOString().slice(0, 10),
+      visitSlot: selectedTime,
+    }));
+  }, [selectedDate, selectedTime]);
 
   const allSlots = ["09:00 AM", "11:00 AM", "02:00 PM", "04:00 PM"];
 
@@ -58,11 +70,37 @@ const CampusVisitForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
+    
+    const finalData = new FormData();
+    Object.entries(formData).forEach(
+      ([key, value]) => {
+        finalData.append(key, value);
+      }
+    );
 
-    setTimeout(() => {
-      alert("Thank you! Your campus visit request has been received.");
-      setSubmitting(false);
-    }, 1500);
+    try
+    {
+      const response = await apiRequest("POST", "/campusVisitForm", finalData);
+
+      if(response.message)
+      {
+        setSubmitting(false);
+        alert("Thank you! Your campus visit request has been received.");
+
+        setFormData({
+          visitorName: "",
+          contactNumber: "",
+          guests: "2 Guests",
+          visitDate: dates[0].fullDate.toISOString().slice(0, 10),
+          visitSlot: "",
+          isCompleted: false,
+        })
+      }
+    }
+    catch(error)
+    {
+      alert(error);
+    }
   };
 
   return (

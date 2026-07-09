@@ -57,13 +57,13 @@ const LegacySection = () => {
                 and innovative teaching methodologies.
               </p>
 
-              <button className="group flex items-center gap-2 font-semibold text-[#cca730]">
-                Learn More
+              <a href="#/academics" className="group flex items-center gap-2 font-semibold text-[#cca730]">
+                Explore Academics
 
                 <span className="transition-transform group-hover:translate-x-2">
                   →
                 </span>
-              </button>
+              </a>
             </div>
           </motion.div>
 
