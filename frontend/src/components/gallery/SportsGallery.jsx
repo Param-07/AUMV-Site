@@ -1,55 +1,87 @@
-import { motion } from "framer-motion";
+import React, { useMemo, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import SmartImage from "../SmartImages";
 
 const SportsGallery = ({
   gallery = [],
-  currentSlides,
   setActiveModal,
   setCurrentSlides,
   setZoom,
   setOffset,
 }) => {
-  const sportsCollections = gallery.filter((item) =>
-    [
-      "sports",
-      "sport",
-      "cricket",
-      "football",
-      "basketball",
-      "volleyball",
-      "athletics",
-      "kabaddi",
-      "tournament",
-      "competition",
-      "games",
-    ].some((keyword) =>
-      item.category?.toLowerCase().includes(keyword)
-    )
+
+  /* ---------------- ALL SPORTS IMAGES ---------------- */
+
+  const sportsImages = useMemo(() => {
+    return gallery
+      .filter((item) =>
+        [
+          "sports",
+          "sport",
+          "cricket",
+          "football",
+          "basketball",
+          "volleyball",
+          "athletics",
+          "kabaddi",
+          "tournament",
+          "competition",
+          "games",
+        ].some((keyword) =>
+          item.category?.toLowerCase().includes(keyword)
+        )
+      )
+      .flatMap((item, groupIndex) =>
+        item.images.map((image, imageIndex) => ({
+          src: image.src,
+          description: image.description,
+          groupIndex,
+          imageIndex,
+        }))
+      );
+  }, [gallery]);
+
+  const [startIndex, setStartIndex] = useState(0);
+
+  if (!sportsImages.length) return null;
+
+  const visibleImages = Array.from(
+    { length: Math.min(3, sportsImages.length) },
+    (_, i) =>
+      sportsImages[
+        (startIndex + i) % sportsImages.length
+      ]
   );
 
-  if (!sportsCollections.length) return null;
+  const next = () =>
+    setStartIndex(
+      (prev) => (prev + 1) % sportsImages.length
+    );
 
-  const featured = sportsCollections[0];
-  const otherCollections = sportsCollections;
+  const previous = () =>
+    setStartIndex(
+      (prev) =>
+        (prev - 1 + sportsImages.length) %
+        sportsImages.length
+    );
 
-  const openModal = (index) => {
-    setActiveModal(index);
+  const openModal = (item) => {
+    setActiveModal(item.groupIndex);
 
     setCurrentSlides((prev) => ({
       ...prev,
-      modal: 0,
+      modal: item.imageIndex,
     }));
 
     setZoom(1);
     setOffset({ x: 0, y: 0 });
-  };
+  };  return (
+    <section className="py-20 px-8 md:px-20 bg-[#fcf9f8] overflow-hidden">
+      <div className="max-w-[1250px] mx-auto">
 
-  return (
-    <section className="max-w-7xl mx-auto px-4 py-24">
-
-      {/* SECTION HEADER */}
-
-      <motion.div
+        {/* ================= HEADER ================= */}
+        <motion.div
         initial={{ opacity: 0, y: 35 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
@@ -58,123 +90,117 @@ const SportsGallery = ({
         <div className="w-14 h-[2px] bg-[#cca730] mb-4" />
 
         <h2 className="text-4xl md:text-5xl font-black text-[#15157d]">
-          Sporting Excellence
+          Athletic Spirit
         </h2>
 
         <p className="mt-4 text-slate-600 max-w-2xl">
-          Celebrating athletic achievements, teamwork,
-          determination, and competitive spirit across
-          various sports disciplines.
+          Building character and resilience on the field.
         </p>
       </motion.div>
+        {/* <motion.div
+          initial={{ opacity: 0, y: 35 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="flex flex-col md:flex-row justify-between items-end mb-12 gap-4"
+        >
+          <div>
+            <h2
+              className="text-4xl font-serif text-[#12157a]"
+              style={{ fontFamily: "Libre Caslon Text, serif" }}
+            >
+              Athletic Spirit
+            </h2>
 
-      {/* FEATURED SPORTS STORY */}
-
-      {/* <motion.div
-        initial={{ opacity: 0, y: 35 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="relative h-[650px] overflow-hidden cursor-pointer group mb-8"
-        onClick={() => openModal(0)}
-      >
-        {featured.images?.map((img, i) => (
-          <div
-            key={i}
-            className={`absolute inset-0 transition-opacity duration-1000 ${
-              currentSlides[featured.category] === i
-                ? "opacity-100"
-                : "opacity-0"
-            }`}
-          >
-            <SmartImage
-              src={img.src}
-              alt={img.heading}
-              wrapperClassName="w-full h-full"
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-            />
-          </div>
-        ))}
-
-        <div className="absolute inset-0 bg-gradient-to-r from-[#15157d]/90 via-black/40 to-transparent" />
-
-        <div className="absolute inset-0 flex items-center">
-          <div className="max-w-2xl px-12 text-white">
-
-            <span className="uppercase tracking-[0.25em] text-[#cca730] text-xs font-semibold">
-              Featured Achievement
-            </span>
-
-            <h3 className="text-5xl md:text-6xl font-black mt-4 leading-tight">
-              {featured.category}
-            </h3>
-
-            <p className="mt-6 text-lg text-gray-200 leading-relaxed">
-              Excellence in sports through discipline,
-              dedication, teamwork, and perseverance.
+            <p className="text-slate-600 mt-2">
+              Building character and resilience on the field.
             </p>
-
           </div>
-        </div>
-      </motion.div> */}
 
-      {/* SPORTS CARDS */}
+          <button className="font-bold text-[10px] uppercase tracking-[0.2em] text-[#12157a] hover:opacity-70 transition">
+            Sports Gallery →
+          </button>
+        </motion.div> */}
 
-      <div className="grid md:grid-cols-3 gap-6">
+        {/* ================= CAROUSEL ================= */}
 
-        {otherCollections.map((item, index) => (
-          <motion.div
-            key={item.category}
-            initial={{ opacity: 0, y: 35 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: index * 0.1 }}
-            className="group bg-white shadow-lg overflow-hidden cursor-pointer"
-            onClick={() => openModal(index + 1)}
+        <div className="relative">
+
+          {/* LEFT BUTTON */}
+
+          <button
+            onClick={previous}
+            className="absolute left-[-28px] top-1/2 -translate-y-1/2 z-30 w-12 h-12 rounded-full bg-white shadow-xl flex items-center justify-center hover:bg-[#12157a] hover:text-white transition-all duration-300"
           >
-            <div className="h-[260px] overflow-hidden relative">
+            <ChevronLeft size={22} />
+          </button>
 
-              {item.images?.map((img, i) => (
-                <div
-                  key={i}
-                  className={`absolute inset-0 transition-opacity duration-1000 ${
-                    currentSlides[item.category] === i
-                      ? "opacity-100"
-                      : "opacity-0"
-                  }`}
+          {/* RIGHT BUTTON */}
+
+          <button
+            onClick={next}
+            className="absolute right-[-28px] top-1/2 -translate-y-1/2 z-30 w-12 h-12 rounded-full bg-white shadow-xl flex items-center justify-center hover:bg-[#12157a] hover:text-white transition-all duration-300"
+          >
+            <ChevronRight size={22} />
+          </button>
+
+          {/* IMAGES */}
+
+          <AnimatePresence mode="wait">
+
+            <motion.div
+              key={startIndex}
+              initial={{ x: 150, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: -150, opacity: 0 }}
+              transition={{ duration: 0.45 }}
+              className="grid grid-cols-1 md:grid-cols-3 gap-8"
+            >
+
+              {visibleImages.map((item, index) => (
+
+                <motion.div
+                  key={`${item.src}-${index}`}
+                  whileHover={{ y: -8 }}
+                  transition={{ duration: 0.25 }}
+                  onClick={() => openModal(item)}
+                  className="relative group overflow-hidden cursor-pointer bg-white shadow-lg"
                 >
-                  <SmartImage
-                    src={img.src}
-                    alt={img.description}
-                    wrapperClassName="w-full h-full"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                  />
-                </div>
+
+                  <div className="relative h-[340px] overflow-hidden">
+
+                    <SmartImage
+                      src={item.src}
+                      alt={item.description}
+                      wrapperClassName="w-full h-full"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                    />
+
+                    {/* OVERLAY */}
+
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
+
+                    {/* DESCRIPTION */}
+
+                    <div className="absolute bottom-0 left-0 right-0 p-6">
+
+                      <p className="text-white text-lg font-semibold leading-snug">
+                        {item.description}
+                      </p>
+
+                    </div>
+
+                  </div>
+
+                </motion.div>
+
               ))}
 
-            </div>
+            </motion.div>
 
-            <div className="p-6">
+          </AnimatePresence>
 
-              <span className="uppercase tracking-[0.2em] text-[#cca730] text-xs font-semibold">
-                Sports Collection
-              </span>
-
-              <h3 className="text-2xl font-bold text-[#15157d] mt-3">
-                {item.category}
-              </h3>
-
-              <p className="mt-3 text-gray-600">
-                {item.images?.length || 0} moments captured
-                from competitions and achievements.
-              </p>
-
-            </div>
-          </motion.div>
-        ))}
-
-      </div>
-
-    </section>
+        </div>
+      </div>    </section>
   );
 };
 

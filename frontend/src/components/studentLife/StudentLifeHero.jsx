@@ -1,7 +1,35 @@
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Users, Award } from "lucide-react";
-
+import { useAppData } from "../../context/AppDataContext";
+import { useEffect, useState } from "react";
 const StudentLifeHero = () => {
+
+  const {gallery, videos}= useAppData();
+  const[studentLife, setStudentLife] = useState([]);
+  const [currentImage, setCurrentImage] = useState(0);
+
+  useEffect(() =>{
+    const filtered = gallery.filter(
+
+      (image) => image.category === "Student Life Gallery"
+    );
+    // console.log(filtered)
+    setStudentLife(filtered[0].images);
+    
+  }, [gallery]);
+
+  useEffect(() => {
+    if (studentLife.length === 0) return;
+
+    setCurrentImage(0);
+
+    const interval = setInterval(() => {
+      setCurrentImage((prev) => (prev + 1) % studentLife.length);
+    }, 4500);
+
+    return () => clearInterval(interval);
+  }, [studentLife]);
+
   return (
     <section className="relative h-[520px] md:h-[620px] overflow-hidden">
       <div className="max-w-7xl mx-auto px-4">
@@ -92,12 +120,21 @@ const StudentLifeHero = () => {
             transition={{ duration: 0.8 }}
             className="relative"
           >
-            <div className="overflow-hidden shadow-2xl">
-              <img
-                src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1600"
-                alt="Student Life"
-                className="w-full h-[500px] object-cover"
-              />
+            <div className="overflow-hidden shadow-2xl relative h-[500px]">
+              <AnimatePresence mode="wait">
+                {studentLife.length > 0 && studentLife[currentImage] && (
+                  <motion.img
+                    key={currentImage}
+                    src={studentLife[currentImage].src}
+                    alt="Student Life"
+                    className="w-full h-[500px] object-cover absolute inset-0"
+                    initial={{ opacity: 0, scale: 1.05 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.8 }}
+                  />
+                )}
+              </AnimatePresence>
             </div>
 
             {/* Overlay */}

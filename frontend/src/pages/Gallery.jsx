@@ -14,11 +14,11 @@ export default function Gallery() {
   const { gallery, videos } = useAppData();
   useScrollToTop();
 
+  const [filteredGallery, setFilteredgallery] = useState([]);
   const [activeModal, setActiveModal] = useState(null);
   const [currentSlides, setCurrentSlides] = useState({});
   const [mainVideo, setMainVideo] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [filterClass, setFilterClass] = useState(null); 
 
   const [zoom, setZoom] = useState(1);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
@@ -27,20 +27,14 @@ export default function Gallery() {
   const startPos = useRef({ x: 0, y: 0 });
   const [mediaType, setMediaType] = useState("all");
 
-  const categories = gallery?.map(
-  (g) => g.category
-) || [];
-
-
-   useEffect(() => {
-    const hash = location.hash;
-    
-    if (hash === "#/gallery#video-gallery") {
-      setFilterClass("video");
-    } else {
-      setFilterClass("photo");
-    }
-  }, [location.hash]);
+  const categories =
+  gallery
+    ?.filter(
+      (g) =>
+        g.category !== "Student Life" &&
+        g.category !== "Student Life Gallery"
+    )
+    .map((g) => g.category) || [];
 
   /* VIDEO INIT */
   useEffect(() => {
@@ -60,7 +54,16 @@ export default function Gallery() {
       }, 3500)
     );
     return () => timers.forEach(clearInterval);
-  }, [gallery]);
+  }, [filteredGallery]);
+
+  useEffect(() =>{
+    setFilteredgallery(gallery
+    ?.filter(
+      (g) =>
+        g.category !== "Student Life" &&
+        g.category !== "Student Life Gallery"
+    ) || []);
+  }, [gallery])
 
   /* MODAL SLIDESHOW */
   useEffect(() => {
@@ -79,8 +82,6 @@ export default function Gallery() {
   useEffect(() => {
     document.body.style.overflow = activeModal ? "hidden" : "auto";
   }, [activeModal]);
-
-  const availableCategories = ["All", ...(gallery?.map((g) => g.category) || [])];
 
   /* ZOOM + DRAG */
   const handleWheelZoom = (e) => {
@@ -111,7 +112,7 @@ export default function Gallery() {
   setSelectedCategory={setSelectedCategory}
 />
 <CinematicGallery
-  gallery={gallery}
+  gallery={filteredGallery}
   currentSlides={currentSlides}
   setActiveModal={setActiveModal}
   setCurrentSlides={setCurrentSlides}
@@ -119,7 +120,7 @@ export default function Gallery() {
   setOffset={setOffset}
 />
 <AcademicGallery
-  gallery={gallery}
+  gallery={filteredGallery}
   selectedCategory={selectedCategory}
   currentSlides={currentSlides}
   setActiveModal={setActiveModal}
@@ -128,7 +129,7 @@ export default function Gallery() {
   setOffset={setOffset}
 />
 <CulturalGallery
-  gallery={gallery}
+  gallery={filteredGallery}
   currentSlides={currentSlides}
   setActiveModal={setActiveModal}
   setCurrentSlides={setCurrentSlides}
@@ -136,7 +137,7 @@ export default function Gallery() {
   setOffset={setOffset}
 />
 <SportsGallery
-  gallery={gallery}
+  gallery={filteredGallery}
   currentSlides={currentSlides}
   setActiveModal={setActiveModal}
   setCurrentSlides={setCurrentSlides}

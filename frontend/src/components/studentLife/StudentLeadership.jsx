@@ -1,27 +1,43 @@
 import { motion } from "framer-motion";
-
+import { useAppData } from "../../context/AppDataContext";
+import { useEffect, useState } from "react";
 const leaders = [
   {
-    name: "Aryan Singh",
-    role: "Head Prefect",
-    image:
+    description: "Aryan Singh ~~ Head Prefect",
+    src:
       "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=1200",
   },
   {
-    name: "Priya Sharma",
-    role: "Cultural Captain",
-    image:
+    description: "Aryan Singh ~~ Head Prefect",
+    src:
       "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=1200",
   },
   {
-    name: "Rohan Verma",
-    role: "Sports Captain",
-    image:
+    description: "Aryan Singh ~~ Head Prefect",
+    src:
       "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=1200",
   },
 ];
 
+
 const StudentLeadership = () => {
+
+  const {gallery, videos} = useAppData();
+  const [studentLife, setStudentLife] = useState([]);
+
+  useEffect(() => {
+    if (gallery?.length) {
+      const filtered = gallery.filter(
+        (item) => item.category === "Student Life"
+      );
+      setStudentLife(filtered[0].images);
+    }
+    else
+    {
+      setStudentLife(leaders);
+    }
+  }, [gallery]);
+
   return (
     <section className="py-24 bg-white overflow-hidden">
       <div className="max-w-7xl mx-auto px-4">
@@ -50,9 +66,9 @@ const StudentLeadership = () => {
 
         <div className="grid md:grid-cols-3 gap-10">
 
-          {leaders.map((leader, index) => (
+          {studentLife.map((studentLife, index) => (
             <motion.div
-              key={leader.name}
+              key={studentLife.description}
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -66,8 +82,8 @@ const StudentLeadership = () => {
 
               <div className="relative overflow-hidden shadow-xl">
                 <img
-                  src={leader.image}
-                  alt={leader.name}
+                  src={studentLife.src}
+                  alt={String(studentLife.description).split("~~")[0]}
                   className="w-full h-[520px] object-cover transition-transform duration-700 group-hover:scale-105"
                 />
 
@@ -81,11 +97,11 @@ const StudentLeadership = () => {
                   </span>
 
                   <h3 className="text-3xl font-black mt-3">
-                    {leader.name}
+                    {String(studentLife.description).split("~~")[0]}
                   </h3>
 
-                  <p className="mt-2 text-gray-300">
-                    {leader.role}
+                  <p className=" text-xl mt-2 text-red-300">
+                    {String(studentLife.description).split("~~")[1]}
                   </p>
                 </div>
               </div>
