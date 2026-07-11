@@ -1,4 +1,5 @@
-import { motion } from "framer-motion";
+import React, { useEffect, useMemo, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import SmartImage from "../SmartImages";
 
 const CulturalGallery = ({
@@ -9,10 +10,13 @@ const CulturalGallery = ({
   setZoom,
   setOffset,
 }) => {
-  const culturalCollections = gallery.filter((item) =>
-    [
+  const [currentImage, setCurrentImage] = useState(0);
+
+  /* ---------------- FILTER CULTURAL COLLECTIONS ---------------- */
+  const culturalCollections = useMemo(() => {
+    const TARGET_KEYWORDS = [
       "Annual Function",
-      "Cultural Event",
+      "Cultural",
       "Celebration",
       "Festival",
       "Independence Day",
@@ -20,148 +24,178 @@ const CulturalGallery = ({
       "Dance",
       "Music",
       "Art",
-    ].some((keyword) =>
-      item.category?.toLowerCase().includes(
-        keyword.toLowerCase()
+    ];
+
+    return gallery.filter((item) =>
+      TARGET_KEYWORDS.some((keyword) =>
+        item.category?.toLowerCase().includes(keyword.toLowerCase())
       )
-    )
-  );
+    );
+  }, [gallery]);
 
-  if (!culturalCollections.length) return null;
+  const featured = culturalCollections[0];
+  const images = featured?.images || [];
+  const totalImages = images.length;
 
-  const openModal = (groupIndex, imageIndex = 0) => {
-    setActiveModal(groupIndex);
+  /* ---------------- SLIDESHOW TIMER ---------------- */
+  useEffect(() => {
+    if (!totalImages) return;
 
+    const interval = setInterval(() => {
+      setCurrentImage((prev) => (prev + 1) % totalImages);
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [totalImages]);
+
+  if (!totalImages) return null;
+
+  /* ---------------- DERIVED SLIDES ---------------- */
+  const currentIndex = currentImage;
+  const nextIndex = (currentImage + 1) % totalImages;
+  const thirdIndex = (currentImage + 2) % totalImages;
+
+  const current = images[currentIndex] || images[0];
+  const next = images[nextIndex] || images[0];
+  const third = images[thirdIndex] || images[0];
+
+  /* ---------------- OPEN MODAL ---------------- */
+  const openModal = (imageIndex) => {
+    setActiveModal(0);
     setCurrentSlides((prev) => ({
       ...prev,
       modal: imageIndex,
     }));
-
     setZoom(1);
     setOffset({ x: 0, y: 0 });
   };
 
-  const featured = culturalCollections[0];
-  const sideCards = culturalCollections.slice(1, 3);
-
   return (
-    <section className="max-w-7xl mx-auto px-4 py-24">
-      {/* HEADER */}
+    <section className="bg-[#12157a] text-white py-20 overflow-hidden">
+      <div className="max-w-[1200px] mx-auto px-8 lg:px-20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          
+          {/* ================= LEFT CONTENT ================= */}
+          <motion.div
+            initial={{ opacity: 0, x: -60 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="space-y-8"
+          >
+            <div className="space-y-4">
+              <span className="block text-sm font-bold tracking-[0.2em] uppercase text-white/80">
+                Cultural Legacy
+              </span>
 
-      <motion.div
-        initial={{ opacity: 0, y: 35 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="mb-12"
-      >
-        <div className="w-14 h-[2px] bg-[#cca730] mb-4" />
-
-        <h2 className="text-4xl md:text-5xl font-black text-[#15157d]">
-          Cultural Showcase
-        </h2>
-
-        <p className="mt-4 text-slate-600 max-w-2xl">
-          Celebrating traditions, creativity, performances,
-          festivals, and unforgettable moments that enrich
-          student life beyond academics.
-        </p>
-      </motion.div>
-
-      <div className="grid lg:grid-cols-12 gap-6">
-
-        {/* FEATURED */}
-
-        <motion.div
-          initial={{ opacity: 0, y: 35 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="lg:col-span-7 relative h-[650px] overflow-hidden cursor-pointer group"
-          onClick={() => openModal(0)}
-        >
-          {featured.images?.map((img, i) => (
-            <div
-              key={i}
-              className={`absolute inset-0 transition-opacity duration-1000 ${
-                (currentSlides[featured.category] || 0) === i
-                  ? "opacity-100"
-                  : "opacity-0"
-              }`}
-            >
-              <SmartImage
-                src={img.src}
-                alt={img.heading}
-                wrapperClassName="w-full h-full"
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-              />
+              <h2
+                className="text-5xl md:text-6xl font-serif leading-tight"
+                style={{ fontFamily: "Libre Caslon Text, serif" }}
+              >
+                Expression of
+                <br />
+                Heritage
+              </h2>
             </div>
-          ))}
 
-          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
-
-          <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
-            <span className="uppercase tracking-[0.25em] text-[#cca730] text-xs font-semibold">
-              Featured Collection
-            </span>
-
-            <h3 className="text-4xl font-black mt-3">
-              {featured.category}
-            </h3>
-
-            <p className="mt-4 text-gray-300">
-              Experience the vibrant cultural spirit of
-              Alok Inter College.
+            <p className="text-lg leading-relaxed text-white/90 max-w-md">
+              Celebrating the diverse talents and traditions that define our
+              community through performance and art.
             </p>
-          </div>
-        </motion.div>
 
-        {/* RIGHT COLUMN */}
-
-        <div className="lg:col-span-5 flex flex-col gap-6">
-
-          {sideCards.map((item, idx) => (
-            <motion.div
-              key={item.category}
-              initial={{ opacity: 0, y: 35 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: idx * 0.15 }}
-              className="relative h-[312px] overflow-hidden cursor-pointer group"
-              onClick={() => openModal(idx + 1)}
+            <button
+              onClick={() => openModal(currentIndex)}
+              className="inline-block px-8 py-4 border-2 border-white font-bold uppercase tracking-wider hover:bg-white hover:text-[#12157a] transition-all duration-300"
             >
-              {item.images?.map((img, i) => (
-                <div
-                  key={i}
-                  className={`absolute inset-0 transition-opacity duration-1000 ${
-                    currentSlides[item.category] === i
-                      ? "opacity-100"
-                      : "opacity-0"
-                  }`}
+              Explore Performances
+            </button>
+          </motion.div>
+
+          {/* ================= IMAGE COMPOSITION ================= */}
+          <motion.div
+            initial={{ opacity: 0, x: 60 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="flex flex-col items-end gap-5"
+          >
+            {/* ================= MAIN IMAGE ================= */}
+            <AnimatePresence mode="wait">
+              <motion.button
+                key={currentIndex}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.8 }}
+                onClick={() => openModal(currentIndex)}
+                className="relative w-full h-[420px] shadow-2xl cursor-pointer group overflow-hidden text-left focus:outline-none focus:ring-2 focus:ring-[#cca730]"
+              >
+                <SmartImage
+                  src={current.src}
+                  alt={current.description || "Featured cultural event"}
+                  wrapperClassName="w-full h-full"
+                  className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                />
+
+                {/* Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
+
+                {/* Description */}
+                <div className="absolute bottom-0 left-0 right-0 p-6">
+                  <span className="text-[#cca730] text-xs uppercase tracking-[0.2em] font-semibold">
+                    {featured.category}
+                  </span>
+
+                  <h3 className="mt-2 text-2xl font-bold text-white">
+                    {current.description}
+                  </h3>
+                </div>
+              </motion.button>
+            </AnimatePresence>
+
+            {/* ================= BOTTOM IMAGES ================= */}
+            <div className="grid grid-cols-2 gap-5 w-[82%]">
+              <AnimatePresence mode="wait">
+                <motion.button
+                  key={`next-${nextIndex}`}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.8 }}
+                  onClick={() => openModal(nextIndex)}
+                  className="h-[170px] shadow-xl cursor-pointer group overflow-hidden focus:outline-none focus:ring-2 focus:ring-[#cca730]"
                 >
                   <SmartImage
-                    src={img.src}
-                    alt={img.heading}
+                    src={next.src}
+                    alt={next.description || "Next cultural event thumbnail"}
                     wrapperClassName="w-full h-full"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    className="w-full h-full object-cover rounded-sm group-hover:scale-105 transition-transform duration-500"
                   />
-                </div>
-              ))}
+                </motion.button>
+              </AnimatePresence>
 
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/10 to-transparent" />
-
-              <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                <span className="uppercase tracking-[0.2em] text-[#cca730] text-xs font-semibold">
-                  Event Gallery
-                </span>
-
-                <h3 className="text-2xl font-bold mt-2">
-                  {item.category}
-                </h3>
-              </div>
-            </motion.div>
-          ))}
+              <AnimatePresence mode="wait">
+                <motion.button
+                  key={`third-${thirdIndex}`}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.8 }}
+                  onClick={() => openModal(thirdIndex)}
+                  className="h-[170px] shadow-xl cursor-pointer group overflow-hidden focus:outline-none focus:ring-2 focus:ring-[#cca730]"
+                >
+                  <SmartImage
+                    src={third.src}
+                    alt={third.description || "Third cultural event thumbnail"}
+                    wrapperClassName="w-full h-full"
+                    className="w-full h-full object-cover rounded-sm group-hover:scale-105 transition-transform duration-500"
+                  />
+                </motion.button>
+              </AnimatePresence>
+            </div>
+          </motion.div>
 
         </div>
-
       </div>
     </section>
   );

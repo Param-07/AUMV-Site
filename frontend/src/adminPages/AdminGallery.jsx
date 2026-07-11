@@ -50,6 +50,7 @@ const AdminGallery = () => {
       event_name: "",
       description: "",
       photo: null,
+      position: ""
     });
 
   const [photoPreview, setPhotoPreview] =
@@ -153,13 +154,16 @@ const AdminGallery = () => {
       ...prev,
       [name]: value,
     }));
-  };  const resetForm = () => {
+  };  
+  
+  const resetForm = () => {
     setModalOpen(false);
 
     setFormData({
       event_name: "",
       description: "",
       photo: null,
+      position: ""
     });
 
     setPhotoPreview(null);
@@ -182,6 +186,7 @@ const AdminGallery = () => {
         "Uploading Photo..."
       );
 
+      if (formData.event_name === "Student Life") formData.description = formData.description + "~~" + formData.position;
       const finalData =
         new FormData();
 
@@ -483,9 +488,20 @@ const AdminGallery = () => {
                 {/* CARD CONTENT */}
                 <div className="p-4 flex-1 flex flex-col justify-between border-t border-slate-100">
 
-                  <h3 className="font-semibold text-slate-900 mb-2 line-clamp-1">
-                    {item.description}
+                  {item.description.split("~~").length > 1 ?
+                  <>
+                  <h3 className="font-semibold text-slate-900 mb-2 line-clamp-1 bg-orange-500">
+                    {item.description.split("~~")[0]}
                   </h3>
+                  <h2 className="font-semibold text-slate-900 mb-2 line-clamp-1 bg-red-500">
+                    {item.description.split("~~")[1]}
+                  </h2>
+                  </> :
+                  <>
+                  <h2 className="font-semibold text-slate-900 mb-2 line-clamp-1 bg-red-500">
+                    {item.description}
+                  </h2>
+                  </>}
 
                   <div className="flex items-center justify-between mt-auto">
 
@@ -608,6 +624,7 @@ const AdminGallery = () => {
                     value={
                       formData.event_name
                     }
+                    defaultValue={activeCategory}
                     onChange={handleChange}
                     className="w-full px-4 py-2.5 border border-slate-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                   >
@@ -636,6 +653,14 @@ const AdminGallery = () => {
                       Annual Function
                     </option>
 
+                    <option value="Student Life">
+                      Student Life
+                    </option>
+
+                    <option value="Student Life Gallery">
+                      Student Life Gallery
+                    </option>
+
                   </select>
 
                 </div>
@@ -643,20 +668,68 @@ const AdminGallery = () => {
                 {/* DESCRIPTION */}
                 <div>
 
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Image Description
-                  </label>
+                  {formData.event_name === "Student Life" ? (
+                    <>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Name 
+                      </label>
 
-                  <input
-                    type="text"
-                    name="description"
-                    value={
-                      formData.description
-                    }
-                    onChange={handleChange}
-                    placeholder="Enter image caption"
-                    className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                  />
+                      <input
+                        type="text"
+                        name="description"
+                        value={formData.description}
+                        onChange={handleChange}
+                        placeholder="Enter student's name"
+                        className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                        required
+                      />
+
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Position  
+                      </label>
+
+                      <select
+                        name="position"
+                        value={formData.position}
+                        onChange={handleChange}
+                        className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                        required
+                      >
+
+                      <option value="">
+                      Select Position
+                      </option>
+
+                      <option value="Head Boy">
+                        Head Boy
+                      </option>
+
+                      <option value="Head Girl">
+                        Head Girl
+                      </option>
+
+                      <option value="Cultural Captain">
+                        Cultural Captain
+                      </option>
+                      </select>
+                    </>
+                  ) : (
+                    <>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Description
+                      </label>
+
+                      <input
+                        type="text"
+                        name="description"
+                        value={formData.description}
+                        onChange={handleChange}
+                        placeholder="Enter name"
+                        className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                        required
+                      />
+                    </>
+                  )}
 
                 </div>
 

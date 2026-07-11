@@ -6,6 +6,10 @@ import {
   GraduationCap,
   HeartHandshake,
 } from "lucide-react";
+import scholar1 from "../../assets/images/Scholar1.jpeg"
+import scholar2 from "../../assets/images/Scholar2.jpeg"
+import scholar3 from "../../assets/images/Scholar3.jpeg"
+import scholar4 from "../../assets/images/Scholar4.jpeg"
 
 const scholarships = [
   {
@@ -104,7 +108,7 @@ const ScholarshipSection = () => {
               <div className="space-y-5">
                 <div className="h-64 rounded-none overflow-hidden shadow-xl">
                   <img
-                    src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1200"
+                    src={scholar1}
                     alt="Scholarship"
                     className="w-full h-full object-cover"
                   />
@@ -112,7 +116,7 @@ const ScholarshipSection = () => {
 
                 <div className="h-40 rounded-none overflow-hidden shadow-xl">
                   <img
-                    src="https://images.unsplash.com/photo-1509062522246-3755977927d7?w=1200"
+                    src={scholar2}
                     alt="Students"
                     className="w-full h-full object-cover"
                   />
@@ -122,7 +126,7 @@ const ScholarshipSection = () => {
               <div className="space-y-5 pt-10">
                 <div className="h-40 rounded-none overflow-hidden shadow-xl">
                   <img
-                    src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200"
+                    src={scholar3}
                     alt="Education"
                     className="w-full h-full object-cover"
                   />
@@ -130,7 +134,7 @@ const ScholarshipSection = () => {
 
                 <div className="h-64 rounded-none overflow-hidden shadow-xl">
                   <img
-                    src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1200"
+                    src={scholar4}
                     alt="Scholar"
                     className="w-full h-full object-cover"
                   />

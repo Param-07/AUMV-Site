@@ -26,7 +26,7 @@ const CinematicGallery = ({
   };
 
   return (
-    <section className="max-w-7xl mx-auto px-4 py-16">
+    <section className="py-20 px-8 md:px-20 bg-[#fcf9f8] overflow-hidden">
       {/* SECTION HEADER */}
 
       <motion.div

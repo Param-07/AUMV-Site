@@ -48,7 +48,7 @@ const AdminNavbar = () => {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("r_token");
-    navigate("/");
+    navigate("/login");
   };
 
   /* ── theme tokens ── */

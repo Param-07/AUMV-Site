@@ -1,4 +1,6 @@
 import { motion } from "framer-motion";
+import admissionOpen from "../../assets/images/AdmissionOpen.jpeg"
+import SmartImage from "../SmartImages";
 
 const AdmissionsHero = () => {
   return (
@@ -59,8 +61,8 @@ const AdmissionsHero = () => {
         className="relative"
         >
             <div className="aspect-[4/5] max-w-[360px] mx-auto overflow-hidden rounded-lg border-8 border-white shadow-xl relative z-10">
-                <img
-                src="/admission-hero.jpg"
+                <SmartImage
+                src={admissionOpen}
                 alt="Admission"
                 className="w-full h-full object-cover"
                 />

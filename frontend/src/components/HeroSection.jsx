@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAppData } from "../context/AppDataContext";
 import School from "../assets/images/AlokSchool.png";
+import SmartImage from "./SmartImages";
 
 const HeroSection = () => {
   const { hero } = useAppData();
@@ -42,14 +43,17 @@ const HeroSection = () => {
           transition={{ duration: 1.2 }}
           className="absolute inset-0"
         >
-          <div
-            className="absolute inset-0 bg-cover bg-center"
-            style={{
-              backgroundImage: `url(${
-                slides[current]?.url
-              }?width=1800&format=webp&quality=85)`,
-            }}
-          />
+          <div className="absolute inset-0">
+  <SmartImage
+    src={slides[current]?.url}
+    alt={slides[current]?.title || "Hero Image"}
+    priority
+    className="w-full h-full object-cover"
+    wrapperClassName="w-full h-full"
+  />
+</div>
+
+<div className="absolute inset-0 bg-black/40" />
         </motion.div>
       </AnimatePresence>
 
