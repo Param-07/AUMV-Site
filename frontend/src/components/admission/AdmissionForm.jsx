@@ -232,13 +232,13 @@ const AdmissionForm = () => {
 
                   <div className="flex items-center gap-3">
                     <Phone size={18} />
-                    <span>+91 XXXXX XXXXX</span>
+                    <span>+91 7398332780</span>
                   </div>
 
                   <div className="flex items-center gap-3">
                     <Mail size={18} />
                     <span>
-                      admissions@alokschool.in
+                      alokic003@gmail.com
                     </span>
                   </div>
 

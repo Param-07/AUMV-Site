@@ -1,85 +1,202 @@
-import { motion } from "framer-motion";
+import React, { useEffect, useMemo, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowRight } from "lucide-react";
+import { useAppData } from "../../context/AppDataContext";
+import SmartImage from "../SmartImages";
 
 const AcademicsHero = () => {
+  const { gallery = [] } = useAppData();
+  const [currentImage, setCurrentImage] = useState(0);
+
+  /* ---------------- DYNAMIC ACHIEVERS FILTER & FALLBACK ---------------- */
+  const achieverImages = useMemo(() => {
+    const fallback = [
+      {
+        src: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1800",
+        title: "Academic Excellence",
+        description: "Celebrating outstanding student milestones and brilliance.",
+      },
+    ];
+
+    if (!gallery || !gallery.length) return fallback;
+
+    // Filter to extract items explicitly tagged with achievement or academic terms
+    const filteredCollections = gallery.filter((item) => {
+      const categoryName = item.category?.toLowerCase() || "";
+      return (
+        categoryName.includes("achiever") || 
+        categoryName.includes("achievement") || 
+        categoryName.includes("academic")
+      );
+    });
+
+    // Fallback to all gallery data if no explicit 'achievers' category exists yet
+    const sourceCollections = filteredCollections.length > 0 ? filteredCollections : gallery;
+
+    const images = sourceCollections.flatMap((item) =>
+      (item.images || []).map((image) => ({
+        src: image.src || image.url,
+        title: image.title || item.category || "Academic Excellence",
+        description: image.description || "Celebrating outstanding student milestones and brilliance.",
+      }))
+    );
+
+    return images.length > 0 ? images : fallback;
+  }, [gallery]);
+
+  /* ---------------- SLIDER SCHEDULER ---------------- */
+  useEffect(() => {
+    if (!achieverImages.length) return;
+
+    const interval = setInterval(() => {
+      setCurrentImage((prev) => (prev + 1) % achieverImages.length);
+    }, 5500);
+
+    return () => clearInterval(interval);
+  }, [achieverImages.length]);
+
+  const current = achieverImages[currentImage];
+
   return (
     <section
-      className="relative min-h-[650px] overflow-hidden"
-      style={{ marginTop: "95px" }}
+      className="
+        relative
+        mt-[95px]
+        grid
+        /* Forced side-by-side split layout ratio on ALL screen resolutions */
+        grid-cols-[46%_54%] 
+        /* Minimized compressed height limits matching the global style */
+        min-h-[280px]
+        sm:min-h-[380px]
+        lg:min-h-[460px]
+        bg-[#0d104f]
+        overflow-hidden
+      "
     >
-      {/* Background */}
-
+      {/* ================= LEFT CONTENT COLUMN ================= */}
       <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{
-          backgroundImage:
-            "url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1800')",
-        }}
-      />
+        className="
+          relative
+          overflow-hidden
+          bg-gradient-to-br
+          from-[#15157d]
+          via-[#12156d]
+          to-[#0d104f]
+          flex
+          items-center
+          /* Low-profile internal vertical and horizontal paddings */
+          py-4
+          px-3
+          sm:px-8
+          lg:px-12
+        "
+      >
+        {/* Shrunk Decorative Background Element */}
+        <div className="absolute -left-28 -bottom-24 w-64 h-64 rounded-full bg-[#cca730]/10 blur-2xl pointer-events-none" />
 
-      {/* Overlays */}
-
-      <div className="absolute inset-0 bg-[#15157d]/80" />
-
-      <div className="absolute inset-0 bg-gradient-to-r from-[#15157d]/95 via-[#15157d]/80 to-transparent" />
-
-      {/* Content */}
-
-      <div className="relative z-10 max-w-7xl mx-auto px-4 min-h-[650px] flex items-center">
-        <div className="max-w-3xl">
-
-          <motion.span
-            initial={{ opacity: 0, y: 25 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="inline-block px-4 py-2 border border-[#cca730] text-[#ffe088] uppercase tracking-[0.25em] text-sm font-semibold mb-8"
-          >
-            Academic Excellence
-          </motion.span>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 35 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-5xl md:text-7xl font-black text-white leading-tight"
-          >
-            Curriculum &
-            <span className="block text-[#cca730]">
-              Pedagogy
-            </span>
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 35 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1 }}
-            className="mt-8 text-lg md:text-xl text-gray-200 max-w-2xl leading-relaxed"
-          >
-            At Alok Inter College, learning extends beyond textbooks.
-            Our curriculum integrates academic rigor, innovation,
-            critical thinking, and values-driven education to prepare
-            students for a rapidly evolving world.
-          </motion.p>
-
+        <div className="relative z-10 w-full max-w-xl mx-auto">
           <motion.div
-            initial={{ opacity: 0, y: 35 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.2 }}
-            className="flex flex-wrap gap-4 mt-10"
+            initial={{ opacity: 0, x: -15 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6 }}
           >
-            <button className="bg-[#cca730] text-black px-8 py-4 font-semibold hover:scale-105 transition-all duration-300">
-              Explore Curriculum
-            </button>
+            {/* Top Tagline Indicator Accent */}
+            <div className="flex items-center gap-2 sm:gap-3 mb-1.5 sm:mb-4">
+              <span className="w-4 sm:w-8 h-[1px] bg-[#cca730]/50" />
+              <span className="uppercase tracking-[0.15em] sm:tracking-[0.25em] text-[8px] sm:text-[10px] text-[#cca730] font-semibold whitespace-nowrap">
+                Academic Excellence
+              </span>
+            </div>
 
-            <button className="border border-white text-white px-8 py-4 font-semibold hover:bg-white hover:text-[#15157d] transition-all duration-300">
-              Academic Results
-            </button>
+            {/* Shrunk Micro Typography Headings */}
+            <h1 className="text-lg sm:text-3xl md:text-5xl xl:text-6xl font-black text-white leading-tight">
+              Curriculum &
+              <span className="block italic text-[#cca730] my-0">
+                Pedagogy
+              </span>
+            </h1>
+
+            {/* Restricted Paragraph Block with Clamp Guards */}
+            <p className="mt-1.5 sm:mt-4 text-[10px] sm:text-sm md:text-base text-white/75 leading-relaxed max-w-md line-clamp-2 sm:line-clamp-3">
+              At Alok Inter College, learning extends beyond textbooks. Our curriculum integrates academic rigor, innovation, critical thinking, and values-driven education to prepare students for a rapidly evolving world.
+            </p>
+
+            {/* Smart Action Triggers (Stacked vertically on mobile frames, side-by-side on desktop) */}
+            <div className="mt-3 sm:mt-6 flex flex-col sm:flex-row gap-1.5 sm:gap-3 w-full">
+              <button className="group w-full sm:w-auto text-center whitespace-nowrap bg-[#cca730] text-[#15157d] px-2.5 sm:px-6 py-1.5 sm:py-2.5 text-[9px] sm:text-sm font-bold flex items-center justify-center gap-1 hover:scale-[1.02] transition-all duration-300">
+                Explore Curriculum
+                <ArrowRight size={12} className="group-hover:translate-x-0.5 transition-transform hidden sm:inline-block" />
+              </button>
+
+              <button className="w-full sm:w-auto text-center whitespace-nowrap border border-white/20 text-white px-2.5 sm:px-6 py-1.5 sm:py-2.5 text-[9px] sm:text-sm font-semibold hover:bg-white hover:text-[#15157d] transition-all duration-300">
+                Academic Results
+              </button>
+            </div>
           </motion.div>
-
         </div>
       </div>
 
-      {/* Floating Statistics */}
+      {/* ================= RIGHT SLIDER COLUMN (ACHIEVERS) ================= */}
+      <div className="relative overflow-hidden group h-full">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentImage}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1, scale: 1.03 }}
+            exit={{ opacity: 0 }}
+            transition={{
+              opacity: { duration: 0.5 },
+              scale: { duration: 5.5, ease: "linear" },
+            }}
+            className="absolute inset-0"
+          >
+            <SmartImage
+              src={current.src}
+              alt={current.description}
+              wrapperClassName="w-full h-full"
+              className="w-full h-full object-cover"
+            />
+          </motion.div>
+        </AnimatePresence>
 
+        {/* Dynamic Shadow Mix Layer */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#15157d]/80 via-black/5 to-transparent" />
+
+        {/* Low Profile Responsive Slider Pagination Array */}
+        <div className="absolute top-2 right-2 sm:top-4 sm:right-4 flex gap-1 z-20 bg-black/30 backdrop-blur-md px-1.5 py-1 rounded-full scale-75 sm:scale-90">
+          {achieverImages.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentImage(index)}
+              className={`transition-all duration-300 rounded-full h-1 ${
+                currentImage === index ? "w-3 sm:w-4 bg-[#cca730]" : "w-1 bg-white/50"
+              }`}
+            />
+          ))}
+        </div>
+
+        {/* Minimal Compact Spotlight Floating Detail Card */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={`card-${currentImage}`}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3 }}
+            className="absolute bottom-2 left-2 right-2 sm:left-auto sm:bottom-4 sm:right-4 bg-white/95 backdrop-blur-md p-2 sm:p-4 max-w-[220px] sm:max-w-xs shadow-xl border-l-4 border-[#cca730]"
+          >
+            <span className="uppercase tracking-wider text-[7px] sm:text-[9px] text-slate-500 font-semibold block">
+              Featured Achievement
+            </span>
+            <h3 className="mt-0.5 text-[10px] sm:text-base font-bold text-[#15157d] leading-tight truncate">
+              {current.title}
+            </h3>
+            <p className="mt-0.5 text-slate-600 text-[9px] sm:text-xs leading-normal line-clamp-1 sm:line-clamp-2">
+              {current.description}
+            </p>
+          </motion.div>
+        </AnimatePresence>
+      </div>
     </section>
   );
 };

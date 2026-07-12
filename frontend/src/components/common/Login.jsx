@@ -102,6 +102,7 @@ const Login = () => {
             {/* Top Navbar */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 lg:px-12 py-4 flex items-center justify-between">
+          <Link to="/" className="flex items-center gap-3 group cursor-pointer">
           <div className="flex items-center gap-4">
             <img
               src={logo}
@@ -113,7 +114,7 @@ const Login = () => {
               ALOK INTER COLLEGE
             </h1>
           </div>
-
+          </Link>
           <nav className="hidden lg:flex items-center gap-8">
             <Link className="text-gray-700 hover:text-red-700 transition" to="/">
               Home

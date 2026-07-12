@@ -12,6 +12,26 @@ import {
 } from "lucide-react";
 
 const ContactCards = () => {
+  const handleSocialClick = (e, appUri, webUrl) => {
+    // Detect mobile devices
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+    if (isMobile) {
+      e.preventDefault();
+      // Attempt to force-open the native mobile app
+      window.location.href = appUri;
+
+      // Fallback scheme: If the app isn't installed, open the browser tab after 1.5 seconds
+      const fallback = setTimeout(() => {
+        window.open(webUrl, "_blank", "noopener,noreferrer");
+      }, 1500);
+
+      // Clear timeout if the user switches away from the browser to the app
+      window.addEventListener("blur", () => clearTimeout(fallback), { once: true });
+    }
+    // If desktop, it skips this block and cleanly executes the default href web link
+  };
+
   return (
     <section className="py-24 bg-white">
       <div className="max-w-7xl mx-auto px-4">
@@ -55,7 +75,7 @@ const ContactCards = () => {
                 />
 
                 <span className="text-slate-600">
-                  +91 94500 XXXXX
+                  +91 7398332780
                 </span>
               </div>
 
@@ -107,7 +127,7 @@ const ContactCards = () => {
                 />
 
                 <span className="text-slate-600">
-                  Mon - Sat | 9:00 AM - 3:00 PM
+                  Mon - Sat | 8:00 AM - 2:00 PM
                 </span>
               </div>
 
@@ -157,26 +177,56 @@ const ContactCards = () => {
 
             <div className="flex gap-4">
 
-              <a
-                href="#"
-                className="w-12 h-12 border border-[#15157d] flex items-center justify-center text-[#15157d] hover:bg-[#15157d] hover:text-white transition-all"
-              >
-                <Facebook size={18} />
-              </a>
+              {/* ================= FACEBOOK LINK ================= */}
+            <a
+              href="https://www.facebook.com/p/Alok-Higher-Secondary-School-Chandauli-100063812572249/"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) =>
+                handleSocialClick(
+                  e,
+                  "fb://page/100063812572249", // Mobile App Protocol using your Page ID
+                  "https://www.facebook.com/p/Alok-Higher-Secondary-School-Chandauli-100063812572249/"
+                )
+              }
+              className="w-12 h-12 border border-[#15157d] flex items-center justify-center text-[#15157d] hover:bg-[#15157d] hover:text-white transition-all"
+            >
+              <Facebook size={18} />
+            </a>
 
-              <a
-                href="#"
-                className="w-12 h-12 border border-[#15157d] flex items-center justify-center text-[#15157d] hover:bg-[#15157d] hover:text-white transition-all"
-              >
-                <Instagram size={18} />
-              </a>
+            {/* ================= INSTAGRAM LINK ================= */}
+            <a
+              href="https://www.instagram.com/alok_inter_college1994/"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) =>
+                handleSocialClick(
+                  e,
+                  "instagram://user?username=alok_inter_college1994", // Mobile App Protocol using your Username
+                  "https://www.instagram.com/alok_inter_college1994/"
+                )
+              }
+              className="w-12 h-12 border border-[#15157d] flex items-center justify-center text-[#15157d] hover:bg-[#15157d] hover:text-white transition-all"
+            >
+              <Instagram size={18} />
+            </a>
 
-              <a
-                href="#"
-                className="w-12 h-12 border border-[#15157d] flex items-center justify-center text-[#15157d] hover:bg-[#15157d] hover:text-white transition-all"
-              >
-                <Youtube size={18} />
-              </a>
+            {/* ================= YOUTUBE LINK ================= */}
+            <a
+              href="https://www.youtube.com/channel/UCbB250hm3z4-6iKfi8XhyIQ"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) =>
+                handleSocialClick(
+                  e,
+                  "vnd.youtube:UCbB250hm3z4-6iKfi8XhyIQ", // Mobile App Protocol using your Channel ID
+                  "https://www.youtube.com/channel/UCbB250hm3z4-6iKfi8XhyIQ"
+                )
+              }
+              className="w-12 h-12 border border-[#15157d] flex items-center justify-center text-[#15157d] hover:bg-[#15157d] hover:text-white transition-all"
+            >
+              <Youtube size={18} />
+            </a>
 
             </div>
           </motion.div>

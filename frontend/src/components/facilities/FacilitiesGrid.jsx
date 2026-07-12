@@ -12,18 +12,24 @@ const FacilitiesGrid = () => {
   const [currentImages, setCurrentImages] = useState({});
 
   const defaultDescriptions = {
-    "Computer Lab":
-      "Modern computing infrastructure with high-speed internet, coding environments, and digital learning resources.",
+  "Computer Lab":
+    "Modern computing infrastructure with high-speed internet, programming environments, and advanced digital tools to foster cutting-edge technological literacy.",
 
-    Library:
-      "A comprehensive collection of academic, reference, and recreational resources supporting lifelong learning.",
+  "Smart Class":
+    "Multimedia-enabled interactive learning spaces equipped with smartboards and audio-visual tools to elevate conceptual understanding and engagement.",
 
-    Playground:
-      "Large outdoor sports facilities designed to promote teamwork, fitness, and leadership.",
+  "Library":
+    "A comprehensive repository of academic literature, reference journals, and recreational media designed to cultivate a profound lifelong culture of reading.",
 
-    Laboratory:
-      "Advanced science laboratories equipped for practical experimentation and innovation.",
-  };
+  "Transport":
+    "A highly secure, strictly monitored, and well-managed fleet of school vehicles covering expansive routes to ensure comfortable daily commuting for students.",
+
+  "Playground":
+    "Expansive outdoor sports complexes and athletics fields designed to build physical fitness, strategic teamwork, competitive spirit, and leadership qualities.",
+
+  "Science Lab":
+    "Advanced scientific workstations fully equipped with premium apparatus for hands-on physics, chemistry, and biology experimentation and discovery.",
+};
 
   const facilityCards = facilities.map((category) => ({
     id: category.category.toLowerCase().replace(/\s+/g, "-"),
