@@ -9,6 +9,7 @@ import {
   GraduationCap,
 } from "lucide-react";
 import { apiRequest } from "../../utils/ApiCall";
+import school from "../../assets/images/AlokSchool.png"
 
 const CampusVisitForm = () => {
   const dates = Array.from({ length: 6 }, (_, i) => {
@@ -113,7 +114,7 @@ const CampusVisitForm = () => {
           className="absolute inset-0 bg-cover bg-center"
           style={{
             backgroundImage:
-              "url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1800')",
+            `url(${school})`,
           }}
         />
         <div className="absolute inset-0 bg-black/55" />

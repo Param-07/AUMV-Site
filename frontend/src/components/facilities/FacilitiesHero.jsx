@@ -53,6 +53,14 @@ const FacilitiesHero = () => {
     return () => clearInterval(interval);
   }, [facilityImages.length]);
 
+  /* ---------------- FIX: INTERACTION ACTION HANDLERS ---------------- */
+  const scrollIntoSection = (elementId) => {
+    const target = document.getElementById(elementId);
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
   const current = facilityImages[currentImage];
 
   return (
@@ -121,13 +129,21 @@ const FacilitiesHero = () => {
 
             {/* Smart Action Triggers (Stacked on Mobile, Balanced on Desktop) */}
             <div className="mt-3 sm:mt-6 flex flex-col sm:flex-row gap-1.5 sm:gap-3 w-full">
-              <button className="group w-full sm:w-auto text-center whitespace-nowrap bg-[#cca730] text-[#15157d] px-2.5 sm:px-6 py-1.5 sm:py-2.5 text-[9px] sm:text-sm font-bold flex items-center justify-center gap-1 hover:scale-[1.02] transition-all duration-300">
+              {/* FIX: Connected click scrolling handler */}
+              <button 
+                onClick={() => scrollIntoSection("academic-ecosystem-section")}
+                className="group w-full sm:w-auto text-center whitespace-nowrap bg-[#cca730] text-[#15157d] px-2.5 sm:px-6 py-1.5 sm:py-2.5 text-[9px] sm:text-sm font-bold flex items-center justify-center gap-1 hover:scale-[1.02] transition-all duration-300"
+              >
                 Explore Facilities
                 <ArrowRight size={12} className="group-hover:translate-x-0.5 transition-transform hidden sm:inline-block" />
               </button>
 
-              <button className="w-full sm:w-auto text-center whitespace-nowrap border border-white/20 text-white px-2.5 sm:px-6 py-1.5 sm:py-2.5 text-[9px] sm:text-sm font-semibold hover:bg-white hover:text-[#15157d] transition-all duration-300">
-                Virtual Tour
+              {/* FIX: Connected click scrolling handler */}
+              <button 
+                onClick={() => scrollIntoSection("facilities-cta-section")}
+                className="w-full sm:w-auto text-center whitespace-nowrap border border-white/20 text-white px-2.5 sm:px-6 py-1.5 sm:py-2.5 text-[9px] sm:text-sm font-semibold hover:bg-white hover:text-[#15157d] transition-all duration-300"
+              >
+                Campus Tour
               </button>
             </div>
           </motion.div>

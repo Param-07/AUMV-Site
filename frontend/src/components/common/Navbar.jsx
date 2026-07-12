@@ -97,30 +97,31 @@ const Navbar = () => {
         className={`
           fixed top-0 left-0 right-0 z-50 
           bg-slate-900 text-slate-100 
-          /* Scaled micro-typography with rigid layout bounds to lock alignment math */
-          text-[10px] xs:text-[11px] sm:text-sm 
-          h-[54px] sm:h-[40px] 
+          text-[11px] sm:text-sm 
+          h-[40px] 
           px-4 
           transition-transform duration-300 
           ${isScrolled ? "-translate-y-full" : "translate-y-0"}
         `}
       >
-        <div className="max-w-7xl mx-auto h-full flex flex-col sm:flex-row justify-center sm:justify-between items-center gap-1 sm:gap-0 py-1 sm:py-0">
-          {/* Contact Details Wrapper Grid Layout */}
-          <div className="flex flex-wrap justify-center items-center gap-x-3 gap-y-0.5 sm:gap-6">
-            <span className="flex items-center gap-1 sm:gap-2">
+        {/* Changed to flex-row permanently, removed col gaps, added overflow bounds */}
+        <div className="max-w-7xl mx-auto h-full flex flex-row justify-between items-center overflow-x-auto whitespace-nowrap scrollbar-none gap-4">
+          
+          {/* Contact Details Wrapper - Forced no-wrap layout */}
+          <div className="flex flex-row items-center gap-4 sm:gap-6 flex-shrink-0">
+            <span className="flex items-center gap-1.5 flex-shrink-0">
               <Phone className="w-3 h-3 sm:w-4 sm:h-4 text-amber-300" /> +91 7398332780
             </span>
-            <span className="flex items-center gap-1 sm:gap-2">
+            <span className="flex items-center gap-1.5 flex-shrink-0">
               <Mail className="w-3 h-3 sm:w-4 sm:h-4 text-amber-300" /> alokic003@gmail.com
             </span>
-            <span className="flex items-center gap-1 sm:gap-2 hidden xs:flex">
+            <span className="flex items-center gap-1.5 flex-shrink-0 hidden md:flex">
               <MapPin className="w-3 h-3 sm:w-4 sm:h-4 text-amber-300" /> Chandauli, UP
             </span>
           </div>
 
-          {/* Quick Portal Action Sub-Links */}
-          <div className="flex items-center gap-4 text-slate-300">
+          {/* Quick Portal Action Links - Pushed smoothly to the right */}
+          <div className="flex items-center gap-4 text-slate-300 flex-shrink-0 pr-2">
             <a href="#" className="hover:text-amber-200 transition-colors font-medium text-amber-300">
               Alumni
             </a>
@@ -146,8 +147,7 @@ const Navbar = () => {
           bg-white/90 backdrop-blur-xl 
           border-b border-slate-200 shadow-sm 
           transition-all duration-300 
-          /* Responsive offset calculations matching the structural height metrics above */
-          ${isScrolled ? "top-0" : "top-[54px] sm:top-[40px]"}
+          ${isScrolled ? "top-0" : "top-[40px]"}
         `}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

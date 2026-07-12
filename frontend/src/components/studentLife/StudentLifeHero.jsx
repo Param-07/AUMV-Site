@@ -8,6 +8,16 @@ const StudentLifeHero = () => {
   const { gallery = [] } = useAppData();
   const [currentImage, setCurrentImage] = useState(0);
 
+  /* ---------------- SMOOTH SCROLL TO BOARD RESULTS ---------------- */
+  const handleScrollToResults = (id) => {
+    const targetElement = document.getElementById(id);
+    if (targetElement) {
+      targetElement.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else {
+      console.warn("Target element '#board-results-section' not found in DOM.");
+    }
+  };
+
   /* ---------------- DYNAMIC DATA FILTER & FALLBACK ENGINE ---------------- */
   const studentLifeImages = useMemo(() => {
     const fallback = [
@@ -128,13 +138,17 @@ const StudentLifeHero = () => {
 
             {/* Inline Action Layout System Group */}
             <div className="mt-3 sm:mt-5 flex flex-col sm:flex-row gap-1.5 sm:gap-3 w-full">
-              <button className="group w-full sm:w-auto text-center whitespace-nowrap bg-[#cca730] text-[#15157d] px-2.5 sm:px-5 py-1.5 sm:py-2.5 text-[9px] sm:text-sm font-bold flex items-center justify-center gap-1 hover:scale-[1.02] transition-all duration-300">
+              <button
+                onClick={() => handleScrollToResults("clubs-and-socities")}
+                className="group w-full sm:w-auto text-center whitespace-nowrap bg-[#cca730] text-[#15157d] px-2.5 sm:px-5 py-1.5 sm:py-2.5 text-[9px] sm:text-sm font-bold flex items-center justify-center gap-1 hover:scale-[1.02] transition-all duration-300">
                 Explore Clubs
                 <ArrowRight size={12} className="group-hover:translate-x-0.5 transition-transform hidden sm:inline-block" />
               </button>
 
-              <button className="w-full sm:w-auto text-center whitespace-nowrap border border-white/20 text-white px-2.5 sm:px-5 py-1.5 sm:py-2.5 text-[9px] sm:text-sm font-semibold hover:bg-white hover:text-[#15157d] transition-all duration-300">
-                Join Leadership
+              <button 
+                onClick={() => handleScrollToResults("student-leadership")}
+                className="w-full sm:w-auto text-center whitespace-nowrap border border-white/20 text-white px-2.5 sm:px-5 py-1.5 sm:py-2.5 text-[9px] sm:text-sm font-semibold hover:bg-white hover:text-[#15157d] transition-all duration-300">
+                Student Leadership
                 </button>
             </div>
 

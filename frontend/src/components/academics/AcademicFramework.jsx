@@ -41,7 +41,7 @@ const frameworkItems = [
 
 const AcademicFramework = () => {
   return (
-    <section className="py-24 bg-slate-50">
+    <section id="academic-framework" className="py-24 bg-slate-50">
       <div className="max-w-7xl mx-auto px-4">
 
         {/* SECTION HEADER */}

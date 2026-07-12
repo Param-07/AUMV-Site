@@ -1,3 +1,4 @@
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
@@ -5,7 +6,8 @@ const FacilitiesCTA = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="py-24 bg-white">
+    /* FIX: Added id tracking anchor and top margin scrolling gap offset */
+    <section id="facilities-cta-section" className="py-24 bg-white scroll-mt-24">
       <div className="max-w-5xl mx-auto px-4 text-center">
 
         <motion.h2

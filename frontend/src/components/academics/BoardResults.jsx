@@ -9,8 +9,9 @@ const BoardResults = () => {
   const [achievers, setAchievers] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-    useEffect(() => {
-        const loadAchievers = async () => {
+
+  useEffect(() => {
+    const loadAchievers = async () => {
       try {
         const res = await apiRequest(
           "GET",
@@ -32,15 +33,13 @@ const BoardResults = () => {
 
   const board10 = useMemo(() => {
     return achievers.filter(
-      (a) =>
-        String(a.class) === "10th"
+      (a) => String(a.class) === "10th"
     );
   }, [achievers]);
 
   const board12 = useMemo(() => {
     return achievers.filter(
-      (a) =>
-        String(a.class) === "12th"
+      (a) => String(a.class) === "12th"
     );
   }, [achievers]);
 
@@ -108,10 +107,13 @@ const BoardResults = () => {
   }
 
   return (
-    <section className="py-24 bg-white">
+    /* 
+      FIX: Added explicit targeting anchor id 
+      scroll-mt-24 prevents your layout's sticky top menu panel from covering the component title header.
+    */
+    <section id="board-results-section" className="py-24 bg-white scroll-mt-24">
       <div className="max-w-7xl mx-auto px-4">
         {/* HEADER */}
-
         <motion.div
           initial={{ opacity: 0, y: 35 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -129,10 +131,8 @@ const BoardResults = () => {
         </motion.div>
 
         {/* RESULT CARDS */}
-
         <div className="grid lg:grid-cols-2 gap-10">
           {/* CLASS X */}
-
           <motion.div
             initial={{ opacity: 0, x: -40 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -140,10 +140,7 @@ const BoardResults = () => {
             transition={{ duration: 0.7 }}
             className="bg-[#15157d] p-10 border-t-4 border-[#cca730] shadow-xl"
           >
-            <Award
-              size={54}
-              className="mx-auto mb-6 text-[#ffe088]"
-            />
+            <Award size={54} className="mx-auto mb-6 text-[#ffe088]" />
 
             <h3 className="text-3xl font-bold text-white text-center mb-2">
               Class X (High School)
@@ -178,28 +175,20 @@ const BoardResults = () => {
             )}
 
             <div className="space-y-3 text-gray-200 text-center mb-8">
-              <p>
-                {stats10.above90} Students Above 90%
-              </p>
-
-              <p>
-                {board10.length} Academic Achievers
-              </p>
-
-              <p>
-                Consistent Excellence in Board Results
-              </p>
+              <p>{stats10.above90} Students Above 90%</p>
+              <p>{board10.length} Academic Achievers</p>
+              <p>Consistent Excellence in Board Results</p>
             </div>
 
             <button
-                onClick={() => navigate("/academic-results/10")}
-                className="w-full py-3 border-2 border-[#cca730] text-[#ffe088] font-semibold hover:bg-[#cca730] hover:text-black transition-all">
-                View Detailed Results
+              onClick={() => navigate("/academic-results/10")}
+              className="w-full py-3 border-2 border-[#cca730] text-[#ffe088] font-semibold hover:bg-[#cca730] hover:text-black transition-all"
+            >
+              View Detailed Results
             </button>
           </motion.div>
 
           {/* CLASS XII */}
-
           <motion.div
             initial={{ opacity: 0, x: 40 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -207,10 +196,7 @@ const BoardResults = () => {
             transition={{ duration: 0.7 }}
             className="bg-gray-100 p-10 border-t-4 border-red-700 shadow-xl"
           >
-            <Trophy
-              size={54}
-              className="mx-auto mb-6 text-red-700"
-            />
+            <Trophy size={54} className="mx-auto mb-6 text-red-700" />
 
             <h3 className="text-3xl font-bold text-[#15157d] text-center mb-2">
               Class XII (Intermediate)
@@ -245,23 +231,16 @@ const BoardResults = () => {
             )}
 
             <div className="space-y-3 text-gray-600 text-center mb-8">
-              <p>
-                {stats12.above90} Students Above 90%
-              </p>
-
-              <p>
-                {board12.length} Academic Achievers
-              </p>
-
-              <p>
-                Excellence in Science & Humanities
-              </p>
+              <p>{stats12.above90} Students Above 90%</p>
+              <p>{board12.length} Academic Achievers</p>
+              <p>Excellence in Science & Humanities</p>
             </div>
 
             <button
-                onClick={() => navigate("/academic-results/12")}
-                className="w-full py-3 bg-[#cca730] text-black font-semibold hover:opacity-90 transition-all">
-                View Detailed Results
+              onClick={() => navigate("/academic-results/12")}
+              className="w-full py-3 bg-[#cca730] text-black font-semibold hover:opacity-90 transition-all"
+            >
+              View Detailed Results
             </button>
           </motion.div>
         </div>

@@ -11,6 +11,7 @@ import {
   ChevronLeft,
 } from "lucide-react";
 import { apiRequest } from "../../utils/ApiCall";
+import school from "../../assets/images/AlokSchool.png"
 
 const AdmissionForm = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -119,7 +120,7 @@ const AdmissionForm = () => {
           className="absolute inset-0 bg-cover bg-center"
           style={{
             backgroundImage:
-              "url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1800')",
+              `url(${school})`,
           }}
         />
 

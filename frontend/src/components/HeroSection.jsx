@@ -106,7 +106,7 @@ const HeroSection = () => {
                 href="/#/gallery"
                 className="w-full sm:w-auto text-center whitespace-nowrap border border-white/20 text-white px-2.5 sm:px-6 py-1.5 sm:py-2.5 text-[9px] sm:text-sm font-semibold hover:bg-white hover:text-[#15157d] transition-all duration-300"
               >
-                View Campus
+                School Gallery
               </a>
             </div>
           </motion.div>
@@ -115,12 +115,12 @@ const HeroSection = () => {
 
       {/* ================= RIGHT IMAGE SLIDER PANEL ================= */}
       <div className="relative overflow-hidden group h-full">
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="popLayout">
           <motion.div
             key={current}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1, scale: 1.03 }}
-            exit={{ opacity: 0 }}
+            exit={{ opacity: 1 }}
             transition={{
               opacity: { duration: 0.5 },
               scale: { duration: 5.5, ease: "linear" },

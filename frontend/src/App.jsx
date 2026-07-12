@@ -1,4 +1,4 @@
-import { HashRouter as Router, Routes, Route, useLocation, Navigate } from "react-router-dom";
+import { HashRouter as Router, Routes, Route, useLocation, Navigate, Outlet } from "react-router-dom";
 import Navbar from "./components/common/Navbar";
 import Footer from "./components/common/Footer";
 import AnnouncementBar from "./components/AnnouncementBar";
@@ -35,6 +35,7 @@ import CampusVisitForm from "./components/admission/CampusVisitForm";
 import AcademicResults from "./components/academicResults/AcademicResults";
 import StudentLife from "./components/studentLife/StudentLife";
 import Contact from "./components/contact/Contact";
+import ScrollToTopButton from "./components/common/scrollToTopButton";
 
 function HomePage() {
   return (
@@ -50,11 +51,28 @@ function HomePage() {
   );
 }
 
+// 1. Layout components now use <Outlet /> to render child matches
 function PublicLayout() {
   return (
     <>
       <Navbar />
-      <Routes>
+      <Outlet /> 
+      <Footer />
+    </>
+  );
+}
+
+// 2. Route Protection wrapper component
+function ProtectedAdminElement({ children }) {
+  const token = localStorage.getItem("token");
+  return token ? children : <Navigate to="/login" replace />;
+}
+
+function AppRouter() {
+  return (
+    <Routes>
+      {/* Public Facing Routes Layout */}
+      <Route element={<PublicLayout />}>
         <Route path="/" element={<HomePage />} />
         <Route path="/facilities/:facilityId?" element={<Facilities />} />
         <Route path="/gallery" element={<Gallery />} />
@@ -65,74 +83,55 @@ function PublicLayout() {
         <Route path="/academic-results/:classId" element={<AcademicResults />} />
         <Route path="/student-life" element={<StudentLife />} />
         <Route path="/contact" element={<Contact />} />
-      </Routes>
-      <Footer />
-    </>
-  );
-}
-
-function AdminLayout() {
-  return (
-    <Routes>
-      <Route path="/" element={<AdminNavbar />}>
-        <Route index element={<Dashboard />} />
-        <Route path="dashboard" element={<Dashboard />} />
-        <Route path="mainpage" element={<MainPageManager />} />
-        <Route path="teachers" element={<Teachers />} />
-        <Route path="adminGallery" element={<AdminGallery />} />
-        <Route path="events" element={<EventsPage />} />
-        <Route path="videos" element={<VideoGallery />} />
-        <Route path="achievers" element={<Achievers />} />
-        <Route path="adminfacilities" element={<AdminFacilities />} />
       </Route>
+
+      {/* Standalone Route for Login (No Header or Footer) */}
+      <Route path="/login" element={<Login />} />
+
+      {/* Protected Admin Routes Layout */}
+      <Route 
+        element={
+          <ProtectedAdminElement>
+            <AdminNavbar />
+          </ProtectedAdminElement>
+        }
+      >
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/mainpage" element={<MainPageManager />} />
+        <Route path="/teachers" element={<Teachers />} />
+        <Route path="/adminGallery" element={<AdminGallery />} />
+        <Route path="/events" element={<EventsPage />} />
+        <Route path="/videos" element={<VideoGallery />} />
+        <Route path="/achievers" element={<Achievers />} />
+        <Route path="/adminfacilities" element={<AdminFacilities />} />
+      </Route>
+
+      {/* Fallback Catch-All Redirect */}
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
-}
-
-function AppRouter() {
-  const location = useLocation();
-  const token = localStorage.getItem("token");
-
-  const adminPaths = ["/dashboard", "/teachers", "/adminGallery", "/events", "/videos", "/achievers", "/adminfacilities", "/mainpage"];
-  const isAdminRoute = adminPaths.some((p) => location.pathname.startsWith(p));
-
-  if (location.pathname === "/login") {
-    return (
-      <Routes>
-        <Route path="/login" element={<Login />} />
-      </Routes>
-    );
-  }
-
-  if (isAdminRoute && !token) return <Navigate to="/login" replace />;
-  if (isAdminRoute) return <AdminLayout />;
-
-  return <PublicLayout />;
 }
 
 function AppContent() {
   const [loadingScreen, setLoadingScreen] = useState(true);
   const [showSkeleton, setShowSkeleton] = useState(true);
-  const { setGallery, setHero, setVideos, setFacilities} = useAppData();
+  const { setGallery, setHero, setVideos, setFacilities } = useAppData();
   const location = useLocation();
 
-  // apply scroll-to-top globally for route changes
   useScrollToTop();
 
   useEffect(() => {
-    // Skip API calls if on login page
     if (location.pathname === "/login" || location.pathname === "/adminLogin") {
       setTimeout(() => {
-          setLoadingScreen(false);
-          setTimeout(() => setShowSkeleton(false), 450);
-        }, 250);
+        setLoadingScreen(false);
+        setTimeout(() => setShowSkeleton(false), 450);
+      }, 250);
       setShowSkeleton(false);
       return;
     }
 
     const loadData = async () => {
       try {
-        var starttime = new Date().getTime();
         const [galleryRes, videosRes, facilitiesRes] = await Promise.all([
           apiRequest("GET", "/gallery/"),
           apiRequest("GET", "/videos/getVideos"),
@@ -188,6 +187,7 @@ export default function App() {
     <Router>
       <AppDataProvider>
         <AppContent />
+        <ScrollToTopButton />
       </AppDataProvider>
     </Router>
   );

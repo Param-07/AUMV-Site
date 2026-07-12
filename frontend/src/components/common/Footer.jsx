@@ -87,7 +87,7 @@ const Footer = () => {
                 onClick={(e) =>
                   handleSocialClick(
                     e,
-                    "vnd.youtube:UCbB250hm3z4-6iKfi8XhyIQ", // Mobile App Protocol using your Channel ID
+                    "youtube://www.youtube.com/channel/UCbB250hm3z4-6iKfi8XhyIQ", // Modern Universal App Deep Link
                     "https://www.youtube.com/channel/UCbB250hm3z4-6iKfi8XhyIQ"
                   )
                 }
