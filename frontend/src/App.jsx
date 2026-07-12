@@ -43,7 +43,7 @@ function HomePage() {
       <AnnouncementBar />
       <LegacySection />
       <LeadershipSection />
-      <RecentHighlights />
+      {/* <RecentHighlights /> */}
       <CTASection />
       {/* <AboutSection /> */}
     </>
