@@ -13,7 +13,7 @@ const AnnouncementBar = () => {
         const res = await apiRequest("GET", "/events/");
         const events = res?.events || [];
 
-        // Filter events that are still valid (valid_till ≥ today)
+        // Filter events that are still valid (valid_till >= today)
         const today = new Date();
         const validEvents = events.filter((ev) => {
           if (!ev.valid_till) return false;
@@ -31,9 +31,14 @@ const AnnouncementBar = () => {
 
   if (!announcements.length) return null;
 
+  // FIX: Combined title and description, dropped the valid_till dates completely
   const fullText = announcements
-    .map((ev) => `${ev.title} (${ev.valid_till || "Until further notice"})`)
-    .join("  |  ");
+    .map((ev) => {
+      const heading = ev.title;
+      const desc = ev.description ? `: ${ev.description}` : "";
+      return `${heading}${desc}`;
+    })
+    .join("   |   ");
 
   return (
     <>
@@ -54,12 +59,17 @@ const AnnouncementBar = () => {
             isCollapsed ? "h-[52px] overflow-hidden" : "h-auto"
           }`}
         >
-          {/* Marquee animation */}
+          {/* Marquee animation containing the hover state handler rule */}
           <style>
             {`
               @keyframes marquee {
                 0% { transform: translateX(100%); }
                 100% { transform: translateX(-100%); }
+              }
+              /* FIX: Pauses the marquee running animation loop on text container hover */
+              .marquee-track:hover {
+                animation-play-state: paused !important;
+                cursor: pointer;
               }
             `}
           </style>
@@ -68,7 +78,8 @@ const AnnouncementBar = () => {
             <Megaphone className="text-indigo-700 flex-shrink-0" size={24} />
 
             <div className="w-full overflow-hidden">
-              <p className="whitespace-nowrap inline-block animate-[marquee_24s_linear_infinite] font-medium text-indigo-900">
+              {/* FIX: Appended 'marquee-track' key class to catch the hover pause style rule */}
+              <p className="marquee-track whitespace-nowrap inline-block animate-[marquee_30s_linear_infinite] font-medium text-indigo-900">
                 {fullText}
               </p>
             </div>

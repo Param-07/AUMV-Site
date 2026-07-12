@@ -39,7 +39,7 @@ const StudentLeadership = () => {
   }, [gallery]);
 
   return (
-    <section className="py-24 bg-white overflow-hidden">
+    <section id="student-leadership" className="py-24 bg-white overflow-hidden">
       <div className="max-w-7xl mx-auto px-4">
 
         {/* HEADER */}

@@ -1,8 +1,10 @@
+import React from "react";
 import FacilitiesGrid from "./FacilitiesGrid";
 
 const AcademicEcosystem = () => {
   return (
-    <section className="py-24">
+    /* FIX: Added id tracking anchor and top margin scrolling gap offset */
+    <section id="academic-ecosystem-section" className="py-24 scroll-mt-24">
       <div className="max-w-7xl mx-auto px-4">
 
         <div className="text-center mb-16">

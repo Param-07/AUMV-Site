@@ -1,51 +1,59 @@
+import React, { useMemo } from "react";
 import { motion } from "framer-motion";
+import { useAppData } from "../../context/AppDataContext";
 import SmartImage from "../SmartImages";
 
-const frameworkItems = [
+// The structural content framework configuration template
+const staticFrameworkItems = [
   {
     title: "Curriculum Excellence",
     subtitle: "Structured For Success",
     description:
       "Our curriculum is carefully aligned with national educational standards while incorporating modern teaching methodologies that foster intellectual curiosity and academic achievement.",
-
-    image:
-      "https://images.unsplash.com/photo-1509062522246-3755977927d7?w=1600",
-
+    image: "https://images.unsplash.com/photo-1509062522246-3755977927d7?w=1600",
     reverse: false,
   },
-
   {
     title: "Technology Integration",
     subtitle: "Learning Beyond Boundaries",
     description:
       "Smart classrooms, digital resources, and technology-enabled teaching create engaging learning experiences that prepare students for the future.",
-
-    image:
-      "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1600",
-
+    image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1600",
     reverse: true,
   },
-
   {
     title: "Experiential Learning",
     subtitle: "Knowledge Through Practice",
     description:
       "Project-based learning, laboratory work, field experiences, and collaborative activities help students connect theory with real-world application.",
-
-    image:
-      "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1600",
-
+    image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1600",
     reverse: false,
   },
 ];
 
 const AcademicFramework = () => {
+  const { gallery = [] } = useAppData();
+
+  // Filter gallery items for "class gallery" and select the top 5 URLs
+  const frameworkItems = useMemo(() => {
+    const galleryImages = gallery
+      .filter((item) => item.category?.toLowerCase() === "class gallery")[0].images
+      .slice(0, 5)
+      .map((item) => item.src || item.image);
+      console.log(galleryImages)
+
+    // Swap structural fallback placeholders with active dynamic database paths
+    return staticFrameworkItems.map((item, index) => ({
+      ...item,
+      image: galleryImages[index] || item.image,
+    }));
+  }, [gallery]);
+
   return (
-    <section className="py-24 bg-slate-50">
+    <section id="academic-framework" className="py-24 bg-slate-50">
       <div className="max-w-7xl mx-auto px-4">
 
         {/* SECTION HEADER */}
-
         <motion.div
           initial={{ opacity: 0, y: 35 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -64,24 +72,21 @@ const AcademicFramework = () => {
           <div className="w-24 h-1 bg-[#cca730] mx-auto mb-6" />
 
           <p className="max-w-3xl mx-auto text-gray-600 text-lg leading-relaxed">
-            Our academic framework combines tradition, innovation,
-            and practical learning experiences to ensure holistic
-            student development.
+            Our academic framework combines tradition, innovation, and practical 
+            learning experiences to ensure holistic student development.
           </p>
         </motion.div>
 
         {/* CONTENT BLOCKS */}
-
         <div className="space-y-24">
-          {frameworkItems.map((item, index) => (
+          {frameworkItems.map((item) => (
             <div
               key={item.title}
               className={`grid lg:grid-cols-2 gap-16 items-center ${
                 item.reverse ? "lg:[&>*:first-child]:order-2" : ""
               }`}
             >
-              {/* IMAGE */}
-
+              {/* IMAGE ELEMENT */}
               <motion.div
                 initial={{
                   opacity: 0,
@@ -93,7 +98,7 @@ const AcademicFramework = () => {
                 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.7 }}
-                className="overflow-hidden shadow-2xl"
+                className="overflow-hidden shadow-2xl rounded-sm"
               >
                 <SmartImage
                   src={item.image}
@@ -103,8 +108,7 @@ const AcademicFramework = () => {
                 />
               </motion.div>
 
-              {/* CONTENT */}
-
+              {/* TEXT CONTENT CONTAINER */}
               <motion.div
                 initial={{
                   opacity: 0,
@@ -129,13 +133,12 @@ const AcademicFramework = () => {
                   {item.description}
                 </p>
 
+                {/* STATS MATRIX */}
                 <div className="grid grid-cols-2 gap-6">
-
                   <div className="border-l-4 border-[#cca730] pl-4">
                     <div className="text-3xl font-black text-[#15157d]">
                       100%
                     </div>
-
                     <div className="text-sm text-gray-500 uppercase tracking-wider">
                       Student Engagement
                     </div>
@@ -145,14 +148,13 @@ const AcademicFramework = () => {
                     <div className="text-3xl font-black text-[#15157d]">
                       21st
                     </div>
-
                     <div className="text-sm text-gray-500 uppercase tracking-wider">
                       Century Skills
                     </div>
                   </div>
-
                 </div>
               </motion.div>
+
             </div>
           ))}
         </div>

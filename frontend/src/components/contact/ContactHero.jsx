@@ -4,6 +4,16 @@ import { Mail, Phone, ArrowRight } from "lucide-react";
 import School from "../../assets/images/AlokSchool.png";
 
 const ContactHero = () => {
+  /* ---------------- SMOOTH SCROLL TO BOARD RESULTS ---------------- */
+  const handleScrollToResults = () => {
+    const targetElement = document.getElementById("inquiry-form");
+    if (targetElement) {
+      targetElement.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else {
+      console.warn("Target element '#board-results-section' not found in DOM.");
+    }
+  };
+
   return (
     <section
       className="
@@ -69,12 +79,16 @@ const ContactHero = () => {
 
             {/* Inline Action Layout System Group */}
             <div className="mt-3 sm:mt-5 flex flex-col sm:flex-row gap-1.5 sm:gap-3 w-full">
-              <button className="group w-full sm:w-auto text-center whitespace-nowrap bg-[#cca730] text-[#15157d] px-2.5 sm:px-5 py-1.5 sm:py-2.5 text-[9px] sm:text-sm font-bold flex items-center justify-center gap-1 hover:scale-[1.02] transition-all duration-300">
-                Send Message
+              <button
+                onClick={() => handleScrollToResults()} 
+                className="group w-full sm:w-auto text-center whitespace-nowrap bg-[#cca730] text-[#15157d] px-2.5 sm:px-5 py-1.5 sm:py-2.5 text-[9px] sm:text-sm font-bold flex items-center justify-center gap-1 hover:scale-[1.02] transition-all duration-300">
+                Send Messages
                 <ArrowRight size={12} className="group-hover:translate-x-0.5 transition-transform hidden sm:inline-block" />
               </button>
 
-              <button className="w-full sm:w-auto text-center whitespace-nowrap border border-white/20 text-white px-2.5 sm:px-5 py-1.5 sm:py-2.5 text-[9px] sm:text-sm font-semibold hover:bg-white hover:text-[#15157d] transition-all duration-300">
+              <button 
+                onClick={() => handleScrollToResults()}
+                className="w-full sm:w-auto text-center whitespace-nowrap border border-white/20 text-white px-2.5 sm:px-5 py-1.5 sm:py-2.5 text-[9px] sm:text-sm font-semibold hover:bg-white hover:text-[#15157d] transition-all duration-300">
                 Admissions Info
               </button>
             </div>
