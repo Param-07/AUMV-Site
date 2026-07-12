@@ -109,10 +109,10 @@ const Navbar = () => {
           {/* Contact Details Wrapper Grid Layout */}
           <div className="flex flex-wrap justify-center items-center gap-x-3 gap-y-0.5 sm:gap-6">
             <span className="flex items-center gap-1 sm:gap-2">
-              <Phone className="w-3 h-3 sm:w-4 sm:h-4 text-amber-300" /> +91 9876543210
+              <Phone className="w-3 h-3 sm:w-4 sm:h-4 text-amber-300" /> +91 7398332780
             </span>
             <span className="flex items-center gap-1 sm:gap-2">
-              <Mail className="w-3 h-3 sm:w-4 sm:h-4 text-amber-300" /> info@alokschool.edu.in
+              <Mail className="w-3 h-3 sm:w-4 sm:h-4 text-amber-300" /> alokic003@gmail.com
             </span>
             <span className="flex items-center gap-1 sm:gap-2 hidden xs:flex">
               <MapPin className="w-3 h-3 sm:w-4 sm:h-4 text-amber-300" /> Chandauli, UP
@@ -121,20 +121,20 @@ const Navbar = () => {
 
           {/* Quick Portal Action Sub-Links */}
           <div className="flex items-center gap-4 text-slate-300">
-            <a href="#" className="hover:text-amber-200 transition-colors">
+            <a href="#" className="hover:text-amber-200 transition-colors font-medium text-amber-300">
               Alumni
             </a>
-            <a href="#" className="hover:text-amber-200 transition-colors">
+            <a href="#" className="hover:text-amber-200 transition-colors font-medium text-amber-300">
               Jobs
             </a>
-            {/* <a
+            <a
               href="/#/login"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-amber-200 transition-colors font-medium text-amber-300"
             >
               Login
-            </a> */}
+            </a>
           </div>
         </div>
       </div>
