@@ -4,3 +4,5 @@ node_modules
 .angular
 desktop.ini
 .env
+__pycache__/
+*.pyc
